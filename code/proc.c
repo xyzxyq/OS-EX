@@ -645,10 +645,32 @@ procdump(void)
 //pid is the id of process
 //priority is the priority value
 //the return value is pid
+// proc.c
 int
 setpriority(int pid, int priority)
 {
+  struct proc *p;
+  int found = 0;
 
+  // 检查优先级范围 [1, 20] (讲义要求)
+  // 注意：讲义说 [1,20]，数值越小优先级越高
+  if(priority < 1 || priority > 20)
+    return -1;
+
+  acquire(&ptable.lock);
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+    if(p->pid == pid){
+      p->priority = priority;
+      found = 1;
+      break;
+    }
+  }
+  release(&ptable.lock);
+
+  if(found)
+    return 0; // 成功
+  else
+    return -1; // 未找到 PID
 }
 
 //sem is the index of sema
@@ -919,41 +941,47 @@ struct proc *smlScheduler() {
 // (请确保你删除了旧的、参数错误的 getptable 函数)
 // (将这个函数粘贴到 proc.c 的末尾)
 
-int getptable(void *ubuf, int size)
+// 在 proc.c 文件的末尾
+
+int 
+getptable(void *ubuf, int size)
 {
-  struct proc_info pinfo[NPROC];
   struct proc *p;
+  struct proc_info pi; // 只在栈上分配一个结构体，非常安全
+  char *uptr = (char*)ubuf;
   int i = 0;
 
-  if(size < sizeof(pinfo))
-    return -1; // 用户提供的缓冲区太小
+  // 检查用户提供的缓冲区是否足够大
+  // 如果用户传来的 size 小于总表大小，可能会导致溢出，这里做个防御性检查
+  if(size < NPROC * sizeof(struct proc_info))
+    return -1;
 
-  // 循环遍历进程表
-  // (这个函数在 proc.c 中，所以它可以访问 ptable)
   acquire(&ptable.lock);
+
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-    if(p->state == UNUSED)
-      continue;
+    // 每次循环前清零 pi，防止数据残留
+    memset(&pi, 0, sizeof(pi));
 
-    pinfo[i].pid = p->pid;
-    pinfo[i].priority = p->priority;
-    pinfo[i].mem_size = p->sz;
-    pinfo[i].state = p->state;
-    safestrcpy(pinfo[i].name, p->name, sizeof(p->name));
+    if(p->state != UNUSED){
+      pi.pid = p->pid;
+      // 处理父进程 PID，如果是 init 或无父进程，设为 -1 (N/A)
+      pi.ppid = (p->parent) ? p->parent->pid : -1; 
+      pi.priority = p->priority;
+      pi.mem_size = p->sz;
+      pi.state = p->state;
+      safestrcpy(pi.name, p->name, sizeof(pi.name));
+    } 
+    // 如果是 UNUSED，pi 已经被 memset 为 0，pid 也是 0，ps 命令会跳过它
 
-    if(p->parent){
-      pinfo[i].ppid = p->parent->pid;
-    } else {
-      pinfo[i].ppid = -1; // N/A
+    // 计算当前结构体在用户缓冲区的目标地址
+    // 直接从内核将这就一个结构体 copy 到用户空间的正确偏移位置
+    if(copyout(myproc()->pgdir, (uint)(uptr + i * sizeof(struct proc_info)), (char*)&pi, sizeof(pi)) < 0){
+      release(&ptable.lock);
+      return -1;
     }
     i++;
   }
+
   release(&ptable.lock);
-
-  // 将内核数据 (pinfo) 复制到用户空间 (buf)
-  // (这个函数在 proc.c 中，所以它可以调用 myproc())
-  if(copyout(myproc()->pgdir, (uint)ubuf, (char*)pinfo, sizeof(pinfo)) < 0)
-    return -1;
-
-  return 0; // 成功
+  return 0;
 }
