@@ -39,6 +39,10 @@ pinit(void)
 {
   initlock(&ptable.lock, "ptable");
   initlock(&schedulerlock, "schedulerlock");
+  
+  // 初始化信号量锁
+  for(int i = 0; i < 32; i++)
+    initlock(&sema[i].lock, "semaphore"); // 使用 sema
 }
 
 // Must be called with interrupts disabled
@@ -685,17 +689,6 @@ sem_destroy(int sem)
 
 }
 
-int sem_wait(int sem, int count)
-{
-
-}
-
-
-int sem_signal(int sem, int count)
-{
-
-}
-
 
 int clone(void (*func)(void *), void *arg, void *stack)
 {
@@ -996,36 +989,36 @@ sem_wait(int sem, int count)
   if(sem < 0 || sem >= 32)
     return -1;
 
-  acquire(&semas[sem].lock);
+  acquire(&sema[sem].lock);
 
   // 2. 检查该信号量是否处于活跃状态
-  if(semas[sem].active == 0){
-    release(&semas[sem].lock);
+  if(sema[sem].active == 0){
+    release(&sema[sem].lock);
     return -1;
   }
 
   // 3. 循环检查资源是否足够 (关键逻辑)
   // 只要当前值小于请求值，就进入睡眠
-  while(semas[sem].value < count){
+  while(sema[sem].value < count){
     // sleep 函数的参数：
     // 参数1: 睡眠的“频道” (channel)，我们用信号量数组元素的地址作为唯一标识
     // 参数2: 当前持有的锁 (sleep 会自动释放这把锁，醒来后自动重新获取)
-    sleep(&semas[sem], &semas[sem].lock);
+    sleep(&sema[sem], &sema[sem].lock);
     
     // 进程醒来后会从这里继续执行，并已经重新持有了锁。
     // 此时回到 while 开头再次检查 value < count
     
     // 防御性检查：如果在睡眠期间信号量被销毁了
-    if(semas[sem].active == 0){
-       release(&semas[sem].lock);
+    if(sema[sem].active == 0){
+       release(&sema[sem].lock);
        return -1;
     }
   }
 
   // 4. 消耗资源
-  semas[sem].value -= count;
+  sema[sem].value -= count;
 
-  release(&semas[sem].lock);
+  release(&sema[sem].lock);
   return 0;
 }
 
@@ -1039,21 +1032,21 @@ sem_signal(int sem, int count)
   if(sem < 0 || sem >= 32)
     return -1;
 
-  acquire(&semas[sem].lock);
+  acquire(&sema[sem].lock);
 
   // 2. 检查活跃状态
-  if(semas[sem].active == 0){
-    release(&semas[sem].lock);
+  if(sema[sem].active == 0){
+    release(&sema[sem].lock);
     return -1;
   }
 
   // 3. 增加资源
-  semas[sem].value += count;
+  sema[sem].value += count;
 
   // 4. 唤醒等待该信号量的所有进程
   // wakeup 的参数必须与 sleep 的第一个参数完全一致 (即信号量的地址)
-  wakeup(&semas[sem]);
+  wakeup(&sema[sem]);
 
-  release(&semas[sem].lock);
+  release(&sema[sem].lock);
   return 0;
 }
