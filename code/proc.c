@@ -678,17 +678,48 @@ setpriority(int pid, int priority)
 }
 
 //sem is the index of sema
-int sem_init(int sem, int value)
-{
+// proc.c
 
+int
+sem_init(int sem, int value)
+{
+  if(sem < 0 || sem >= 32)
+    return -1;
+
+  acquire(&sema[sem].lock);
+  
+  // 如果已经在使用中，则返回错误
+  if(sema[sem].active == 1) {
+    release(&sema[sem].lock);
+    return -1;
+  }
+
+  sema[sem].value = value;
+  sema[sem].active = 1; // 关键！必须置为 1，sem_wait 才能工作
+  
+  release(&sema[sem].lock);
+  return 0;
 }
 
 int
 sem_destroy(int sem)
 {
+  if(sem < 0 || sem >= 32)
+    return -1;
 
+  acquire(&sema[sem].lock);
+  
+  if(sema[sem].active == 0) {
+    release(&sema[sem].lock);
+    return -1;
+  }
+
+  sema[sem].active = 0; // 标记为未使用
+  sema[sem].value = 0;
+  
+  release(&sema[sem].lock);
+  return 0;
 }
-
 
 int clone(void (*func)(void *), void *arg, void *stack)
 {
