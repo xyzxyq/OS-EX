@@ -109,6 +109,12 @@ found:
   p->priority = 10;
   p->pid = nextpid++;
 
+  // 清空信号量持有记录
+  for(int i = 0; i < 32; i++){
+    p->sem_held[i] = 0;
+  }
+  //end
+
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -250,9 +256,34 @@ exit(void)
   struct proc *curproc = myproc();
   struct proc *p;
   int fd;
+  int i; // 用于循环
 
   if(curproc == initproc)
     panic("init exiting");
+
+  // --- 新增代码：信号量自动回收机制 ---
+  // 检查所有信号量，看当前进程是否持有资源
+  for(i = 0; i < 32; i++) {
+    if(curproc->sem_held[i] > 0) {
+      // 发现未释放的资源！
+      int count = curproc->sem_held[i];
+      
+      // 打印内核警告（可选，但在调试阶段非常有用）
+      cprintf("WARNING: pid %d exited with %d resources of sem %d held. Auto-releasing.\n", 
+              curproc->pid, count, i);
+      
+      // 强制执行 signal 操作
+      // 注意：这里我们不能直接调用 sem_signal，因为 sem_signal 会操作 myproc()->sem_held，
+      // 虽然逻辑上兼容，但为了避免不必要的锁竞争或副作用，直接操作底层 sema 结构更稳妥。
+      // 不过，直接调用 sem_signal 是最复用代码且安全的方式。
+      
+      sem_signal(i, count);
+      
+      // 确保账本清零（sem_signal 会做，但这里再次确保）
+      curproc->sem_held[i] = 0;
+    }
+  }
+  // --------------------------------
 
   // Close all open files.
   for(fd = 0; fd < NOFILE; fd++){
@@ -1048,6 +1079,22 @@ sem_wait(int sem, int count)
 
   // 4. 消耗资源
   sema[sem].value -= count;
+
+  // 增加资源
+  sema[sem].value += count;
+  
+  // --- 新增代码：销账 ---
+  // 如果该进程确实持有这个信号量的资源，则扣除
+  if(myproc()->sem_held[sem] >= count) {
+      myproc()->sem_held[sem] -= count;
+  } else {
+      // 这种情况可能是“生产者”在释放它从未申请过的资源，
+      // 或者出现了逻辑错误。为了安全，我们只清零，不减成负数。
+      myproc()->sem_held[sem] = 0;
+  }
+  // -------------------
+
+  wakeup(&sema[sem]);
 
   release(&sema[sem].lock);
   return 0;

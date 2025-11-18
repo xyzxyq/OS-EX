@@ -56,6 +56,10 @@ struct proc {
   int stime;                   // Process SLEEPING time
   int retime;                  // Process READY(RUNNABLE) time
   int rutime;                  // Process RUNNING time
+  // 新增：记录该进程持有的信号量资源数量
+  // 索引对应信号量ID，值对应持有的资源数 (count)
+  // 假设系统最大支持 32 个信号量，与 proc.c 中的定义一致
+  int sem_held[32];
 };
 
 // Per-process state (simplified version for user space)

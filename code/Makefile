@@ -185,6 +185,7 @@ UPROGS=\
 	_nice\
 	_scheduler_test\
 	_sem_test\
+	_leak_test1\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README test_data.txt $(UPROGS)
