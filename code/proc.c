@@ -16,12 +16,16 @@ struct {
   struct proc proc[NPROC];
 } ptable;
 
+// Kernel-owned counting semaphore.
+// Each entry is protected by its own spinlock so that we can block
+// independently of the global ptable lock and avoid convoying.
 struct semaphore {
-  int value;
-  int active;
-  struct spinlock lock;
+  int value;              // Current resource count exposed to wait/signal routines
+  int active;             // Flag: 1 if the semaphore slot has been initialised
+  struct spinlock lock;   // Guards 'value' and 'active'
 };
 
+// Global semaphore table shared by all processes.
 struct semaphore sema[32];
 
 static struct proc *initproc;
@@ -39,10 +43,11 @@ pinit(void)
 {
   initlock(&ptable.lock, "ptable");
   initlock(&schedulerlock, "schedulerlock");
-  
-  // 初始化信号量锁
+
+  // Each semaphore slot owns its own lock so the heavy-weight ptable lock
+  // is not needed when processes block on, or wake from, a specific slot.
   for(int i = 0; i < 32; i++)
-    initlock(&sema[i].lock, "semaphore"); // 使用 sema
+    initlock(&sema[i].lock, "semaphore");
 }
 
 // Must be called with interrupts disabled
@@ -110,10 +115,10 @@ found:
   p->pid = nextpid++;
 
   // 清空信号量持有记录
+  // Reset per-semaphore accounting when a proc structure is reused.
   for(int i = 0; i < 32; i++){
     p->sem_held[i] = 0;
   }
-  //end
 
   release(&ptable.lock);
 
@@ -969,23 +974,107 @@ struct proc *defaultScheduler(void) {
 }
 
 // Priority Scheduler -------------------
+// 选择优先级最高（priority值最小）的就绪进程
 struct proc *priorityScheduler() {
-
+  struct proc *p;
+  struct proc *highP = 0;  // 记录优先级最高的进程
+  
+  // 遍历进程表，找到优先级最高的RUNNABLE进程
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if(p->state != RUNNABLE)
+      continue;
+    // 如果还没找到候选进程，或者当前进程优先级更高（数值更小）
+    if(highP == 0 || p->priority < highP->priority) {
+      highP = p;
+    }
+  }
+  return highP;
 }
 
 // FCFS Scheduler -----------------------
+// 先来先服务：选择创建时间最早的就绪进程
 struct proc *fcfsScheduler() {
-
+  struct proc *p;
+  struct proc *firstP = 0;  // 记录最早创建的进程
+  
+  // 遍历进程表，找到创建时间最早的RUNNABLE进程
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if(p->state != RUNNABLE)
+      continue;
+    // 如果还没找到候选进程，或者当前进程创建时间更早
+    if(firstP == 0 || p->ctime < firstP->ctime) {
+      firstP = p;
+    }
+  }
+  return firstP;
 }
 
-// CFS Scheduler -------------------------
+// Round Robin Scheduler -------------------------
+// 轮转调度：按循环顺序选择就绪进程，保证公平性
 struct proc *rrScheduler() {
-
+  static int lastIndex = 0;  // 记录上次调度的位置
+  struct proc *p;
+  int i;
+  
+  // 从上次位置开始循环查找下一个RUNNABLE进程
+  for(i = 0; i < NPROC; i++) {
+    lastIndex = (lastIndex + 1) % NPROC;
+    p = &ptable.proc[lastIndex];
+    if(p->state == RUNNABLE) {
+      return p;
+    }
+  }
+  return 0;
 }
 
-// SML Scheduler ---------------------------
+// SML (Static Multi-Level Queue) Scheduler ---------------------------
+// 静态多级队列调度：按优先级分为3个队列，高优先级队列优先
+// 队列1 (高): priority 1-7
+// 队列2 (中): priority 8-14  
+// 队列3 (低): priority 15-20
+// 每个队列内部使用轮转调度
 struct proc *smlScheduler() {
-
+  static int lastIdx[3] = {0, 0, 0};  // 各队列的轮转索引
+  struct proc *p;
+  int i;
+  
+  // 队列1：高优先级 (priority 1-7)
+  for(i = 0; i < NPROC; i++) {
+    lastIdx[0] = (lastIdx[0] + 1) % NPROC;
+    p = &ptable.proc[lastIdx[0]];
+    if(p->state == RUNNABLE && p->priority >= 1 && p->priority <= 7) {
+      return p;
+    }
+  }
+  
+  // 队列2：中优先级 (priority 8-14)
+  for(i = 0; i < NPROC; i++) {
+    lastIdx[1] = (lastIdx[1] + 1) % NPROC;
+    p = &ptable.proc[lastIdx[1]];
+    if(p->state == RUNNABLE && p->priority >= 8 && p->priority <= 14) {
+      return p;
+    }
+  }
+  
+  // 队列3：低优先级 (priority 15-20)
+  for(i = 0; i < NPROC; i++) {
+    lastIdx[2] = (lastIdx[2] + 1) % NPROC;
+    p = &ptable.proc[lastIdx[2]];
+    if(p->state == RUNNABLE && p->priority >= 15 && p->priority <= 20) {
+      return p;
+    }
+  }
+  
+  // 如果没有设置优先级的进程(priority为0)，使用默认轮转
+  for(i = 0; i < NPROC; i++) {
+    lastIdx[0] = (lastIdx[0] + 1) % NPROC;
+    p = &ptable.proc[lastIdx[0]];
+    if(p->state == RUNNABLE) {
+      return p;
+    }
+  }
+  
+  return 0;
 }
 
 // proc.c
@@ -998,11 +1087,14 @@ struct proc *smlScheduler() {
 
 // 在 proc.c 文件的末尾
 
+// Copy the internal process table to user space in a compact proc_info array.
+// Copy internal ptable entries into user-provided proc_info array.
+// The caller is responsible for supplying enough space for NPROC entries.
 int 
 getptable(void *ubuf, int size)
 {
   struct proc *p;
-  struct proc_info pi; // 只在栈上分配一个结构体，非常安全
+  struct proc_info pi; // Stack-local scratch copy used for each entry
   char *uptr = (char*)ubuf;
   int i = 0;
 
@@ -1044,6 +1136,7 @@ getptable(void *ubuf, int size)
 // proc.c
 
 // P 操作：等待并消耗资源
+// Blocking P operation: try to consume 'count' units from semaphore 'sem'.
 int 
 sem_wait(int sem, int count)
 {
@@ -1079,22 +1172,11 @@ sem_wait(int sem, int count)
 
   // 4. 消耗资源
   sema[sem].value -= count;
-
-  // 增加资源
-  sema[sem].value += count;
   
-  // --- 新增代码：销账 ---
-  // 如果该进程确实持有这个信号量的资源，则扣除
-  if(myproc()->sem_held[sem] >= count) {
-      myproc()->sem_held[sem] -= count;
-  } else {
-      // 这种情况可能是“生产者”在释放它从未申请过的资源，
-      // 或者出现了逻辑错误。为了安全，我们只清零，不减成负数。
-      myproc()->sem_held[sem] = 0;
-  }
+  // --- 新增代码：记账 ---
+  // 记录该进程持有了多少个该信号量的资源
+  myproc()->sem_held[sem] += count;
   // -------------------
-
-  wakeup(&sema[sem]);
 
   release(&sema[sem].lock);
   return 0;
@@ -1103,6 +1185,7 @@ sem_wait(int sem, int count)
 // proc.c
 
 // V 操作：释放资源并唤醒等待者
+// Non-blocking V operation: release 'count' units back to semaphore 'sem'.
 int 
 sem_signal(int sem, int count)
 {
@@ -1120,6 +1203,17 @@ sem_signal(int sem, int count)
 
   // 3. 增加资源
   sema[sem].value += count;
+
+  // --- 新增代码：销账 ---
+  // 减少进程对该信号量的持有计数
+  if(myproc()->sem_held[sem] >= count) {
+      myproc()->sem_held[sem] -= count;
+  } else {
+      // 防御性处理：如果持有计数小于释放数量，可能是逻辑错误
+      // 为了安全，只清零，不减成负数
+      myproc()->sem_held[sem] = 0;
+  }
+  // -------------------
 
   // 4. 唤醒等待该信号量的所有进程
   // wakeup 的参数必须与 sleep 的第一个参数完全一致 (即信号量的地址)

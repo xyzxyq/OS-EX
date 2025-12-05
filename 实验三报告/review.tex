@@ -1,0 +1,1286 @@
+% !TeX compiler = xelatex
+% !TeX encoding = UTF-8
+
+\documentclass[a4paper, 12pt]{article}
+
+% ==========================================
+%   1. 基础宏包与字体设置
+% ==========================================
+\usepackage[UTF8, heading=true]{ctex} % 中文支持
+\usepackage{geometry}       % 页面布局
+\usepackage{fancyhdr}       % 页眉页脚
+\usepackage{graphicx}       % 图片支持
+\usepackage{xcolor}         % 颜色支持
+\usepackage{tikz}           % 绘图支持
+\usetikzlibrary{shadows}    % 【修复】加载 shadows 库以防万一
+\usepackage{listings}       % 代码环境
+\usepackage[most]{tcolorbox}% 现代盒子
+\usepackage{booktabs}       % 专业表格
+\usepackage{hyperref}       % 超链接
+\usepackage{enumitem}       % 列表定制
+\usepackage{float}          % 浮动控制
+\usepackage{mathpazo}       % 使用 Palatino 字体
+\usepackage{caption}        % 图表标题美化
+\usepackage{titletoc}       % 目录美化
+
+% ==========================================
+%   2. 视觉风格定义
+% ==========================================
+% --- 颜色定义 ---
+\definecolor{ThemeColor}{RGB}{0, 51, 102}    % 主题色：厦大蓝
+\definecolor{LightBlue}{RGB}{235, 242, 250}  % 浅蓝背景
+\definecolor{CodeBg}{RGB}{250, 250, 250}     % 代码背景：极浅灰
+\definecolor{LineNumBg}{RGB}{240, 240, 240}  % 行号背景
+\definecolor{CodeGreen}{RGB}{80, 161, 79}    % 代码注释绿
+\definecolor{CodePurple}{RGB}{166, 38, 164}  % 代码关键字紫
+\definecolor{CodeBlue}{RGB}{64, 120, 242}    % 代码函数蓝
+
+% --- 页面布局 ---
+\geometry{left=2.5cm, right=2.5cm, top=3cm, bottom=2.5cm, headheight=25pt}
+
+% --- 链接设置 ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=ThemeColor,
+    filecolor=ThemeColor,      
+    urlcolor=ThemeColor,
+    pdftitle={操作系统实验报告},
+}
+
+% --- 章节标题设置 (ctex) ---
+\ctexset{
+    section = {
+        format = \Large\bfseries\color{ThemeColor},
+        beforeskip = 24pt,
+        afterskip = 12pt
+    },
+    subsection = {
+        format = \large\bfseries\color{ThemeColor!80!black},
+    }
+}
+
+% --- 图表标题设置 ---
+\DeclareCaptionFont{ThemeColor}{\color{ThemeColor}}
+\captionsetup{
+    labelfont={bf, ThemeColor},
+    textfont={bf},
+    labelsep=quad
+}
+
+% --- 页眉页脚 ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\bfseries\color{ThemeColor} 操作系统实验报告}
+\fancyhead[R]{\small\leftmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{ThemeColor}\leaders\hrule height \headrulewidth\hfill}}
+
+% --- 目录样式美化 ---
+\titlecontents{section}[0pt]{\addvspace{10pt}\bfseries}
+{\color{ThemeColor}\thecontentslabel\hspace{1em}}
+{}
+{\titlerule*[8pt]{.}\contentspage}
+
+\titlecontents{subsection}[2em]{\addvspace{3pt}}
+{\thecontentslabel\hspace{1em}}
+{}
+{\titlerule*[8pt]{.}\contentspage}
+
+
+\newtcblisting{codeblock}[2][]{%
+    enhanced, breakable, listing engine=listings, listing only,%
+    title={#2}, coltitle=black!70, fonttitle=\small\bfseries\sffamily,%
+    attach boxed title to top left={xshift=22mm, yshift=-4mm},%
+    boxed title style={empty, size=minimal, bottom=0pt, top=0pt},%
+    colback=CodeBg, colframe=gray!30, boxrule=0.5pt, arc=6mm,%
+    left=6mm, right=2mm, top=10mm, bottom=2mm,%
+    drop shadow,%
+    % 【修复1】使用 underlay 确保背景画在文字下面
+    underlay={%
+        \begin{tcbclipinterior}
+            \fill[LineNumBg] (frame.north west) rectangle ([yshift=-8mm]frame.north east);
+            \fill[LineNumBg] (frame.south west) rectangle ([xshift=5.5mm]frame.north west);
+        \end{tcbclipinterior}%
+    },%
+    % 【修复2】overlay 只画装饰点，确保在最上层
+    overlay={%
+        \node[anchor=west, font=\small\bfseries\sffamily, text=black!70]
+        at ([xshift=22mm, yshift=-4mm]frame.north west) {\tcbtitletext};
+        \fill[red!70] ([xshift=6mm, yshift=-4mm]frame.north west) circle (2.5pt);
+        \fill[orange!70] ([xshift=11mm, yshift=-4mm]frame.north west) circle (2.5pt);
+        \fill[green!60!black] ([xshift=16mm, yshift=-4mm]frame.north west) circle (2.5pt);
+    },%
+    listing options={%
+        language=C, basicstyle=\ttfamily\small, keywordstyle=\color{CodePurple}\bfseries,%
+        commentstyle=\color{CodeGreen}\itshape, stringstyle=\color{orange!80!black},%
+        ndkeywordstyle=\color{CodeBlue}\bfseries, numbers=left, numberstyle=\tiny\color{gray!60}\ttfamily,%
+        stepnumber=1, numbersep=10pt, breaklines=true, tabsize=4, showstringspaces=false,%
+        frame=none, escapeinside={(*@}{@*)}, columns=fixed, keepspaces=true%
+    },%
+    #1%
+}
+
+% 图片占位宏 (修复版)
+\newcommand{\placeholderimg}[3]{
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+            % 如果没有 logo 图片，请注释掉下面这一行
+            \node[opacity=0.1] {\includegraphics[width=3cm]{img/logo.png}}; 
+            \node[align=center] at (0,0) {
+                \color{ThemeColor}\bfseries\Large 图片占位符 \\[1em]
+                \color{gray}\small 尺寸: #1 $\times$ #2 \\[0.5em]
+                \color{black}\itshape #3
+            };
+        \end{tikzpicture}
+        % 【修复点2】移除了自动生成的 label，避免复杂字符报错
+        \caption{#3} 
+    \end{figure}
+}
+
+% ==========================================
+%   4. 文档正文
+% ==========================================
+\begin{document}
+    
+    % --- 封面 ---
+    \begin{titlepage}
+        \newgeometry{top=3cm, bottom=2cm, left=2cm, right=2cm}
+        \centering
+        
+        % 顶部装饰
+        \begin{tikzpicture}[remember picture, overlay]
+            \fill[ThemeColor] (current page.north west) rectangle ([yshift=-1cm]current page.north east);
+        \end{tikzpicture}
+        
+        \vspace*{1cm}
+        % Logo (确保 img/logo.png 存在，否则替换为文件名或注释掉)
+        \includegraphics[width=8cm]{img/logo.png} 
+        
+        \vspace{1cm}
+        
+        {\Huge \bfseries \heiti 操作系统实验报告 \par}
+        \vspace{0.5cm}
+        {\color{ThemeColor} \rule{0.6\textwidth}{1.5pt}} % 分割线
+        \vspace{0.5cm}
+        
+        {\Large \bfseries 实验二：进程优先级管理与信号量实现 \par}
+        
+        \vspace{1.5cm}
+        
+        % 信息表格
+        \begin{large}
+            \renewcommand{\arraystretch}{2.0}
+            \begin{tabular}{rc}
+                \bfseries 专\hspace{1em}业： & \underline{\makebox[8cm][c]{人工智能}} \\
+                \bfseries 姓\hspace{1em}名： & \underline{\makebox[8cm][c]{张晓宇}} \\
+                \bfseries 学\hspace{1em}号： & \underline{\makebox[8cm][c]{37220232203927}} \\
+                \bfseries 实验日期： & \underline{\makebox[8cm][c]{2025.11.7}} \\
+                \bfseries 指导教师： & \underline{\makebox[8cm][c]{曹冬林}} \\
+            \end{tabular}
+        \end{large}
+        
+        \vfill
+        {\small \today}
+    \end{titlepage}
+    \restoregeometry
+    
+    % --- 目录 ---
+    {
+        \hypersetup{linkcolor=black} 
+        \tableofcontents
+    }
+    \newpage
+    
+    % --- 正文 ---
+    
+    \section{实验目的}
+    
+    本次实验围绕操作系统的两个核心主题——进程管理（侧重于优先级）和进程同步（侧重于信号量）展开，旨在达成以下目标：
+    
+    \subsection{深入理解进程管理与调度}
+    学习如何在操作系统内核中实现进程优先级的查看和修改机制。理解优先级如何作为进程调度的重要依据，为从默认的轮转调度（Round Robin）转向优先级调度奠定基础。
+    
+    \subsection{掌握内核数据结构的扩展与系统调用}
+    学习如何修改关键的内核数据结构，特别是进程控制块（\texttt{struct proc}），以包含进程优先级信息；学习如何定义新的内核数据结构来实现信号量（\texttt{struct semaphore}）。同时，通过实现 \texttt{getptable()}、\texttt{setpriority()}、\texttt{sem\_init()}等一系列系统调用，熟练掌握从用户态发起请求到内核态响应处理的完整流程。
+    
+    \subsection{深入理解进程同步与互斥}
+    分析多进程并发访问共享资源（如文件）时可能出现的竞态条件（Race Condition）和数据不一致问题。理解临界区（Critical Section）的概念以及保护临界区的必要性。
+    
+    \subsection{掌握信号量机制的原理与实现}
+    学习 Dijkstra 提出的信号量机制（Semaphore），理解 P 操作（\texttt{wait}）和 V 操作（\texttt{signal}）的原理。掌握如何在内核中利用 \texttt{sleep()} 和 \texttt{wakeup()} 原语来实现信号量的阻塞和唤醒功能。
+    
+    \section{实验环境}
+    
+    \subsection{硬件环境}
+    \begin{itemize}[label=\textbullet, itemsep=0pt]
+        \item \textbf{CPU}：Intel i9-13900h
+        \item \textbf{GPU}：NVIDIA RTX 4050
+        \item \textbf{宿主机操作系统}：Windows 11
+    \end{itemize}
+    
+    \subsection{软件环境}
+    \begin{itemize}[label=\textbullet, itemsep=0pt]
+        \item \textbf{操作系统}：Ubuntu 18.04 (64位)
+        \item \textbf{模拟器}：QEMU
+        \item \textbf{编译工具}：gcc, make (build-essential)
+        \item \textbf{目标操作系统内核}：xv6
+    \end{itemize}
+    
+    \section{实验要求}
+    
+    \subsection{任务一：进程优先级管理}
+    \begin{enumerate}
+        \item \textbf{实现 \texttt{ps} 命令 (ps.c)}：显示系统进程列表，包括 PID, PPID, PRI (优先级), MEM, STATE, CMD。
+        \item \textbf{实现系统调用 \texttt{getptable()}}：用于从内核获取进程表信息。
+        \item \textbf{实现 \texttt{nice} 命令 (nice.c)}：用户态程序，用于修改进程优先级。命令格式：\texttt{nice pid priority}（优先级范围 [1, 20]，数值越小优先级越高）。
+        \item \textbf{实现系统调用 \texttt{setpriority(pid, priority)}}：供 \texttt{nice} 命令调用。
+    \end{enumerate}
+    
+    \subsection{任务二：信号量实现}
+    在内核中实现以下系统调用：
+    \begin{enumerate}
+        \item \texttt{int sem\_init(int sem, int value)}：初始化信号量 \texttt{sem} 的值为 \texttt{value}。
+        \item \texttt{int sem\_destroy(int sem)}：销毁信号量 \texttt{sem}。
+        \item \texttt{int sem\_wait(int sem, int count)}：P 操作，申请 \texttt{count} 个资源，如果不足则阻塞。
+        \item \texttt{int sem\_signal(int sem, int count)}：V 操作，释放 \texttt{count} 个资源，并唤醒等待的进程。
+    \end{enumerate}
+    
+    \subsection{任务三：使用信号量解决文件读写互斥}
+    \begin{enumerate}
+        \item 创建 \texttt{sem\_test.c}。
+        \item 启动 10 个并发进程。
+        \item 每个进程重复 50 次以下操作：从文件中读取数值，加 1，写回文件。
+        \item 使用任务二实现的信号量保证操作的互斥性，验证最终文件中的数值为 500。
+    \end{enumerate}
+    
+    \section{实验流程}
+    
+    \subsection{实验准备：内核基础修改}
+    本次实验涉及大量的内核修改，特别是对进程管理和系统调用的扩展。首先需要进行一些基础准备工作。
+    
+    \subsubsection{扩展进程控制块（struct proc）}
+    为了支持优先级，必须在内核中存储每个进程的优先级信息。这需要修改 \texttt{proc.h} 文件中的 \texttt{struct proc} 定义。
+    
+    同时，需要在 \texttt{proc.c} 的 \texttt{allocproc()} 函数中为新进程设置默认优先级（例如设为 10）。
+    
+    \begin{figure}[H] % [H] 参数强制图片显示在当前位置，不乱跑
+        \centering
+        % width=0.8\textwidth 表示图片宽度占页面文本宽度的 80%
+        \includegraphics[width=0.6\textwidth]{img/1.png} 
+        \caption{修改 proc.h 和 allocproc() 设置默认优先级}
+        \label{fig:1} % 用于引用的标签
+    \end{figure}
+    
+    \subsubsection{系统调用实现流程}
+    在 xv6 中添加一个新的系统调用通常需要修改以下几个文件：\texttt{syscall.h}, \texttt{syscall.c}, \texttt{usys.S}, \texttt{user.h}, 和 \texttt{sysproc.c}。
+    
+    
+    \subsection{任务一：进程优先级管理}
+    
+    \subsubsection{实现思路与流程}
+    任务一的目标是实现进程优先级的查看 (\texttt{ps} / \texttt{getptable}) 和修改 (\texttt{nice} / \texttt{setpriority})。任务一的总体流程如图\ref{fig:task1_overall}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.4\textwidth]{img/任务一总体流程.drawio.pdf} 
+        \caption{任务一总体实现流程}
+        \label{fig:task1_overall}
+    \end{figure}
+    
+    \subsubsection{步骤一：实现 setpriority() 系统调用}
+    该系统调用用于修改指定 PID 进程的优先级。内核实现需要完成参数获取、参数校验、获取 \texttt{ptable.lock} 锁、遍历进程表并修改优先级。
+    
+    
+    \texttt{setpriority()} 系统调用的实现流程如图\ref{fig:setpriority_flow}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/1_内核态sys_setpriority系统调用实现流程图.drawio.pdf} 
+        \caption{setpriority 系统调用实现流程}
+        \label{fig:setpriority_flow}
+    \end{figure}
+    
+    \subsubsection{步骤二：实现 getptable() 系统调用}
+    该系统调用用于将内核的进程表信息传递给用户态的 \texttt{ps} 命令。由于内核和用户空间的地址空间隔离，需要将内核数据复制到用户空间提供的缓冲区。
+    
+    
+    \texttt{getptable()} 系统调用的实现流程如图\ref{fig:getptable_flow}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/1_内核态_sys_getptable系统调用实现流程图.drawio.pdf} 
+        \caption{getptable 系统调用实现流程}
+        \label{fig:getptable_flow}
+    \end{figure}
+    
+    \subsubsection{步骤三：实现用户态程序 nice.c}
+    \texttt{nice} 命令解析命令行参数并通过 \texttt{setpriority()} 系统调用来修改进程优先级。
+    
+    
+    用户态程序 \texttt{nice} 的实现流程如图\ref{fig:nice_flow}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/2_用户态程序nice实现流程图.drawio.pdf} 
+        \caption{nice 用户态程序实现流程}
+        \label{fig:nice_flow}
+    \end{figure}
+    
+    \subsubsection{步骤四：实现用户态程序 ps.c}
+    \texttt{ps} 命令调用 \texttt{getptable()} 系统调用获取进程信息，并格式化输出。
+    
+    
+    用户态程序 \texttt{ps} 的实现流程如图\ref{fig:ps_flow}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/2_用户态程序ps实现流程图.drawio.pdf} 
+        \caption{ps 用户态程序实现流程}
+        \label{fig:ps_flow}
+    \end{figure}
+    
+    
+    \subsubsection{测试与验证}
+    编译并启动内核 \texttt{make qemu-nox}。
+    
+    \textbf{测试用例 1：验证 ps 命令} \\
+    操作：\texttt{$ ps $} \\
+    预期结果：输出包含 PRI 列的进程信息。init 和 sh 的默认优先级应为 10。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.5\textwidth]{img/ps.png} 
+        \caption{命令执行结果}
+        \label{fig:ps}
+    \end{figure}
+    
+    %\placeholderimg{12cm}{4cm}{ps 命令执行结果截图}
+    
+    \textbf{测试用例 2：验证 nice 命令} \\
+    操作：先用 \texttt{ps} 查看PID，然后执行 \texttt{$ nice 2 5 $}。\\
+    预期结果：再次执行 \texttt{ps}，PID 2 的 PRI 列应显示为 5。
+    
+    %\placeholderimg{12cm}{5cm}{nice 命令执行及验证结果截图}
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.5\textwidth]{img/nice.png} 
+        \caption{nice命令执行及验证结果}
+        \label{fig:nice}
+    \end{figure}
+    
+    
+    \subsection{任务二：信号量实现}
+    任务二要求在内核中实现信号量机制。这需要利用内核提供的同步原语 \texttt{sleep()} 和 \texttt{wakeup()}。
+    
+    \subsubsection{实现思路与数据结构}
+    任务二的总体流程如图\ref{fig:task2_overall}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/任务二总体流程.drawio.pdf} 
+        \caption{任务二总体实现流程}
+        \label{fig:task2_overall}
+    \end{figure}
+    
+    \subsubsection{步骤一：定义信号量数据结构与初始化}
+    在内核中定义信号量结构体，并创建全局信号量数组。
+    
+    \begin{codeblock}{信号量数据结构定义}
+        #include "spinlock.h"
+        #define MAX_SEMAPHORES 16 // 系统最大支持的信号量数量
+        
+        // (定义在 proc.h 或相关头文件中)
+        struct semaphore {
+            int value;            // 信号量的计数值
+            struct spinlock lock; // 保护信号量的自旋锁
+            int active;           // 标记该信号量是否正在使用
+        };
+        
+        // (在 proc.c 中定义全局数组)
+        struct semaphore semaphores[MAX_SEMAPHORES];
+    \end{codeblock}
+    
+    在系统启动时（例如在 \texttt{main.c} 中调用 \texttt{seminit()}），需要初始化这些信号量的锁。
+    
+    \subsubsection{步骤二：实现 sem\_init() 和 sem\_destroy()}
+    这两个系统调用用于管理信号量的生命周期。
+    
+    \begin{codeblock}{sysproc.c (sys\_sem\_init)}
+        int
+        sys_sem_init(void)
+        {
+            int sem, value;
+            // ... (参数获取与校验) ...
+            
+            // 初始化操作
+            acquire(&semaphores[sem].lock);
+            semaphores[sem].value = value;
+            semaphores[sem].active = 1;
+            release(&semaphores[sem].lock);
+            
+            return 0;
+        }
+    \end{codeblock}
+    
+    \texttt{sem\_init()} 的实现流程如图\ref{fig:sem_init_flow}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.5\textwidth]{img/1_sem_init流程图.drawio.pdf} 
+        \caption{sem\_init 实现流程}
+        \label{fig:sem_init_flow}
+    \end{figure}
+    
+    \texttt{sem\_destroy()} 的实现流程如图\ref{fig:sem_destroy_flow}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.5\textwidth]{img/2_sem_destroy流程图.drawio.pdf} 
+        \caption{sem\_destroy 实现流程}
+        \label{fig:sem_destroy_flow}
+    \end{figure}
+    
+    \subsubsection{步骤三：实现 sem\_wait() (P操作)}
+    \texttt{sem\_wait} 是核心操作。如果资源不足，进程必须阻塞。关键点在于使用 \texttt{while} 循环检查条件，并调用 \texttt{sleep(chan, lock)} 进行阻塞。
+    
+    \begin{codeblock}{sysproc.c (sys\_sem\_wait)}
+        int
+        sys_sem_wait(void)
+        {
+            int sem, count;
+            // ... (参数获取与校验) ...
+            
+            acquire(&semaphores[sem].lock);
+            
+            // 当资源不足时，阻塞等待 (使用 while 而非 if 是关键)
+            while(semaphores[sem].value < count){
+                // 使用信号量的地址作为等待通道 (chan)
+                // sleep 会原子性地释放 lock 并使当前进程进入 SLEEPING 状态
+                sleep(&semaphores[sem], &semaphores[sem].lock);
+                // 被唤醒后，sleep 会重新获取 lock
+            }
+            
+            // 资源足够，分配资源
+            semaphores[sem].value -= count;
+            
+            release(&semaphores[sem].lock);
+            
+            return 0;
+        }
+    \end{codeblock}
+    
+    \texttt{sem\_wait()} (P操作) 的实现流程如图\ref{fig:sem_wait_flow}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.8\textwidth]{img/1_sem_wait流程图.drawio.pdf} 
+        \caption{sem\_wait (P操作) 实现流程}
+        \label{fig:sem_wait_flow}
+    \end{figure}
+    
+    \subsubsection{步骤四：实现 sem\_signal() (V操作)}
+    \texttt{sem\_signal} 用于释放资源，并唤醒可能正在等待该资源的进程。
+    
+    \begin{codeblock}{sysproc.c (sys\_sem\_signal)}
+        int
+        sys_sem_signal(void)
+        {
+            int sem, count;
+            // ... (参数获取与校验) ...
+            
+            acquire(&semaphores[sem].lock);
+            
+            // 释放资源
+            semaphores[sem].value += count;
+            
+            // 唤醒等待的进程
+            wakeup(&semaphores[sem]);
+            
+            release(&semaphores[sem].lock);
+            
+            return 0;
+        }
+    \end{codeblock}
+    
+    \texttt{sem\_signal()} (V操作) 的实现流程如图\ref{fig:sem_signal_flow}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.5\textwidth]{img/2_sem_signal流程图.drawio.pdf} 
+        \caption{sem\_signal (V操作) 实现流程}
+        \label{fig:sem_signal_flow}
+    \end{figure}
+    
+    \subsection{任务三：使用信号量解决文件读写互斥}
+    
+    \subsubsection{并发问题分析与临界区定义}
+    任务要求 10 个进程并发地对同一个文件重复执行读-修改-写操作50次。这个操作不是原子性的。两个进程如果同时读到 10，分别加 1 后都写回 11，会导致结果错误。为了保证最终结果为 500，必须确保读-修改-写，这整个过程是互斥的，这个区域也就是临界区。
+    
+    \subsubsection{实现思路（sem\_test.c）}
+    使用任务二实现的信号量来保护临界区。任务三的总体流程如图\ref{fig:task3_overall}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/任务三总体流程.drawio.pdf} 
+        \caption{任务三总体实现流程}
+        \label{fig:task3_overall}
+    \end{figure}
+    
+    \begin{enumerate}
+        \item 初始化共享文件为 0。
+        \item 初始化互斥信号量：\texttt{sem\_init(0, 1)}（初始值为 1，作为互斥锁）。
+        \item 使用 \texttt{fork()} 创建 10 个子进程。
+        \item 子进程逻辑（循环 50 次）：P 操作进入临界区，执行读写，V 操作退出临界区。
+        \item 父进程逻辑：\texttt{wait()} 所有子进程，验证结果。
+    \end{enumerate}
+    
+    
+    \texttt{sem\_test.c} 的详细实现流程如图\ref{fig:sem_test_flow}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/sem_test流程图.drawio.pdf} 
+        \caption{sem\_test 程序详细实现流程}
+        \label{fig:sem_test_flow}
+    \end{figure}
+    
+    \subsubsection{测试与验证}
+    
+    \textbf{测试用例 1：不使用信号量保护（对照实验）} \\
+    操作：修改 \texttt{sem\_test.c}，注释掉 \texttt{sem\_wait()} 和 \texttt{sem\_signal()}。重新编译并运行。\\
+    预期结果：Final value 有概率小于 500，Test FAILED。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.6\textwidth]{img/test0_sem_test.png} 
+        \caption{不使用信号量保护的运行结果,有概率出现数据不一致}
+        \label{fig:sem_test_fail}
+    \end{figure}
+    
+    \textbf{测试用例 2：使用信号量保护} \\
+    操作：迭代运行50次包含信号量保护的 \texttt{sem\_test.c} ，查看输出是否有不符合预期。\\
+    预期结果：Final value: 500。Test PASSED。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.4\textwidth]{img/pass1.png} 
+        \label{fig:test1}
+    \end{figure}
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.4\textwidth]{img/pass2.png} 
+        \caption{五十次迭代测试判断信号量保护机制是否有效}
+        \label{fig:test2}
+    \end{figure}
+    
+    通过对比实验，清晰地证明了信号量机制在解决并发互斥问题中的有效性。
+    
+    
+    \section{实验总结}
+    
+    本次实验围绕进程优先级管理和信号量机制展开，通过实现三个具体的任务，我取得了以下技术成果和理论认识：
+    
+    \subsection{掌握了进程优先级的动态管理}
+    我成功地扩展了 xv6 的进程控制块（\texttt{struct proc}）以包含优先级字段，并实现了 \texttt{setpriority()} 系统调用和用户态 \texttt{nice} 命令。同时，通过实现 \texttt{getptable()} 系统调用和 \texttt{ps} 命令，我学会了如何将内核态的进程信息安全地（通过数据复制）暴露给用户态程序。
+    
+    \subsection{掌握了信号量机制的内核级实现}
+    我成功地在内核中定义了信号量数据结构（\texttt{struct semaphore}），并实现了 \texttt{sem\_init()}、\texttt{sem\_destroy()}、\texttt{sem\_wait()}（P操作）和 \texttt{sem\_signal()}（V操作）四个核心系统调用。这标志着我掌握了这一经典同步机制的原理和实现细节。
+    
+    \subsection{解决了并发环境下的临界区保护}
+    在任务三中，我分析了多进程并发执行“读-修改-写”操作时产生的竞态条件。通过使用实现的信号量作为互斥锁（Mutex），我成功地保护了临界区，确保了操作的原子性，最终在 \texttt{sem\_test.c} 中验证了 500 次累加操作的正确性。
+    
+    \subsection{深入理解了 Sleep 和 Wakeup 模型}
+    信号量的实现核心在于进程的阻塞和唤醒。我熟练运用了 xv6 提供的 \texttt{sleep(chan, lock)} 和 \texttt{wakeup(chan)} 原语。我深刻理解了 \texttt{sleep} 如何原子性地释放锁并进入睡眠，以及在被唤醒后如何重新获取锁。特别地，我掌握了使用 \texttt{while} 循环进行条件检查（而非 \texttt{if}），以防止虚假唤醒（Spurious Wakeup）带来的问题。
+    
+    \section{实验心得}
+    
+    这次实验是继实现 Shell 之后的又一次深入内核的探索，带给我的挑战和收获都非常大。
+    
+    首先，我深刻体会到了理论与实践的结合。在课堂上学习信号量时，P/V操作似乎很清晰。但在实际实现时，特别是处理原子性和阻塞唤醒的细节时，才发现其复杂性。例如，\texttt{sem\_wait} 中的 \texttt{while} 循环和 \texttt{sleep} 的配合是整个实现的关键。我意识到，必须在持有锁的情况下检查条件，并且依赖 \texttt{sleep} 来原子性地释放锁和阻塞。任何一步顺序的错误都可能导致死锁或同步失败。这个过程让我对锁的使用和进程状态转换有了更深刻的认识。
+    
+    其次，任务三的 \texttt{sem\_test} 让我直观地看到了并发错误的发生以及同步机制的强大作用。当注释掉信号量保护后，最终结果几乎总是小于 500，这生动地展示了竞态条件的危害。而加入信号量后，结果稳定为 500，这种从混乱到有序的过程让我对操作系统的核心职责——管理并发——有了更深的认同感。
+    
+    最后，通过任务一实现 \texttt{ps} 和 \texttt{nice}，我熟练掌握了添加系统调用的完整流程，极大地提升了我在操作系统内核中进行开发和调试的能力。
+    
+    \newpage
+    \section{附录：核心代码实现}
+    \subsection{附录A：数据结构定义}
+    
+    \subsubsection{A.1 ptable.h - 进程信息结构}
+    
+    \begin{codeblock}{ptable.h}
+        // ptable.h - 进程信息结构定义，用于内核与用户态程序之间传递进程信息
+        #ifndef _PTABLE_H_
+        #define _PTABLE_H_
+        
+        #include "param.h" // 引入NPROC常量定义
+        
+        // proc_info结构体：轻量级进程快照，专为用户态程序(如ps命令)设计
+        struct proc_info {
+            int pid;                   // 进程ID，唯一标识一个进程
+            int ppid;                  // 父进程ID，如果没有父进程则为-1
+            int priority;              // 进程调度优先级(1-20，数值越小优先级越高)
+            int mem_size;              // 进程占用的内存大小(字节数)
+            enum procstate state;      // 进程状态
+            char name[16];             // 进程命令名(最多16字节)
+        };
+        
+        #endif
+    \end{codeblock}
+    
+    \subsubsection{A.2 proc.h - 进程控制块扩展}
+    
+    \begin{codeblock}{proc.h (关键部分)}
+        // 进程状态枚举
+        enum procstate { 
+            UNUSED,    // 进程槽位未使用
+            EMBRYO,    // 进程正在创建中
+            SLEEPING,  // 进程因等待某个事件而睡眠
+            RUNNABLE,  // 进程就绪，等待被调度执行
+            RUNNING,   // 进程正在CPU上运行
+            ZOMBIE     // 进程已终止，等待父进程回收
+        };
+        
+        // 进程控制块(PCB)：内核中描述每个进程的核心数据结构
+        struct proc {
+            uint sz;                     // 进程地址空间大小(字节)
+            pde_t* pgdir;                // 进程页目录的虚拟地址
+            char *kstack;                // 进程内核栈的底部地址
+            enum procstate state;        // 进程当前状态
+            int pid;                     // 进程ID
+            int priority;                // 新增：进程优先级(1-20)
+            struct proc *parent;         // 指向父进程的指针
+            struct trapframe *tf;        // 保存用户态寄存器状态
+            struct context *context;     // 进程上下文(用于上下文切换)
+            void *chan;                  // 睡眠通道
+            int killed;                  // 非零表示进程被标记为终止
+            struct file *ofile[NOFILE];  // 打开的文件描述符数组
+            struct inode *cwd;           // 当前工作目录
+            char name[16];               // 进程名称
+            int sem_held[32];            // 新增：记录进程持有的信号量资源
+        };
+    \end{codeblock}
+    
+    \subsubsection{A.3 proc.c - 信号量结构定义}
+    
+    \begin{codeblock}{proc.c (信号量定义)}
+        // 内核信号量结构：用于进程间的同步与互斥
+        struct semaphore {
+            int value;              // 信号量的当前值(可用资源数量)
+            int active;             // 标志位：1表示该信号量槽位已初始化
+            struct spinlock lock;   // 保护value和active字段的自旋锁
+        };
+        
+        // 全局信号量表：系统最多支持32个信号量
+        struct semaphore sema[32];
+    \end{codeblock}
+    
+    \subsection{附录B：进程管理系统调用实现}
+    
+    \subsubsection{B.1 proc.c - setpriority函数}
+    
+    \begin{codeblock}{setpriority实现}
+        // setpriority：修改指定进程的优先级
+        // 参数：pid - 目标进程ID，priority - 新优先级值(1-20)
+        // 返回值：0表示成功，-1表示失败
+        int
+        setpriority(int pid, int priority)
+        {
+            struct proc *p;          // 用于遍历进程表的指针
+            int found = 0;           // 标志：是否找到目标进程
+            
+            // 步骤1：参数校验 - 优先级必须在[1, 20]范围内
+            if(priority < 1 || priority > 20)
+            return -1;
+            
+            // 步骤2：获取进程表锁，确保互斥访问
+            acquire(&ptable.lock);
+            
+            // 步骤3：遍历进程表，查找目标进程
+            for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+                if(p->pid == pid){
+                    p->priority = priority;  // 修改优先级
+                    found = 1;
+                    break;
+                }
+            }
+            
+            // 步骤4：释放进程表锁
+            release(&ptable.lock);
+            
+            // 步骤5：返回结果
+            return found ? 0 : -1;
+        }
+    \end{codeblock}
+    
+    \subsubsection{B.2 proc.c - getptable函数}
+    
+    \begin{codeblock}{getptable实现}
+        // getptable：将内核进程表信息复制到用户空间
+        // 参数：ubuf - 用户空间缓冲区地址，size - 缓冲区大小
+        // 返回值：0表示成功，-1表示失败
+        int 
+        getptable(void *ubuf, int size)
+        {
+            struct proc *p;              // 进程表遍历指针
+            struct proc_info pi;         // 临时变量，用于构造进程信息
+            char *uptr = (char*)ubuf;    // 用户缓冲区指针
+            int i = 0;                   // 进程计数器
+            
+            // 步骤1：缓冲区大小检查
+            if(size < NPROC * sizeof(struct proc_info))
+            return -1;
+            
+            // 步骤2：获取进程表锁
+            acquire(&ptable.lock);
+            
+            // 步骤3：遍历进程表
+            for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+                // 清零临时结构体
+                memset(&pi, 0, sizeof(pi));
+                
+                // 如果槽位正在使用，填充信息
+                if(p->state != UNUSED){
+                    pi.pid = p->pid;
+                    pi.ppid = (p->parent) ? p->parent->pid : -1; 
+                    pi.priority = p->priority;
+                    pi.mem_size = p->sz;
+                    pi.state = p->state;
+                    safestrcpy(pi.name, p->name, sizeof(pi.name));
+                }
+                
+                // 步骤4：复制到用户空间
+                if(copyout(myproc()->pgdir, 
+                (uint)(uptr + i * sizeof(struct proc_info)), 
+                (char*)&pi, sizeof(pi)) < 0){
+                    release(&ptable.lock);
+                    return -1;
+                }
+                i++;
+            }
+            
+            // 步骤5：释放锁并返回
+            release(&ptable.lock);
+            return 0;
+        }
+    \end{codeblock}
+    
+    \subsubsection{B.3 sysproc.c - 系统调用包装器}
+    
+    \begin{codeblock}{系统调用包装器}
+        // sys_setpriority：setpriority系统调用包装器
+        int
+        sys_setpriority(void)
+        {
+            int pid, priority;
+            
+            // 从系统调用参数栈中解析参数
+            if(argint(0, &pid) < 0)        // 参数0：进程ID
+            return -1;
+            if(argint(1, &priority) < 0)   // 参数1：优先级值
+            return -1;
+            
+            // 调用内核实现函数
+            return setpriority(pid, priority);
+        }
+        
+        // sys_getptable：getptable系统调用包装器
+        int
+        sys_getptable(void)
+        {
+            char *buf;  // 用户空间缓冲区指针
+            int size;   // 缓冲区大小
+            
+            // 解析参数并验证用户地址有效性
+            if(argptr(0, &buf, sizeof(struct proc_info) * NPROC) || 
+            argint(1, &size))
+            return -1;
+            
+            // 调用内核实现函数
+            return getptable(buf, size);
+        }
+    \end{codeblock}
+    
+    \subsection{附录C：用户态程序实现}
+    
+    \subsubsection{C.1 ps.c - 进程查看命令}
+    
+    \begin{codeblock}{ps.c}
+        #include "types.h"
+        #include "stat.h"
+        #include "user.h"
+        #include "param.h"     // 包含NPROC常量定义
+        #include "mmu.h"
+        #include "proc.h"      // 包含procstate枚举定义
+        #include "ptable.h"    // 包含proc_info结构定义
+        
+        // 进程状态字符串数组：将状态枚举转换为可读字符串
+        static char *states[] = {
+            [UNUSED]    "UNUSED  ",  // 补空格对齐到8字符
+            [EMBRYO]    "EMBRYO  ",
+            [SLEEPING]  "SLEEPING",
+            [RUNNABLE]  "RUNNABLE",
+            [RUNNING]   "RUNNING ",
+            [ZOMBIE]    "ZOMBIE  "
+        };
+        
+        int
+        main(int argc, char *argv[])
+        {
+            struct proc_info pinfo[NPROC];  // 接收进程信息的缓冲区
+            
+            // 步骤1：清零缓冲区，防止打印垃圾数据
+            memset(pinfo, 0, sizeof(pinfo));
+            
+            // 步骤2：调用getptable系统调用获取进程表信息
+            if(getptable(pinfo, sizeof(pinfo)) < 0){
+                printf(2, "ps: getptable failed\n");
+                exit();
+            }
+            
+            // 步骤3：打印表头
+            printf(1, "PID    PPID    PRI    MEM    STATE        CMD\n");
+            
+            // 步骤4：遍历并打印每个进程的信息
+            for(int i = 0; i < NPROC; i++){
+                // 跳过未使用的进程槽位
+                if(pinfo[i].pid == 0)
+                continue;
+                
+                // 打印PID
+                printf(1, "%d    ", pinfo[i].pid);
+                
+                // 打印PPID（-1则显示N/A）
+                if(pinfo[i].ppid == -1)
+                printf(1, "N/A    ");
+                else
+                printf(1, "%d    ", pinfo[i].ppid);
+                
+                // 打印优先级和内存大小
+                printf(1, "%d    %d    ", pinfo[i].priority, pinfo[i].mem_size);
+                
+                // 打印进程状态
+                if(pinfo[i].state >= 0 && pinfo[i].state < 6)
+                printf(1, "%s    ", states[pinfo[i].state]);
+                else
+                printf(1, "???    ");
+                
+                // 打印进程名称
+                printf(1, "%s\n", pinfo[i].name);
+            }
+            
+            exit();
+        }
+    \end{codeblock}
+    
+    \subsubsection{C.2 nice.c - 优先级修改命令}
+    
+    \begin{codeblock}{nice.c}
+        #include "types.h"
+        #include "stat.h"
+        #include "user.h"
+        #include "fcntl.h"
+        
+        int
+        main(int argc, char *argv[])
+        {
+            int pid, priority;
+            
+            // 步骤1：参数检查 - 需要两个参数：pid和priority
+            if(argc != 3){
+                printf(2, "Usage: nice pid priority\n");
+                exit();
+            }
+            
+            // 步骤2：解析命令行参数
+            pid = atoi(argv[1]);       // 第一个参数：进程ID
+            priority = atoi(argv[2]);  // 第二个参数：优先级值
+            
+            // 步骤3：参数校验 - 优先级必须在[1, 20]范围内
+            if (priority < 1 || priority > 20) {
+                printf(2, "nice: priority must be between 1 and 20\n");
+                exit();
+            }
+            
+            // 步骤4：调用setpriority系统调用
+            if(setpriority(pid, priority) < 0){
+                printf(2, "nice: failed to set priority (pid %d not found?)\n", pid);
+            } else {
+                printf(1, "nice: priority of process %d set to %d\n", pid, priority);
+            }
+            
+            exit();
+        }
+    \end{codeblock}
+    
+    \subsection{附录D：信号量实现}
+    
+    \subsubsection{D.1 proc.c - sem\_init函数}
+    
+    \begin{codeblock}{sem\_init实现}
+        // sem_init：初始化一个信号量
+        // 参数：sem - 信号量ID(0-31)，value - 信号量初始值
+        // 返回值：0表示成功，-1表示失败
+        int
+        sem_init(int sem, int value)
+        {
+            // 步骤1：参数校验
+            if(sem < 0 || sem >= 32)
+            return -1;
+            
+            // 步骤2：获取该信号量的锁
+            acquire(&sema[sem].lock);
+            
+            // 步骤3：检查是否已被初始化
+            if(sema[sem].active == 1) {
+                release(&sema[sem].lock);
+                return -1;  // 已在使用，不允许重复初始化
+            }
+            
+            // 步骤4：初始化信号量
+            sema[sem].value = value;  // 设置初始值
+            sema[sem].active = 1;     // 标记为活跃状态
+            
+            // 步骤5：释放锁
+            release(&sema[sem].lock);
+            
+            return 0;
+        }
+    \end{codeblock}
+    
+    \subsubsection{D.2 proc.c - sem\_destroy函数}
+    
+    \begin{codeblock}{sem\_destroy实现}
+        // sem_destroy：销毁一个信号量
+        // 参数：sem - 信号量ID(0-31)
+        // 返回值：0表示成功，-1表示失败
+        int
+        sem_destroy(int sem)
+        {
+            // 步骤1：参数校验
+            if(sem < 0 || sem >= 32)
+            return -1;
+            
+            // 步骤2：获取锁
+            acquire(&sema[sem].lock);
+            
+            // 步骤3：检查是否处于活跃状态
+            if(sema[sem].active == 0) {
+                release(&sema[sem].lock);
+                return -1;
+            }
+            
+            // 步骤4：销毁信号量
+            sema[sem].active = 0;  // 标记为未使用
+            sema[sem].value = 0;   // 清零计数值
+            
+            // 步骤5：释放锁
+            release(&sema[sem].lock);
+            
+            return 0;
+        }
+    \end{codeblock}
+    
+    \subsubsection{D.3 proc.c - sem\_wait函数(P操作)}
+    
+    \begin{codeblock}{sem\_wait实现}
+        // sem_wait：P操作，申请资源，资源不足则阻塞
+        // 参数：sem - 信号量ID，count - 需要申请的资源数量
+        // 返回值：0表示成功，-1表示失败
+        int 
+        sem_wait(int sem, int count)
+        {
+            // 步骤1：参数校验
+            if(sem < 0 || sem >= 32)
+            return -1;
+            
+            // 步骤2：获取信号量锁
+            acquire(&sema[sem].lock);
+            
+            // 步骤3：检查是否处于活跃状态
+            if(sema[sem].active == 0){
+                release(&sema[sem].lock);
+                return -1;
+            }
+            
+            // 步骤4：循环检查资源是否足够（核心逻辑）
+            // 使用while而非if，防止虚假唤醒
+            while(sema[sem].value < count){
+                // 资源不足，进程进入睡眠
+                // sleep的参数1：睡眠通道（使用信号量地址）
+                // sleep的参数2：当前持有的锁
+                // sleep会原子性地释放锁并进入SLEEPING状态
+                sleep(&sema[sem], &sema[sem].lock);
+                
+                // 被唤醒后，回到while开头重新检查条件
+                
+                // 防御性检查：信号量是否在睡眠期间被销毁
+                if(sema[sem].active == 0){
+                    release(&sema[sem].lock);
+                    return -1;
+                }
+            }
+            
+            // 步骤5：资源充足，消耗资源
+            sema[sem].value -= count;
+            
+            // 步骤6：记账，用于进程退出时的自动资源回收
+            myproc()->sem_held[sem] += count;
+            
+            // 步骤7：释放锁
+            release(&sema[sem].lock);
+            
+            return 0;
+        }
+    \end{codeblock}
+    
+    \subsubsection{D.4 proc.c - sem\_signal函数(V操作)}
+    
+    \begin{codeblock}{sem\_signal实现}
+        // sem_signal：V操作，释放资源并唤醒等待者
+        // 参数：sem - 信号量ID，count - 需要释放的资源数量
+        // 返回值：0表示成功，-1表示失败
+        int 
+        sem_signal(int sem, int count)
+        {
+            // 步骤1：参数校验
+            if(sem < 0 || sem >= 32)
+            return -1;
+            
+            // 步骤2：获取信号量锁
+            acquire(&sema[sem].lock);
+            
+            // 步骤3：检查活跃状态
+            if(sema[sem].active == 0){
+                release(&sema[sem].lock);
+                return -1;
+            }
+            
+            // 步骤4：释放资源，增加信号量的值
+            sema[sem].value += count;
+            
+            // 步骤5：销账，减少当前进程的资源持有计数
+            if(myproc()->sem_held[sem] >= count) {
+                myproc()->sem_held[sem] -= count;
+            } else {
+                // 防御性处理：持有计数不足，清零
+                myproc()->sem_held[sem] = 0;
+            }
+            
+            // 步骤6：唤醒所有等待该信号量的进程
+            // wakeup将所有在该通道上睡眠的进程状态改为RUNNABLE
+            wakeup(&sema[sem]);
+            
+            // 步骤7：释放锁
+            release(&sema[sem].lock);
+            
+            return 0;
+        }
+    \end{codeblock}
+    
+    \subsubsection{D.5 sysproc.c - 信号量系统调用包装器}
+    
+    \begin{codeblock}{信号量系统调用包装器}
+        // sys_sem_init：sem_init系统调用包装器
+        int
+        sys_sem_init(void)
+        {
+            int sem, value;
+            
+            if (argint(0, &sem) < 0)      // 解析参数0：信号量ID
+            return -1;
+            if (argint(1, &value) < 0)    // 解析参数1：初始值
+            return -1;
+            
+            return sem_init(sem, value);
+        }
+        
+        // sys_sem_destroy：sem_destroy系统调用包装器
+        int
+        sys_sem_destroy(void)
+        {
+            int sem;
+            
+            if (argint(0, &sem) < 0)
+            return -1;
+            
+            return sem_destroy(sem);
+        }
+        
+        // sys_sem_wait：sem_wait系统调用包装器
+        int 
+        sys_sem_wait(void)
+        {
+            int sem, count;
+            
+            if (argint(0, &sem) < 0)      // 解析参数0：信号量ID
+            return -1;
+            if (argint(1, &count) < 0)    // 解析参数1：资源数量
+            return -1;
+            
+            return sem_wait(sem, count);
+        }
+        
+        // sys_sem_signal：sem_signal系统调用包装器
+        int 
+        sys_sem_signal(void)
+        {
+            int sem, count;
+            
+            if (argint(0, &sem) < 0)
+            return -1;
+            if (argint(1, &count) < 0)
+            return -1;
+            
+            return sem_signal(sem, count);
+        }
+    \end{codeblock}
+    
+    \subsection{附录E：信号量测试程序}
+    
+    \subsubsection{E.1 sem\_test.c - 完整实现}
+    
+    \begin{codeblock}{sem\_test.c}
+        #include "types.h"
+        #include "stat.h"
+        #include "user.h"
+        #include "fcntl.h"
+        
+        // 测试参数定义
+        #define NUM_CHILDREN 10              // 并发子进程数量
+        #define TARGET_COUNT_PER_CHILD 50    // 每个子进程的循环次数
+        #define COUNTER_FILE "counter"       // 共享计数器文件名
+        #define SEM_ID 0                     // 使用0号信号量
+        
+        // test_counter：信号量互斥测试函数
+        void
+        test_counter()
+        {
+            int i, j;
+            int fd;
+            int val;
+            
+            // ===== 第一部分：初始化 =====
+            
+            // 步骤1：创建共享计数器文件并写入初始值0
+            fd = open(COUNTER_FILE, O_CREATE | O_RDWR);
+            if(fd < 0){
+                printf(1, "Error: create counter file failed\n");
+                exit();
+            }
+            val = 0;
+            write(fd, &val, sizeof(int));  // 写入4字节整数
+            close(fd);
+            
+            // 步骤2：初始化互斥信号量（初始值为1，作为互斥锁）
+            if(sem_init(SEM_ID, 1) < 0){
+                printf(1, "Error: sem_init failed\n");
+                exit();
+            }
+            
+            printf(1, "Starting %d children, each incrementing %d times...\n", 
+            NUM_CHILDREN, TARGET_COUNT_PER_CHILD);
+            
+            // ===== 第二部分：创建并发子进程 =====
+            
+            for(i = 0; i < NUM_CHILDREN; i++){
+                int pid = fork();
+                if(pid < 0){
+                    printf(1, "fork failed\n");
+                    exit();
+                }
+                
+                if(pid == 0){
+                    // --- 子进程代码 ---
+                    for(j = 0; j < TARGET_COUNT_PER_CHILD; j++){
+                        
+                        // P操作：申请进入临界区
+                        if(sem_wait(SEM_ID, 1) < 0){
+                            printf(1, "Child: sem_wait failed\n");
+                            exit();
+                        }
+                        
+                        // ========== 临界区开始 ==========
+                        
+                        // 读取当前计数值
+                        fd = open(COUNTER_FILE, O_RDONLY);
+                        if(fd < 0){
+                            printf(1, "Child: open read failed\n");
+                            exit();
+                        }
+                        if(read(fd, &val, sizeof(int)) != sizeof(int)){
+                            printf(1, "Child: read failed\n");
+                            exit();
+                        }
+                        close(fd);
+                        
+                        // 更新计数值（加1）
+                        val++;
+                        
+                        // 写回新值
+                        fd = open(COUNTER_FILE, O_WRONLY); 
+                        if(fd < 0){
+                            printf(1, "Child: open write failed\n");
+                            exit();
+                        }
+                        if(write(fd, &val, sizeof(int)) != sizeof(int)){
+                            printf(1, "Child: write failed\n");
+                            exit();
+                        }
+                        close(fd);
+                        
+                        // ========== 临界区结束 ==========
+                        
+                        // V操作：离开临界区
+                        if(sem_signal(SEM_ID, 1) < 0){
+                            printf(1, "Child: sem_signal failed\n");
+                            exit();
+                        }
+                    }
+                    
+                    exit();  // 子进程完成后退出
+                }
+            }
+            
+            // ===== 第三部分：等待子进程并验证结果 =====
+            
+            // 父进程等待所有子进程退出
+            for(i = 0; i < NUM_CHILDREN; i++){
+                wait();
+            }
+            
+            // 读取最终计数值
+            fd = open(COUNTER_FILE, O_RDONLY);
+            read(fd, &val, sizeof(int));
+            close(fd);
+            
+            printf(1, "Final counter value: %d\n", val);
+            
+            // 验证结果（期望值：10 × 50 = 500）
+            if(val == NUM_CHILDREN * TARGET_COUNT_PER_CHILD){
+                printf(1, "TEST PASSED!\n");
+            } else {
+                printf(1, "TEST FAILED! Expected %d\n", 
+                NUM_CHILDREN * TARGET_COUNT_PER_CHILD);
+            }
+            
+            // ===== 第四部分：清理资源 =====
+            
+            sem_destroy(SEM_ID);    // 销毁信号量
+            unlink(COUNTER_FILE);   // 删除测试文件
+            
+            return;
+        }
+        
+        int
+        main(int argc, char *argv[])
+        {
+            test_counter();
+            return 0;
+        }
+    \end{codeblock}
+    
+\end{document}

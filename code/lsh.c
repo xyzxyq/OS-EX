@@ -207,7 +207,19 @@ int lsh_exit(struct cmd *cmd) {
 int lsh_execute(struct cmd *cmd) {
   int fd, p[2];
 
-  // 检查内建命令
+  // 检查命令是否有效
+  if (cmd->left[0] == 0) {
+    return 1;
+  }
+
+  // 检查内建命令 - 首先直接检查 exit 命令
+  if (cmd->left[0][0] == 'e' && cmd->left[0][1] == 'x' && 
+      cmd->left[0][2] == 'i' && cmd->left[0][3] == 't' &&
+      (cmd->left[0][4] == '\0' || cmd->left[0][4] == ' ' || 
+       cmd->left[0][4] == '\n' || cmd->left[0][4] == '\r')) {
+    exit();
+  }
+  
   for (int i = 0; i < lsh_num_builtins(); i++) {
     if (strcmp(cmd->left[0], builtin_str[i]) == 0) {
       return (*builtin_func[i])(cmd);
@@ -376,6 +388,23 @@ int main(int argc, char **argv) {
     memset(line, 0, LSH_RL_BUFSIZE * sizeof(char));
     memset(cmd, 0, sizeof(struct cmd));
     gets(line, LSH_RL_BUFSIZE);
+
+    // 去除行尾的换行符、回车符和空白字符
+    {
+      int len = strlen(line);
+      while (len > 0 && (line[len-1] == '\n' || line[len-1] == '\r' || 
+                         line[len-1] == ' ' || line[len-1] == '\t')) {
+        line[--len] = '\0';
+      }
+      // 去除行首的空白字符
+      char *start = line;
+      while (*start == ' ' || *start == '\t' || *start == '\r') {
+        start++;
+      }
+      if (start != line) {
+        memmove(line, start, strlen(start) + 1);
+      }
+    }
 
     // fill struct cmd and splits args between left and right (if symbols >,<,| are detected)
     left_i = right_i = 0;

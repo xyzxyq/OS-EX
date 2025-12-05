@@ -41,7 +41,7 @@ struct proc {
   char *kstack;                // Bottom of kernel stack for this process
   enum procstate state;        // Process state
   int pid;                     // Process ID
-  int priority;                // Process priority
+  int priority;                // Process priority (smaller number => higher priority)
   struct proc *parent;         // Parent process
   struct trapframe *tf;        // Trap frame for current syscall
   struct context *context;     // swtch() here to run process
@@ -50,16 +50,13 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
-  int isthread;                //changes
-  void *stack;
+  int isthread;                // Non-zero when representing a user-level thread
+  void *stack;                 // Base of the thread's user stack (for cleanup)
   uint ctime;                  // Process creation time
   int stime;                   // Process SLEEPING time
   int retime;                  // Process READY(RUNNABLE) time
   int rutime;                  // Process RUNNING time
-  // 新增：记录该进程持有的信号量资源数量
-  // 索引对应信号量ID，值对应持有的资源数 (count)
-  // 假设系统最大支持 32 个信号量，与 proc.c 中的定义一致
-  int sem_held[32];
+  int sem_held[32];            // Per-semaphore resource count (index == semaphore ID)
 };
 
 // Per-process state (simplified version for user space)

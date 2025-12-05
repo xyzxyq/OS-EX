@@ -101,15 +101,14 @@ sys_getptable(void)
   char *buf;
   int size;
 
-  // 1. 解析用户传递的参数
-  // 第一个参数 (buf) 是一个指针，指向的内存大小应该是 pinfo 数组那么大
-  // 第二个参数 (size) 是一个整数
+  // Parse user arguments: buffer pointer followed by the reported buffer size.
   if(argptr(0, &buf, sizeof(struct proc_info) * NPROC) || argint(1, &size))
     return -1;
 
-  // 2. 调用 proc.c 中的内部函数来完成真正的工作
+  // Delegate to the kernel helper that performs the actual copyout.
   return getptable(buf, size);
 }
+
 
 int
 sys_getppid(void)
@@ -117,6 +116,7 @@ sys_getppid(void)
   return myproc()->parent->pid;
 }
 
+// User wrapper for setpriority(pid, priority).
 int
 sys_setpriority(void)
 {
@@ -131,7 +131,8 @@ sys_setpriority(void)
   return setpriority(pid, priority);
 }
 
-int 
+// Create or reset a kernel semaphore slot exposed to user space.
+int
 sys_sem_init(void)
 {
   int sem;
@@ -145,6 +146,7 @@ sys_sem_init(void)
   return sem_init(sem, value);
 }
 
+// Destroy a semaphore slot so subsequent waits fail fast.
 int
 sys_sem_destroy(void)
 {
@@ -156,6 +158,7 @@ sys_sem_destroy(void)
   return sem_destroy(sem);
 }
 
+// Wrapper for sem_wait: parse (sem,count) and block if needed.
 int sys_sem_wait(void)
 {
   int sem;
@@ -169,6 +172,7 @@ int sys_sem_wait(void)
   return sem_wait(sem, count);
 }
 
+// Wrapper for sem_signal: parse (sem,count) and wake sleepers.
 int sys_sem_signal(void)
 {
   int sem;
@@ -182,6 +186,7 @@ int sys_sem_signal(void)
   return sem_signal(sem, count);
 }
 
+// Clone syscall builds a user thread by sharing address space.
 int sys_clone(void)
 {
   int func_add;
@@ -199,6 +204,7 @@ int sys_clone(void)
   
 }
 
+// Join syscall waits for a clone and frees its stack pointer.
 int sys_join(void)
 {
   int stack_add;
@@ -209,12 +215,14 @@ int sys_join(void)
   return join((void **)stack_add);
 }
 
+// Expose current scheduler policy to user processes.
 int
 sys_getscheduler(void)
 {
   return getscheduler();
 }
 
+// Allow user code to switch between scheduler implementations.
 int
 sys_setscheduler(void)
 {
@@ -227,6 +235,7 @@ sys_setscheduler(void)
 }
 
 
+// Userspace hook to voluntarily yield the CPU.
 int sys_yield(void) {
   yield();
   return 0;
@@ -236,6 +245,7 @@ int sys_yield(void) {
   @returns - pidof the terminated child process ‐ if successful
 ­             -1, upon failure
 */
+// wait2 extends wait with runtime stats; arguments are user pointers.
 int sys_wait2(void) {
   int *retime, *rutime, *stime;
   if (argptr(0, (void*)&retime, sizeof(retime)) < 0)

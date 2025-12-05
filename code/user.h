@@ -23,6 +23,7 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+// Project-specific user-level helpers.
 int getppid(void);
 int setpriority(int, int);
 int sem_init(int sem, int value);

@@ -29,6 +29,7 @@ SYSCALL(getpid)
 SYSCALL(sbrk)
 SYSCALL(sleep)
 SYSCALL(uptime)
+// Additional process-management/syscall stubs added for the project.
 SYSCALL(getptable)
 SYSCALL(getppid)
 SYSCALL(setpriority)

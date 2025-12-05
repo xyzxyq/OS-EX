@@ -118,6 +118,7 @@ extern int sys_setscheduler(void);
 extern int sys_wait2(void);
 extern int sys_yield(void);
 
+
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
 [SYS_exit]    sys_exit,
@@ -140,6 +141,7 @@ static int (*syscalls[])(void) = {
 [SYS_link]    sys_link,
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
+// Extended process/semaphore/thread syscalls.
 [SYS_getptable]   sys_getptable,
 [SYS_getppid]     sys_getppid,
 [SYS_setpriority] sys_setpriority,

@@ -110,6 +110,7 @@ int             growproc(int);
 int             kill(int);
 struct cpu*     mycpu(void);
 struct proc*    myproc();
+// Expose kernel scheduling/introspection helpers to the rest of the kernel.
 int             getptable(void*, int);
 void            pinit(void);
 void            procdump(void);

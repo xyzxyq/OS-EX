@@ -118,12 +118,20 @@ test_counter()
   // 清理测试文件
   unlink(COUNTER_FILE);
   
-  exit();
+  return;
 }
 
 int
 main(int argc, char *argv[])
 {
   test_counter();
+
+  // int sem_id = 5;
+  // int i;
+  // for(i = 0; i < 50; i++){
+  //   printf(1, "\n========== Test Round %d/50 ==========\n", i+1);
+  //   test_counter();
+  // }
+  // printf(1, "\n========== All 50 tests completed ==========\n");
   return 0;
 }
