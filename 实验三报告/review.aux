@@ -4,100 +4,120 @@
 \HyPL@Entry{0<</S/D>>}
 \pgfsyspdfmark {pgfid1}{19579138}{49000519}
 \HyPL@Entry{1<</S/D>>}
-\@writefile{toc}{\contentsline {section}{\numberline {1}实验目的}{2}{section.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}深入理解进程管理与调度}{2}{subsection.1.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {1.2}掌握内核数据结构的扩展与系统调用}{2}{subsection.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {1.3}深入理解进程同步与互斥}{2}{subsection.1.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {1.4}掌握信号量机制的原理与实现}{2}{subsection.1.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {2}实验环境}{2}{section.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}硬件环境}{2}{subsection.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}软件环境}{3}{subsection.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3}实验要求}{3}{section.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}任务一：进程优先级管理}{3}{subsection.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}任务二：信号量实现}{3}{subsection.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}任务三：使用信号量解决文件读写互斥}{3}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {1}实验目的}{3}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1}深入理解进程调度机制}{3}{subsection.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.2}掌握多种调度算法的原理与实现}{3}{subsection.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.3}设计调度算法评估框架}{3}{subsection.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.4}掌握调度算法性能分析方法}{3}{subsection.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}实验环境}{3}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}硬件环境}{3}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}软件环境}{4}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}实验要求}{4}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}任务一：实现调度算法}{4}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}任务二：实现测试程序}{4}{subsection.3.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {4}实验流程}{4}{section.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}实验准备：内核基础修改}{4}{subsection.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}扩展进程控制块（struct proc）}{4}{subsubsection.4.1.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces 修改 proc.h 和 allocproc() 设置默认优先级}}{4}{figure.caption.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}实验准备：调度框架设计}{4}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}扩展进程控制块}{5}{subsubsection.4.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}调度框架设计}{5}{subsubsection.4.1.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces 调度框架设计流程}}{6}{figure.caption.2}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
-\newlabel{fig:1}{{1}{4}{修改 proc.h 和 allocproc() 设置默认优先级}{figure.caption.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}系统调用实现流程}{4}{subsubsection.4.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}任务一：进程优先级管理}{4}{subsection.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}实现思路与流程}{4}{subsubsection.4.2.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces 任务一总体实现流程}}{5}{figure.caption.3}\protected@file@percent }
-\newlabel{fig:task1_overall}{{2}{5}{任务一总体实现流程}{figure.caption.3}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}步骤一：实现 setpriority() 系统调用}{5}{subsubsection.4.2.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces setpriority 系统调用实现流程}}{6}{figure.caption.4}\protected@file@percent }
-\newlabel{fig:setpriority_flow}{{3}{6}{setpriority 系统调用实现流程}{figure.caption.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}步骤二：实现 getptable() 系统调用}{6}{subsubsection.4.2.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces getptable 系统调用实现流程}}{7}{figure.caption.5}\protected@file@percent }
-\newlabel{fig:getptable_flow}{{4}{7}{getptable 系统调用实现流程}{figure.caption.5}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.4}步骤三：实现用户态程序 nice.c}{7}{subsubsection.4.2.4}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces nice 用户态程序实现流程}}{7}{figure.caption.6}\protected@file@percent }
-\newlabel{fig:nice_flow}{{5}{7}{nice 用户态程序实现流程}{figure.caption.6}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.5}步骤四：实现用户态程序 ps.c}{8}{subsubsection.4.2.5}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces ps 用户态程序实现流程}}{8}{figure.caption.7}\protected@file@percent }
-\newlabel{fig:ps_flow}{{6}{8}{ps 用户态程序实现流程}{figure.caption.7}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.6}测试与验证}{8}{subsubsection.4.2.6}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces 命令执行结果}}{8}{figure.caption.8}\protected@file@percent }
-\newlabel{fig:ps}{{7}{8}{命令执行结果}{figure.caption.8}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces nice命令执行及验证结果}}{9}{figure.caption.9}\protected@file@percent }
-\newlabel{fig:nice}{{8}{9}{nice命令执行及验证结果}{figure.caption.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}任务二：信号量实现}{9}{subsection.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.1}实现思路与数据结构}{9}{subsubsection.4.3.1}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces 任务二总体实现流程}}{10}{figure.caption.10}\protected@file@percent }
-\newlabel{fig:task2_overall}{{9}{10}{任务二总体实现流程}{figure.caption.10}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.2}步骤一：定义信号量数据结构与初始化}{10}{subsubsection.4.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.3}步骤二：实现 sem\_init() 和 sem\_destroy()}{11}{subsubsection.4.3.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces sem\_init 实现流程}}{12}{figure.caption.11}\protected@file@percent }
-\newlabel{fig:sem_init_flow}{{10}{12}{sem\_init 实现流程}{figure.caption.11}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces sem\_destroy 实现流程}}{13}{figure.caption.12}\protected@file@percent }
-\newlabel{fig:sem_destroy_flow}{{11}{13}{sem\_destroy 实现流程}{figure.caption.12}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.4}步骤三：实现 sem\_wait() (P操作)}{13}{subsubsection.4.3.4}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces sem\_wait (P操作) 实现流程}}{15}{figure.caption.13}\protected@file@percent }
-\newlabel{fig:sem_wait_flow}{{12}{15}{sem\_wait (P操作) 实现流程}{figure.caption.13}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.5}步骤四：实现 sem\_signal() (V操作)}{15}{subsubsection.4.3.5}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces sem\_signal (V操作) 实现流程}}{17}{figure.caption.14}\protected@file@percent }
-\newlabel{fig:sem_signal_flow}{{13}{17}{sem\_signal (V操作) 实现流程}{figure.caption.14}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}任务三：使用信号量解决文件读写互斥}{17}{subsection.4.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.1}并发问题分析与临界区定义}{17}{subsubsection.4.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.2}实现思路（sem\_test.c）}{18}{subsubsection.4.4.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces 任务三总体实现流程}}{18}{figure.caption.15}\protected@file@percent }
-\newlabel{fig:task3_overall}{{14}{18}{任务三总体实现流程}{figure.caption.15}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces sem\_test 程序详细实现流程}}{19}{figure.caption.16}\protected@file@percent }
-\newlabel{fig:sem_test_flow}{{15}{19}{sem\_test 程序详细实现流程}{figure.caption.16}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.3}测试与验证}{19}{subsubsection.4.4.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces 不使用信号量保护的运行结果,有概率出现数据不一致}}{19}{figure.caption.17}\protected@file@percent }
-\newlabel{fig:sem_test_fail}{{16}{19}{不使用信号量保护的运行结果,有概率出现数据不一致}{figure.caption.17}{}}
-\newlabel{fig:test1}{{\caption@xref {fig:test1}{ on input line 570}}{20}{测试与验证}{figure.caption.18}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces 五十次迭代测试判断信号量保护机制是否有效}}{20}{figure.caption.19}\protected@file@percent }
-\newlabel{fig:test2}{{17}{20}{五十次迭代测试判断信号量保护机制是否有效}{figure.caption.19}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}实验总结}{20}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}掌握了进程优先级的动态管理}{21}{subsection.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}掌握了信号量机制的内核级实现}{21}{subsection.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}解决了并发环境下的临界区保护}{21}{subsection.5.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}深入理解了 Sleep 和 Wakeup 模型}{21}{subsection.5.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6}实验心得}{21}{section.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {7}附录：核心代码实现}{23}{section.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}附录A：数据结构定义}{23}{subsection.7.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.1.1}A.1 ptable.h - 进程信息结构}{23}{subsubsection.7.1.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.1.2}A.2 proc.h - 进程控制块扩展}{24}{subsubsection.7.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.1.3}A.3 proc.c - 信号量结构定义}{25}{subsubsection.7.1.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}附录B：进程管理系统调用实现}{25}{subsection.7.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.2.1}B.1 proc.c - setpriority函数}{25}{subsubsection.7.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.2.2}B.2 proc.c - getptable函数}{26}{subsubsection.7.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.2.3}B.3 sysproc.c - 系统调用包装器}{28}{subsubsection.7.2.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}附录C：用户态程序实现}{29}{subsection.7.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.3.1}C.1 ps.c - 进程查看命令}{29}{subsubsection.7.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.3.2}C.2 nice.c - 优先级修改命令}{31}{subsubsection.7.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}附录D：信号量实现}{32}{subsection.7.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.4.1}D.1 proc.c - sem\_init函数}{32}{subsubsection.7.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.4.2}D.2 proc.c - sem\_destroy函数}{33}{subsubsection.7.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.4.3}D.3 proc.c - sem\_wait函数(P操作)}{34}{subsubsection.7.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.4.4}D.4 proc.c - sem\_signal函数(V操作)}{35}{subsubsection.7.4.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.4.5}D.5 sysproc.c - 信号量系统调用包装器}{36}{subsubsection.7.4.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {7.5}附录E：信号量测试程序}{38}{subsection.7.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.5.1}E.1 sem\_test.c - 完整实现}{38}{subsubsection.7.5.1}\protected@file@percent }
+\newlabel{fig:sched_framework}{{1}{6}{调度框架设计流程}{figure.caption.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.3}进程统计信息收集}{6}{subsubsection.4.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}任务一：实现调度算法}{7}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}调度器主循环}{7}{subsubsection.4.2.1}\protected@file@percent }
+\newlabel{fig:scheduler1}{{\caption@xref {fig:scheduler1}{ on input line 297}}{7}{调度器主循环}{figure.caption.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces 调度器函数}}{7}{figure.caption.4}\protected@file@percent }
+\newlabel{fig:scheduler2}{{2}{7}{调度器函数}{figure.caption.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces 调度器主循环流程}}{8}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:scheduler_main}{{3}{8}{调度器主循环流程}{figure.caption.5}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}优先级调度算法（Priority Scheduling）}{8}{subsubsection.4.2.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces 优先级调度算法实现流程}}{10}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:priority_sched}{{4}{10}{优先级调度算法实现流程}{figure.caption.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces 优先级调度算法核心代码}}{11}{figure.caption.7}\protected@file@percent }
+\newlabel{fig:priority_code}{{5}{11}{优先级调度算法核心代码}{figure.caption.7}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}先来先服务调度算法（FCFS）}{12}{subsubsection.4.2.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces 先来先服务调度原理}}{12}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:FIFS}{{6}{12}{先来先服务调度原理}{figure.caption.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces FCFS调度算法实现流程}}{13}{figure.caption.9}\protected@file@percent }
+\newlabel{fig:fcfs_sched}{{7}{13}{FCFS调度算法实现流程}{figure.caption.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces 先来先服务调度算法核心代码}}{14}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:fifs_code}{{8}{14}{先来先服务调度算法核心代码}{figure.caption.10}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.4}轮转调度算法（Round Robin）}{14}{subsubsection.4.2.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces 轮转调度原理}}{15}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:RR}{{9}{15}{轮转调度原理}{figure.caption.11}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces 轮转调度算法实现流程}}{16}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:rr_sched}{{10}{16}{轮转调度算法实现流程}{figure.caption.12}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces 轮转调度算法核心代码}}{16}{figure.caption.13}\protected@file@percent }
+\newlabel{fig:rr_code}{{11}{16}{轮转调度算法核心代码}{figure.caption.13}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.5}静态多级队列调度算法（SML）}{17}{subsubsection.4.2.5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces 静态多级队列调度原理}}{17}{figure.caption.14}\protected@file@percent }
+\newlabel{fig:SML}{{12}{17}{静态多级队列调度原理}{figure.caption.14}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces 静态多级队列调度算法实现流程}}{18}{figure.caption.15}\protected@file@percent }
+\newlabel{fig:sml_sched}{{13}{18}{静态多级队列调度算法实现流程}{figure.caption.15}{}}
+\newlabel{fig:sml_code1}{{\caption@xref {fig:sml_code1}{ on input line 591}}{19}{静态多级队列调度算法（SML）}{figure.caption.16}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {14}{\ignorespaces 先来先服务调度算法核心代码}}{19}{figure.caption.17}\protected@file@percent }
+\newlabel{fig:sml_code2}{{14}{19}{先来先服务调度算法核心代码}{figure.caption.17}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}任务二：实现测试程序}{19}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.1}测试程序设计思路}{19}{subsubsection.4.3.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {15}{\ignorespaces 测试程序设计流程}}{20}{figure.caption.18}\protected@file@percent }
+\newlabel{cpu_task_create}{{15}{20}{测试程序设计流程}{figure.caption.18}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {16}{\ignorespaces 测试程序设计流程}}{20}{figure.caption.19}\protected@file@percent }
+\newlabel{io_task_create}{{16}{20}{测试程序设计流程}{figure.caption.19}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {17}{\ignorespaces 测试程序设计流程}}{21}{figure.caption.20}\protected@file@percent }
+\newlabel{fig:test_program}{{17}{21}{测试程序设计流程}{figure.caption.20}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.2}wait2 系统调用}{21}{subsubsection.4.3.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {18}{\ignorespaces wait2 系统调用实现流程}}{22}{figure.caption.21}\protected@file@percent }
+\newlabel{fig:wait2}{{18}{22}{wait2 系统调用实现流程}{figure.caption.21}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}测试与验证}{22}{subsection.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.1}运行配置}{23}{subsubsection.4.4.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {19}{\ignorespaces 调度算法对比测试完整输出}}{23}{figure.caption.22}\protected@file@percent }
+\newlabel{fig:run_all}{{19}{23}{调度算法对比测试完整输出}{figure.caption.22}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.2}各调度算法运行结果}{23}{subsubsection.4.4.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {20}{\ignorespaces 优先级调度算法运行结果}}{23}{figure.caption.23}\protected@file@percent }
+\newlabel{fig:run_priority}{{20}{23}{优先级调度算法运行结果}{figure.caption.23}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {21}{\ignorespaces FCFS调度算法运行结果}}{24}{figure.caption.24}\protected@file@percent }
+\newlabel{fig:run_fcfs}{{21}{24}{FCFS调度算法运行结果}{figure.caption.24}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {22}{\ignorespaces 轮转调度算法运行结果}}{25}{figure.caption.25}\protected@file@percent }
+\newlabel{fig:run_rr}{{22}{25}{轮转调度算法运行结果}{figure.caption.25}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {23}{\ignorespaces 静态多级队列调度算法运行结果}}{26}{figure.caption.26}\protected@file@percent }
+\newlabel{fig:run_sml}{{23}{26}{静态多级队列调度算法运行结果}{figure.caption.26}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.3}运行结果分析}{26}{subsubsection.4.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.4}性能可视化分析}{26}{subsubsection.4.4.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {24}{\ignorespaces 平均性能指标对比}}{27}{figure.caption.27}\protected@file@percent }
+\newlabel{fig:avg_comparison}{{24}{27}{平均性能指标对比}{figure.caption.27}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {25}{\ignorespaces 各进程执行详情}}{27}{figure.caption.28}\protected@file@percent }
+\newlabel{fig:process_details}{{25}{27}{各进程执行详情}{figure.caption.28}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {26}{\ignorespaces 周转时间对比}}{28}{figure.caption.29}\protected@file@percent }
+\newlabel{fig:turnaround_comp}{{26}{28}{周转时间对比}{figure.caption.29}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {27}{\ignorespaces 综合性能雷达图}}{28}{figure.caption.30}\protected@file@percent }
+\newlabel{fig:radar_chart}{{27}{28}{综合性能雷达图}{figure.caption.30}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces 四种调度算法性能指标对比}}{29}{table.caption.31}\protected@file@percent }
+\newlabel{tab:performance_comparison}{{1}{29}{四种调度算法性能指标对比}{table.caption.31}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}实验总结}{30}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}掌握了调度框架的设计方法}{30}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}深入理解了不同调度算法的特点}{31}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}掌握了进程统计信息收集方法}{31}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}理解了调度决策对系统性能的影响}{31}{subsection.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}实验心得}{31}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}附录：核心代码实现}{32}{section.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}附录A：数据结构定义}{32}{subsection.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.1.1}A.1 ptable.h - 进程信息结构}{32}{subsubsection.7.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.1.2}A.2 proc.h - 进程控制块扩展}{33}{subsubsection.7.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.1.3}A.3 proc.c - 信号量结构定义}{34}{subsubsection.7.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}附录B：进程管理系统调用实现}{34}{subsection.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.2.1}B.1 proc.c - setpriority函数}{34}{subsubsection.7.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.2.2}B.2 proc.c - getptable函数}{35}{subsubsection.7.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.2.3}B.3 sysproc.c - 系统调用包装器}{37}{subsubsection.7.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}附录C：用户态程序实现}{38}{subsection.7.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.3.1}C.1 ps.c - 进程查看命令}{38}{subsubsection.7.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.3.2}C.2 nice.c - 优先级修改命令}{40}{subsubsection.7.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}附录D：信号量实现}{41}{subsection.7.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.4.1}D.1 proc.c - sem\_init函数}{41}{subsubsection.7.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.4.2}D.2 proc.c - sem\_destroy函数}{42}{subsubsection.7.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.4.3}D.3 proc.c - sem\_wait函数(P操作)}{43}{subsubsection.7.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.4.4}D.4 proc.c - sem\_signal函数(V操作)}{44}{subsubsection.7.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.4.5}D.5 sysproc.c - 信号量系统调用包装器}{45}{subsubsection.7.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.5}附录E：信号量测试程序}{47}{subsection.7.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {7.5.1}E.1 sem\_test.c - 完整实现}{47}{subsubsection.7.5.1}\protected@file@percent }
 \ttl@finishall
-\gdef \@abspage@last{43}
+\gdef \@abspage@last{52}

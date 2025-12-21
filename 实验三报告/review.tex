@@ -165,7 +165,7 @@
         {\color{ThemeColor} \rule{0.6\textwidth}{1.5pt}} % 分割线
         \vspace{0.5cm}
         
-        {\Large \bfseries 实验二：进程优先级管理与信号量实现 \par}
+        {\Large \bfseries 实验三：调度算法比较 \par}
         
         \vspace{1.5cm}
         
@@ -176,7 +176,7 @@
                 \bfseries 专\hspace{1em}业： & \underline{\makebox[8cm][c]{人工智能}} \\
                 \bfseries 姓\hspace{1em}名： & \underline{\makebox[8cm][c]{张晓宇}} \\
                 \bfseries 学\hspace{1em}号： & \underline{\makebox[8cm][c]{37220232203927}} \\
-                \bfseries 实验日期： & \underline{\makebox[8cm][c]{2025.11.7}} \\
+                \bfseries 实验日期： & \underline{\makebox[8cm][c]{2025.12.5}} \\
                 \bfseries 指导教师： & \underline{\makebox[8cm][c]{曹冬林}} \\
             \end{tabular}
         \end{large}
@@ -197,19 +197,25 @@
     
     \section{实验目的}
     
-    本次实验围绕操作系统的两个核心主题——进程管理（侧重于优先级）和进程同步（侧重于信号量）展开，旨在达成以下目标：
+    本次实验围绕操作系统的核心主题——进程调度算法展开，旨在达成以下目标：
     
-    \subsection{深入理解进程管理与调度}
-    学习如何在操作系统内核中实现进程优先级的查看和修改机制。理解优先级如何作为进程调度的重要依据，为从默认的轮转调度（Round Robin）转向优先级调度奠定基础。
+    \subsection{深入理解进程调度机制}
+    学习操作系统中进程调度器的工作原理，理解调度器如何在多个就绪进程之间进行选择。掌握调度策略与调度算法的区别，以及不同调度算法对系统性能的影响。
     
-    \subsection{掌握内核数据结构的扩展与系统调用}
-    学习如何修改关键的内核数据结构，特别是进程控制块（\texttt{struct proc}），以包含进程优先级信息；学习如何定义新的内核数据结构来实现信号量（\texttt{struct semaphore}）。同时，通过实现 \texttt{getptable()}、\texttt{setpriority()}、\texttt{sem\_init()}等一系列系统调用，熟练掌握从用户态发起请求到内核态响应处理的完整流程。
+    \subsection{掌握多种调度算法的原理与实现}
+    研究并实现四种经典的进程调度算法：
+    \begin{itemize}[label=\textbullet, itemsep=0pt]
+        \item \textbf{优先级调度（Priority Scheduling）}：根据进程优先级选择执行，优先级高的进程优先获得CPU。
+        \item \textbf{先来先服务（FCFS）}：按照进程到达就绪队列的先后顺序进行调度。
+        \item \textbf{轮转调度（Round Robin）}：进程按照循环顺序轮流获得时间片执行。
+        \item \textbf{静态多级队列（SML）}：将进程按优先级划分到不同队列，高优先级队列优先调度，队列内部使用轮转策略。
+    \end{itemize}
     
-    \subsection{深入理解进程同步与互斥}
-    分析多进程并发访问共享资源（如文件）时可能出现的竞态条件（Race Condition）和数据不一致问题。理解临界区（Critical Section）的概念以及保护临界区的必要性。
+    \subsection{设计调度算法评估框架}
+    构建一个可切换的调度框架，支持在运行时动态切换调度算法。设计合理的测试方案，包含不同类型的负载（CPU密集型和IO密集型），对调度算法进行公平的性能对比。
     
-    \subsection{掌握信号量机制的原理与实现}
-    学习 Dijkstra 提出的信号量机制（Semaphore），理解 P 操作（\texttt{wait}）和 V 操作（\texttt{signal}）的原理。掌握如何在内核中利用 \texttt{sleep()} 和 \texttt{wakeup()} 原语来实现信号量的阻塞和唤醒功能。
+    \subsection{掌握调度算法性能分析方法}
+    学习进程运行时间统计方法，理解就绪时间、运行时间、休眠时间、周转时间等关键指标的含义。通过对比实验，分析不同调度算法在各项指标上的表现差异。
     
     \section{实验环境}
     
@@ -230,380 +236,615 @@
     
     \section{实验要求}
     
-    \subsection{任务一：进程优先级管理}
+    \subsection{任务一：实现调度算法}
+    在 \texttt{proc.c} 中编程实现以下四种调度算法：
     \begin{enumerate}
-        \item \textbf{实现 \texttt{ps} 命令 (ps.c)}：显示系统进程列表，包括 PID, PPID, PRI (优先级), MEM, STATE, CMD。
-        \item \textbf{实现系统调用 \texttt{getptable()}}：用于从内核获取进程表信息。
-        \item \textbf{实现 \texttt{nice} 命令 (nice.c)}：用户态程序，用于修改进程优先级。命令格式：\texttt{nice pid priority}（优先级范围 [1, 20]，数值越小优先级越高）。
-        \item \textbf{实现系统调用 \texttt{setpriority(pid, priority)}}：供 \texttt{nice} 命令调用。
+        \item \textbf{优先级调度（Priority Scheduling）}：选择优先级最高（数值最小）的就绪进程执行。
+        \item \textbf{先来先服务（FCFS）}：选择创建时间最早的就绪进程执行。
+        \item \textbf{轮转调度（Round Robin）}：按循环顺序公平地调度每个就绪进程。
+        \item \textbf{静态多级队列（SML）}：按优先级将进程划分为多个队列，高优先级队列优先执行。
     \end{enumerate}
     
-    \subsection{任务二：信号量实现}
-    在内核中实现以下系统调用：
+    \subsection{任务二：实现测试程序}
+    在 \texttt{scheduler\_test.c} 中实现测试程序：
     \begin{enumerate}
-        \item \texttt{int sem\_init(int sem, int value)}：初始化信号量 \texttt{sem} 的值为 \texttt{value}。
-        \item \texttt{int sem\_destroy(int sem)}：销毁信号量 \texttt{sem}。
-        \item \texttt{int sem\_wait(int sem, int count)}：P 操作，申请 \texttt{count} 个资源，如果不足则阻塞。
-        \item \texttt{int sem\_signal(int sem, int count)}：V 操作，释放 \texttt{count} 个资源，并唤醒等待的进程。
-    \end{enumerate}
-    
-    \subsection{任务三：使用信号量解决文件读写互斥}
-    \begin{enumerate}
-        \item 创建 \texttt{sem\_test.c}。
-        \item 启动 10 个并发进程。
-        \item 每个进程重复 50 次以下操作：从文件中读取数值，加 1，写回文件。
-        \item 使用任务二实现的信号量保证操作的互斥性，验证最终文件中的数值为 500。
+        \item 创建 6 个进程，包含 3 个 CPU 密集型进程和 3 个 IO 密集型进程。
+        \item 为不同类型的进程设置不同的优先级。
+        \item 记录所有进程的运行过程，收集进程统计信息。
+        \item 对比各调度算法在平均就绪时间、平均运行时间、平均休眠时间、平均周转时间上的结果。
     \end{enumerate}
     
     \section{实验流程}
     
-    \subsection{实验准备：内核基础修改}
-    本次实验涉及大量的内核修改，特别是对进程管理和系统调用的扩展。首先需要进行一些基础准备工作。
+    \subsection{实验准备：调度框架设计}
+    本次实验需要设计一个可扩展的调度框架，支持在运行时动态切换调度算法。同时需要扩展进程控制块以支持运行时间统计。
     
-    \subsubsection{扩展进程控制块（struct proc）}
-    为了支持优先级，必须在内核中存储每个进程的优先级信息。这需要修改 \texttt{proc.h} 文件中的 \texttt{struct proc} 定义。
+    \subsubsection{扩展进程控制块}
+    为了支持调度算法比较，需要在 \texttt{proc.h} 的进程控制块中添加以下时间统计字段：
+    \begin{itemize}
+        \item \texttt{priority}：进程优先级 (1-20)
+        \item \texttt{ctime}：进程创建时间
+        \item \texttt{stime}：休眠(SLEEPING)累计时间
+        \item \texttt{retime}：就绪(RUNNABLE)累计时间
+        \item \texttt{rutime}：运行(RUNNING)累计时间
+    \end{itemize}
     
-    同时，需要在 \texttt{proc.c} 的 \texttt{allocproc()} 函数中为新进程设置默认优先级（例如设为 10）。
+    \subsubsection{调度框架设计}
+    在 \texttt{sdh.h} 中设计可扩展的调度框架，核心思想是使用函数指针数组存储各调度算法，通过 \texttt{setscheduler()} 系统调用动态切换当前使用的调度函数。
     
-    \begin{figure}[H] % [H] 参数强制图片显示在当前位置，不乱跑
-        \centering
-        % width=0.8\textwidth 表示图片宽度占页面文本宽度的 80%
-        \includegraphics[width=0.6\textwidth]{img/1.png} 
-        \caption{修改 proc.h 和 allocproc() 设置默认优先级}
-        \label{fig:1} % 用于引用的标签
-    \end{figure}
-    
-    \subsubsection{系统调用实现流程}
-    在 xv6 中添加一个新的系统调用通常需要修改以下几个文件：\texttt{syscall.h}, \texttt{syscall.c}, \texttt{usys.S}, \texttt{user.h}, 和 \texttt{sysproc.c}。
-    
-    
-    \subsection{任务一：进程优先级管理}
-    
-    \subsubsection{实现思路与流程}
-    任务一的目标是实现进程优先级的查看 (\texttt{ps} / \texttt{getptable}) 和修改 (\texttt{nice} / \texttt{setpriority})。任务一的总体流程如图\ref{fig:task1_overall}所示。
+    调度框架的设计思路如图\ref{fig:sched_framework}所示。
     
     \begin{figure}[H] 
         \centering
-        \includegraphics[width=0.4\textwidth]{img/任务一总体流程.drawio.pdf} 
-        \caption{任务一总体实现流程}
-        \label{fig:task1_overall}
+        \includegraphics[width=0.7\textwidth]{img/sched_framework.drawio.pdf}
+        \caption{调度框架设计流程}
+        \label{fig:sched_framework}
     \end{figure}
     
-    \subsubsection{步骤一：实现 setpriority() 系统调用}
-    该系统调用用于修改指定 PID 进程的优先级。内核实现需要完成参数获取、参数校验、获取 \texttt{ptable.lock} 锁、遍历进程表并修改优先级。
+    \subsubsection{进程统计信息收集}
+    实现 \texttt{update\_statistics()} 函数，在每个时钟中断时被调用，根据当前进程状态更新对应的时间计数器。该函数遍历进程表，根据进程的 SLEEPING、RUNNABLE、RUNNING 状态分别递增 \texttt{stime}、\texttt{retime}、\texttt{rutime} 计数器。
     
+    \subsection{任务一：实现调度算法}
     
-    \texttt{setpriority()} 系统调用的实现流程如图\ref{fig:setpriority_flow}所示。
+    \subsubsection{调度器主循环}
+    修改 \texttt{scheduler()} 函数，使用函数指针 \texttt{ready\_process} 调用当前选择的调度算法，实现调度策略的动态切换。
+    
+    调度器函数如图所示：
+    
+    \begin{figure}[H] 
+    	\centering
+    	\includegraphics[width=0.6\textwidth]{img/scheduler1.png}
+    	\label{fig:scheduler1}
+    \end{figure}
+    \begin{figure}[H] 
+    	\centering
+    	\includegraphics[width=0.6\textwidth]{img/scheduler2.png}
+    	\caption{调度器函数}
+    	\label{fig:scheduler2}
+    \end{figure}
+    
+    调度器主循环流程如图\ref{fig:scheduler_main}所示。
     
     \begin{figure}[H] 
         \centering
-        \includegraphics[width=0.9\textwidth]{img/1_内核态sys_setpriority系统调用实现流程图.drawio.pdf} 
-        \caption{setpriority 系统调用实现流程}
-        \label{fig:setpriority_flow}
+        \includegraphics[width=0.7\textwidth]{img/scheduler_main.drawio.pdf}
+        \caption{调度器主循环流程}
+        \label{fig:scheduler_main}
     \end{figure}
     
-    \subsubsection{步骤二：实现 getptable() 系统调用}
-    该系统调用用于将内核的进程表信息传递给用户态的 \texttt{ps} 命令。由于内核和用户空间的地址空间隔离，需要将内核数据复制到用户空间提供的缓冲区。
+    \subsubsection{优先级调度算法（Priority Scheduling）}
     
+    \textbf{算法原理：}
     
-    \texttt{getptable()} 系统调用的实现流程如图\ref{fig:getptable_flow}所示。
+    优先级调度是一种基于进程重要性的抢占式或非抢占式调度算法。每个进程被分配一个优先级值，调度器总是选择优先级最高的就绪进程执行。在本实现中，优先级使用数值1-20表示，\textbf{数值越小表示优先级越高}。
     
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.9\textwidth]{img/1_内核态_sys_getptable系统调用实现流程图.drawio.pdf} 
-        \caption{getptable 系统调用实现流程}
-        \label{fig:getptable_flow}
-    \end{figure}
+    该算法的核心思想是：\textit{重要的任务应该优先得到CPU资源}。通过为不同类型的进程分配不同的优先级，系统可以确保关键任务（如系统服务、实时任务）能够快速响应，而次要任务（如后台批处理）则在资源空闲时执行。
     
-    \subsubsection{步骤三：实现用户态程序 nice.c}
-    \texttt{nice} 命令解析命令行参数并通过 \texttt{setpriority()} 系统调用来修改进程优先级。
+    \textbf{实现策略：}
     
-    
-    用户态程序 \texttt{nice} 的实现流程如图\ref{fig:nice_flow}所示。
-    
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.9\textwidth]{img/2_用户态程序nice实现流程图.drawio.pdf} 
-        \caption{nice 用户态程序实现流程}
-        \label{fig:nice_flow}
-    \end{figure}
-    
-    \subsubsection{步骤四：实现用户态程序 ps.c}
-    \texttt{ps} 命令调用 \texttt{getptable()} 系统调用获取进程信息，并格式化输出。
-    
-    
-    用户态程序 \texttt{ps} 的实现流程如图\ref{fig:ps_flow}所示。
-    
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.9\textwidth]{img/2_用户态程序ps实现流程图.drawio.pdf} 
-        \caption{ps 用户态程序实现流程}
-        \label{fig:ps_flow}
-    \end{figure}
-    
-    
-    \subsubsection{测试与验证}
-    编译并启动内核 \texttt{make qemu-nox}。
-    
-    \textbf{测试用例 1：验证 ps 命令} \\
-    操作：\texttt{$ ps $} \\
-    预期结果：输出包含 PRI 列的进程信息。init 和 sh 的默认优先级应为 10。
-    
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.5\textwidth]{img/ps.png} 
-        \caption{命令执行结果}
-        \label{fig:ps}
-    \end{figure}
-    
-    %\placeholderimg{12cm}{4cm}{ps 命令执行结果截图}
-    
-    \textbf{测试用例 2：验证 nice 命令} \\
-    操作：先用 \texttt{ps} 查看PID，然后执行 \texttt{$ nice 2 5 $}。\\
-    预期结果：再次执行 \texttt{ps}，PID 2 的 PRI 列应显示为 5。
-    
-    %\placeholderimg{12cm}{5cm}{nice 命令执行及验证结果截图}
-    
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.5\textwidth]{img/nice.png} 
-        \caption{nice命令执行及验证结果}
-        \label{fig:nice}
-    \end{figure}
-    
-    
-    \subsection{任务二：信号量实现}
-    任务二要求在内核中实现信号量机制。这需要利用内核提供的同步原语 \texttt{sleep()} 和 \texttt{wakeup()}。
-    
-    \subsubsection{实现思路与数据结构}
-    任务二的总体流程如图\ref{fig:task2_overall}所示。
-    
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.9\textwidth]{img/任务二总体流程.drawio.pdf} 
-        \caption{任务二总体实现流程}
-        \label{fig:task2_overall}
-    \end{figure}
-    
-    \subsubsection{步骤一：定义信号量数据结构与初始化}
-    在内核中定义信号量结构体，并创建全局信号量数组。
-    
-    \begin{codeblock}{信号量数据结构定义}
-        #include "spinlock.h"
-        #define MAX_SEMAPHORES 16 // 系统最大支持的信号量数量
-        
-        // (定义在 proc.h 或相关头文件中)
-        struct semaphore {
-            int value;            // 信号量的计数值
-            struct spinlock lock; // 保护信号量的自旋锁
-            int active;           // 标记该信号量是否正在使用
-        };
-        
-        // (在 proc.c 中定义全局数组)
-        struct semaphore semaphores[MAX_SEMAPHORES];
-    \end{codeblock}
-    
-    在系统启动时（例如在 \texttt{main.c} 中调用 \texttt{seminit()}），需要初始化这些信号量的锁。
-    
-    \subsubsection{步骤二：实现 sem\_init() 和 sem\_destroy()}
-    这两个系统调用用于管理信号量的生命周期。
-    
-    \begin{codeblock}{sysproc.c (sys\_sem\_init)}
-        int
-        sys_sem_init(void)
-        {
-            int sem, value;
-            // ... (参数获取与校验) ...
-            
-            // 初始化操作
-            acquire(&semaphores[sem].lock);
-            semaphores[sem].value = value;
-            semaphores[sem].active = 1;
-            release(&semaphores[sem].lock);
-            
-            return 0;
-        }
-    \end{codeblock}
-    
-    \texttt{sem\_init()} 的实现流程如图\ref{fig:sem_init_flow}所示。
-    
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.5\textwidth]{img/1_sem_init流程图.drawio.pdf} 
-        \caption{sem\_init 实现流程}
-        \label{fig:sem_init_flow}
-    \end{figure}
-    
-    \texttt{sem\_destroy()} 的实现流程如图\ref{fig:sem_destroy_flow}所示。
-    
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.5\textwidth]{img/2_sem_destroy流程图.drawio.pdf} 
-        \caption{sem\_destroy 实现流程}
-        \label{fig:sem_destroy_flow}
-    \end{figure}
-    
-    \subsubsection{步骤三：实现 sem\_wait() (P操作)}
-    \texttt{sem\_wait} 是核心操作。如果资源不足，进程必须阻塞。关键点在于使用 \texttt{while} 循环检查条件，并调用 \texttt{sleep(chan, lock)} 进行阻塞。
-    
-    \begin{codeblock}{sysproc.c (sys\_sem\_wait)}
-        int
-        sys_sem_wait(void)
-        {
-            int sem, count;
-            // ... (参数获取与校验) ...
-            
-            acquire(&semaphores[sem].lock);
-            
-            // 当资源不足时，阻塞等待 (使用 while 而非 if 是关键)
-            while(semaphores[sem].value < count){
-                // 使用信号量的地址作为等待通道 (chan)
-                // sleep 会原子性地释放 lock 并使当前进程进入 SLEEPING 状态
-                sleep(&semaphores[sem], &semaphores[sem].lock);
-                // 被唤醒后，sleep 会重新获取 lock
-            }
-            
-            // 资源足够，分配资源
-            semaphores[sem].value -= count;
-            
-            release(&semaphores[sem].lock);
-            
-            return 0;
-        }
-    \end{codeblock}
-    
-    \texttt{sem\_wait()} (P操作) 的实现流程如图\ref{fig:sem_wait_flow}所示。
-    
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.8\textwidth]{img/1_sem_wait流程图.drawio.pdf} 
-        \caption{sem\_wait (P操作) 实现流程}
-        \label{fig:sem_wait_flow}
-    \end{figure}
-    
-    \subsubsection{步骤四：实现 sem\_signal() (V操作)}
-    \texttt{sem\_signal} 用于释放资源，并唤醒可能正在等待该资源的进程。
-    
-    \begin{codeblock}{sysproc.c (sys\_sem\_signal)}
-        int
-        sys_sem_signal(void)
-        {
-            int sem, count;
-            // ... (参数获取与校验) ...
-            
-            acquire(&semaphores[sem].lock);
-            
-            // 释放资源
-            semaphores[sem].value += count;
-            
-            // 唤醒等待的进程
-            wakeup(&semaphores[sem]);
-            
-            release(&semaphores[sem].lock);
-            
-            return 0;
-        }
-    \end{codeblock}
-    
-    \texttt{sem\_signal()} (V操作) 的实现流程如图\ref{fig:sem_signal_flow}所示。
-    
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.5\textwidth]{img/2_sem_signal流程图.drawio.pdf} 
-        \caption{sem\_signal (V操作) 实现流程}
-        \label{fig:sem_signal_flow}
-    \end{figure}
-    
-    \subsection{任务三：使用信号量解决文件读写互斥}
-    
-    \subsubsection{并发问题分析与临界区定义}
-    任务要求 10 个进程并发地对同一个文件重复执行读-修改-写操作50次。这个操作不是原子性的。两个进程如果同时读到 10，分别加 1 后都写回 11，会导致结果错误。为了保证最终结果为 500，必须确保读-修改-写，这整个过程是互斥的，这个区域也就是临界区。
-    
-    \subsubsection{实现思路（sem\_test.c）}
-    使用任务二实现的信号量来保护临界区。任务三的总体流程如图\ref{fig:task3_overall}所示。
-    
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.9\textwidth]{img/任务三总体流程.drawio.pdf} 
-        \caption{任务三总体实现流程}
-        \label{fig:task3_overall}
-    \end{figure}
-    
-    \begin{enumerate}
-        \item 初始化共享文件为 0。
-        \item 初始化互斥信号量：\texttt{sem\_init(0, 1)}（初始值为 1，作为互斥锁）。
-        \item 使用 \texttt{fork()} 创建 10 个子进程。
-        \item 子进程逻辑（循环 50 次）：P 操作进入临界区，执行读写，V 操作退出临界区。
-        \item 父进程逻辑：\texttt{wait()} 所有子进程，验证结果。
+    本实现采用非抢占式优先级调度，具体步骤如下：
+    \begin{enumerate}[itemsep=2pt]
+        \item 遍历整个进程表，筛选出所有状态为 RUNNABLE 的就绪进程
+        \item 维护一个候选进程指针 \texttt{highP}，初始值为 NULL
+        \item 对每个就绪进程，比较其 \texttt{priority} 字段与当前候选进程
+        \item 如果发现更高优先级的进程（数值更小），则更新候选进程指针
+        \item 遍历完成后，返回优先级最高的进程
     \end{enumerate}
     
+    \textbf{算法优势：}
+    \begin{itemize}[itemsep=0pt]
+        \item \textbf{响应快速}：高优先级进程可以立即获得CPU，适合实时系统
+        \item \textbf{灵活性高}：可以根据实际需求动态调整进程优先级
+        \item \textbf{实现简单}：只需一次遍历即可完成调度决策
+    \end{itemize}
     
-    \texttt{sem\_test.c} 的详细实现流程如图\ref{fig:sem_test_flow}所示。
+    \textbf{潜在问题：}
+    \begin{itemize}[itemsep=0pt]
+        \item \textbf{饥饿问题}：低优先级进程可能永远得不到执行机会
+        \item \textbf{不够公平}：相同优先级的进程之间没有轮转机制
+    \end{itemize}
     
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.9\textwidth]{img/sem_test流程图.drawio.pdf} 
-        \caption{sem\_test 程序详细实现流程}
-        \label{fig:sem_test_flow}
-    \end{figure}
-    
-    \subsubsection{测试与验证}
-    
-    \textbf{测试用例 1：不使用信号量保护（对照实验）} \\
-    操作：修改 \texttt{sem\_test.c}，注释掉 \texttt{sem\_wait()} 和 \texttt{sem\_signal()}。重新编译并运行。\\
-    预期结果：Final value 有概率小于 500，Test FAILED。
-    
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.6\textwidth]{img/test0_sem_test.png} 
-        \caption{不使用信号量保护的运行结果,有概率出现数据不一致}
-        \label{fig:sem_test_fail}
-    \end{figure}
-    
-    \textbf{测试用例 2：使用信号量保护} \\
-    操作：迭代运行50次包含信号量保护的 \texttt{sem\_test.c} ，查看输出是否有不符合预期。\\
-    预期结果：Final value: 500。Test PASSED。
+    优先级调度算法的实现流程如图\ref{fig:priority_sched}所示。
     
     \begin{figure}[H] 
         \centering
-        \includegraphics[width=0.4\textwidth]{img/pass1.png} 
-        \label{fig:test1}
+        \includegraphics[width=0.7\textwidth]{img/priority_scheduler.drawio.pdf}
+        \caption{优先级调度算法实现流程}
+        \label{fig:priority_sched}
     \end{figure}
+    
+    \textbf{核心代码实现：}
+    
+    优先级调度算法的核心代码实现如图\ref{fig:priority_code}所示。
+    
     \begin{figure}[H] 
         \centering
-        \includegraphics[width=0.4\textwidth]{img/pass2.png} 
-        \caption{五十次迭代测试判断信号量保护机制是否有效}
-        \label{fig:test2}
+        \includegraphics[width=0.5\textwidth]{img/priority_alg.png}
+        \caption{优先级调度算法核心代码}
+        \label{fig:priority_code}
     \end{figure}
     
-    通过对比实验，清晰地证明了信号量机制在解决并发互斥问题中的有效性。
+    \textbf{代码解析：}
     
+    \begin{enumerate}[itemsep=3pt]
+        \item \textbf{变量初始化}（第1-2行）：
+        \begin{itemize}[itemsep=0pt]
+            \item \texttt{struct proc *p} - 用于遍历进程表的指针
+            \item \texttt{struct proc *highP = 0} - 候选进程指针，初始化为NULL，表示尚未找到候选进程
+        \end{itemize}
+        
+        \item \textbf{遍历进程表}（第4-10行）：
+        \begin{itemize}[itemsep=0pt]
+            \item 使用 \texttt{for} 循环遍历整个进程表，从 \texttt{ptable.proc} 开始到 \texttt{\&ptable.proc[NPROC]} 结束
+            \item 第5-6行：跳过所有非就绪状态的进程（\texttt{p->state != RUNNABLE}）
+            \item 第7-9行：\textbf{核心比较逻辑}
+            \begin{itemize}
+                \item 如果还未找到候选进程（\texttt{highP == 0}），或者
+                \item 当前进程的优先级更高（\texttt{p->priority < highP->priority}，数值越小优先级越高）
+                \item 则更新候选进程为当前进程：\texttt{highP = p}
+            \end{itemize}
+        \end{itemize}
+        
+        \item \textbf{返回结果}（第11行）：
+        \begin{itemize}[itemsep=0pt]
+            \item 返回优先级最高的进程指针 \texttt{highP}
+            \item 如果没有就绪进程，\texttt{highP} 为 NULL (0)，调度器主循环会继续等待
+        \end{itemize}
+    \end{enumerate}
+    
+    \textbf{关键技术点：}
+    \begin{itemize}[itemsep=2pt]
+        \item \textbf{优先级比较}：使用 \texttt{<} 运算符而非 \texttt{>}，因为数值越小优先级越高
+        \item \textbf{首次判断}：\texttt{highP == 0} 确保第一个就绪进程能被选中
+        \item \textbf{时间复杂度}：O(n)，n为进程表大小（NPROC=64）
+        \item \textbf{线程安全}：调用方（\texttt{scheduler()}）已持有 \texttt{ptable.lock}，无需额外加锁
+    \end{itemize}
+    
+    \subsubsection{先来先服务调度算法（FCFS）}
+    
+    \textbf{算法原理：}
+    
+    先来先服务（First-Come First-Served）是最简单直观的调度算法，遵循"先到先得"的公平原则。进程按照进入就绪队列的时间顺序排队，调度器总是选择最早到达的进程执行，直到该进程执行完毕或主动放弃CPU。
+    
+    FCFS算法本质上是一个\textbf{非抢占式队列调度}，类似于日常生活中的"排队买票"——先来的人先得到服务，后来的人必须等待前面所有人处理完毕。
+    
+    \textbf{实现策略：}
+    
+    本实现通过比较进程的创建时间戳（\texttt{ctime}字段）来确定进程到达顺序：
+    \begin{enumerate}[itemsep=2pt]
+        \item 遍历进程表，筛选所有 RUNNABLE 状态的进程
+        \item 维护候选进程指针 \texttt{firstP}，记录创建时间最早的进程
+        \item 对每个就绪进程，比较其 \texttt{ctime} 与当前候选进程
+        \item 选择 \texttt{ctime} 值最小（创建最早）的进程执行
+        \item 该进程将持续运行直到完成或阻塞，不会被其他进程抢占
+    \end{enumerate}
+    
+    \textbf{算法优势：}
+    \begin{itemize}[itemsep=0pt]
+        \item \textbf{实现简单}：无需复杂的数据结构和调度决策逻辑
+        \item \textbf{公平性好}：所有进程按到达顺序依次执行，不会饥饿
+        \item \textbf{可预测性强}：进程等待时间可以根据队列长度估算
+    \end{itemize}
+    
+    \textbf{潜在问题：}
+    \begin{itemize}[itemsep=0pt]
+        \item \textbf{护航效应（Convoy Effect）}：一个长进程会阻塞后面所有短进程
+        \item \textbf{平均等待时间长}：短作业可能因为前面的长作业而等待很久
+        \item \textbf{不适合交互式系统}：无法优先响应用户交互请求
+    \end{itemize}
+    
+    FCFS 调度算法原理如图\ref{fig:FIFS}所示。
+    
+    \begin{figure}[H] 
+    	\centering
+    	\includegraphics[width=0.85\textwidth]{img/FIFS.jpeg}
+    	\caption{先来先服务调度原理}
+    	\label{fig:FIFS}
+    \end{figure}
+    
+    FCFS 调度算法的实现流程如图\ref{fig:fcfs_sched}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.85\textwidth]{img/fcfs_scheduler.drawio.pdf}
+        \caption{FCFS调度算法实现流程}
+        \label{fig:fcfs_sched}
+    \end{figure}
+    
+    算法实现如下图所示。
+    \begin{figure}[H] 
+    	\centering
+    	\includegraphics[width=0.5\textwidth]{img/FIFS_alg.png}
+    	\caption{先来先服务调度算法核心代码}
+    	\label{fig:fifs_code}
+    \end{figure}
+    
+    \subsubsection{轮转调度算法（Round Robin）}
+    
+    \textbf{算法原理：}
+    
+    轮转调度（Round Robin，简称RR）是一种\textbf{时间片轮转}的抢占式调度算法，被广泛应用于分时操作系统中。其核心思想是：将CPU时间划分为固定长度的时间片（time quantum），就绪队列中的进程按\textbf{循环顺序}依次获得一个时间片的执行机会。
+    
+    当一个进程的时间片用完后，即使它尚未完成，也会被迫让出CPU，回到就绪队列末尾等待下一轮调度。这种机制保证了所有进程都能\textit{公平地}获得CPU资源，不会出现某个进程长期占用CPU的情况。
+    
+    \textbf{实现策略：}
+    
+    本实现使用循环索引的方式模拟时间片轮转：
+    \begin{enumerate}[itemsep=2pt]
+        \item 使用静态变量 \texttt{lastIndex} 记录上次调度的进程在进程表中的位置
+        \item 从 \texttt{lastIndex + 1} 开始向后查找下一个就绪进程
+        \item 如果到达进程表末尾，则从头开始继续查找（循环特性）
+        \item 找到第一个 RUNNABLE 进程后立即返回，不再比较优先级或到达时间
+        \item 更新 \texttt{lastIndex}，为下次调度做准备
+    \end{enumerate}
+    
+    \textbf{时间片设置：}在xv6中，时间片由时钟中断频率决定，默认为10ms。进程在时钟中断时会被强制调用 \texttt{yield()} 让出CPU。
+    
+    \textbf{算法优势：}
+    \begin{itemize}[itemsep=0pt]
+        \item \textbf{公平性极佳}：所有进程获得相同的CPU时间配额
+        \item \textbf{响应时间好}：交互式任务不会等待太久
+        \item \textbf{无饥饿问题}：每个进程都保证在有限时间内得到调度
+        \item \textbf{适合分时系统}：特别适合多用户、多任务环境
+    \end{itemize}
+    
+    \textbf{潜在问题：}
+    \begin{itemize}[itemsep=0pt]
+        \item \textbf{上下文切换开销}：频繁切换进程会增加系统开销
+        \item \textbf{时间片难以选择}：过长影响响应时间，过短增加开销
+        \item \textbf{不区分优先级}：无法优先服务重要进程
+    \end{itemize}
+    
+    轮转调度算法原理如图\ref{fig:RR}所示。
+    
+    \begin{figure}[H] 
+    	\centering
+    	\includegraphics[width=0.7\textwidth]{img/RoundRobin.jpg}
+    	\caption{轮转调度原理}
+    	\label{fig:RR}
+    \end{figure}
+    
+    轮转调度算法的实现流程如图\ref{fig:rr_sched}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.7\textwidth]{img/rr_scheduler.drawio.pdf}
+        \caption{轮转调度算法实现流程}
+        \label{fig:rr_sched}
+    \end{figure}
+    
+    算法实现如下图所示。
+    \begin{figure}[H] 
+    	\centering
+    	\includegraphics[width=0.5\textwidth]{img/RR_alg.png}
+    	\caption{轮转调度算法核心代码}
+    	\label{fig:rr_code}
+    \end{figure}
+    
+    \subsubsection{静态多级队列调度算法（SML）}
+    
+    \textbf{算法原理：}
+    
+    静态多级队列（Static Multi-Level Queue）是一种\textbf{混合型调度算法}，它巧妙地结合了优先级调度和轮转调度的优点。该算法的核心思想是：根据进程的优先级将其\textit{永久性地}分配到不同的就绪队列中，高优先级队列总是优先得到调度，而队列内部则采用轮转策略保证公平性。
+    
+    "静态"体现在进程一旦被分配到某个队列，其所属队列关系就固定不变；"多级"则体现在系统维护多个不同优先级的就绪队列。这种设计既保证了重要进程的响应速度，又避免了同等重要进程之间的不公平竞争。
+    
+    \textbf{队列划分策略：}
+    
+    本实现将进程按优先级划分为三个队列：
+    \begin{itemize}[itemsep=2pt]
+        \item \textbf{队列1（高优先级）}：priority 1-7 \quad （系统服务、实时任务）
+        \item \textbf{队列2（中优先级）}：priority 8-14 \quad （普通用户进程）
+        \item \textbf{队列3（低优先级）}：priority 15-20 \quad （后台批处理）
+    \end{itemize}
+    
+     静态多级队列调度算法原理如图\ref{fig:SML}所示。
+    
+    \begin{figure}[H] 
+    	\centering
+    	\includegraphics[width=0.7\textwidth]{img/SML.png}
+    	\caption{静态多级队列调度原理}
+    	\label{fig:SML}
+    \end{figure}
+    
+    \textbf{实现策略：}
+    
+    调度器按照以下严格顺序选择进程：
+    \begin{enumerate}[itemsep=2pt]
+        \item \textbf{优先调度队列1}：使用轮转方式从高优先级队列中选择进程
+        \item 如果队列1为空，则调度队列2：同样使用轮转策略
+        \item 如果队列2也为空，才调度队列3：继续使用轮转策略
+        \item 每个队列维护独立的 \texttt{lastIdx} 索引，记录上次调度位置
+        \item 当高优先级队列中有新进程就绪时，立即抢占低优先级队列的CPU
+    \end{enumerate}
+    
+    \textbf{算法优势：}
+    \begin{itemize}[itemsep=0pt]
+        \item \textbf{兼顾效率与公平}：高优先级进程快速响应，同级进程公平竞争
+        \item \textbf{调度开销较低}：只需遍历当前优先级队列，不必扫描全部进程
+        \item \textbf{易于实现}：逻辑清晰，代码结构简单
+        \item \textbf{灵活可扩展}：可根据需要增加或减少队列数量
+    \end{itemize}
+    
+    \textbf{潜在问题：}
+    \begin{itemize}[itemsep=0pt]
+        \item \textbf{低优先级饥饿}：如果高优先级队列持续有进程，低优先级进程可能长期得不到调度
+        \item \textbf{队列边界敏感}：优先级7和8的进程可能表现差异很大
+        \item \textbf{缺乏动态调整}：无法根据进程行为自动提升或降低优先级
+    \end{itemize}
+    
+    \textbf{改进空间：}可以引入\textit{老化机制}（aging），当低优先级进程等待时间过长时，临时提升其优先级，避免饥饿问题。
+    
+    SML 调度算法的实现流程如图\ref{fig:sml_sched}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=1.0\textwidth]{img/sml_scheduler.drawio.pdf}
+        \caption{静态多级队列调度算法实现流程}
+        \label{fig:sml_sched}
+    \end{figure}
+    
+    算法实现如下图所示。
+    \begin{figure}[H] 
+    	\centering
+    	\includegraphics[width=0.5\textwidth]{img/SML_alg1.png}
+    	\label{fig:sml_code1}
+    \end{figure}
+    \begin{figure}[H] 
+    	\centering
+    	\includegraphics[width=0.5\textwidth]{img/SML_alg2.png}
+    	\caption{先来先服务调度算法核心代码}
+    	\label{fig:sml_code2}
+    \end{figure}
+    
+    \subsection{任务二：实现测试程序}
+    
+    \subsubsection{测试程序设计思路}
+    测试程序 \texttt{scheduler\_test.c} 创建两种类型的进程来模拟真实工作负载：
+
+     \textbf{(1) CPU 密集型}：执行大量计算操作，很少主动让出 CPU
+     
+     \begin{figure}[H] 
+     	\centering
+     	\includegraphics[width=0.5\textwidth]{img/cpu_task_create.png}
+     	\caption{测试程序设计流程}
+     	\label{cpu_task_create}
+     \end{figure}
+    
+     \textbf{(2) IO 密集型}：频繁调用 \texttt{sleep()} 模拟 IO 等待，经常处于阻塞状态
+
+	 \begin{figure}[H] 
+			\centering
+			\includegraphics[width=0.5\textwidth]{img/io_task_create.png}
+			\caption{测试程序设计流程}
+			\label{io_task_create}
+	\end{figure}
+    
+    测试程序的整体设计流程如图\ref{fig:test_program}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=1.0\textwidth]{img/scheduler_test.drawio.pdf}
+        \caption{测试程序设计流程}
+        \label{fig:test_program}
+    \end{figure}
+    
+    \subsubsection{wait2 系统调用}
+    为了收集子进程的运行统计信息，实现 \texttt{wait2()} 系统调用。该系统调用在原有 \texttt{wait()} 的基础上，额外返回子进程的就绪时间、运行时间和休眠时间三个统计指标。
+    
+    wait2 系统调用的实现流程如图\ref{fig:wait2}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=1.0\textwidth]{img/wait2.drawio.pdf}
+        \caption{wait2 系统调用实现流程}
+        \label{fig:wait2}
+    \end{figure}
+    
+    \subsection{测试与验证}
+    
+    编译并启动内核 \texttt{make qemu-nox}，运行 \texttt{scheduler\_test} 测试各调度算法。
+    
+    \textbf{测试配置：}
+    \begin{itemize}
+        \item 3 个 CPU 密集型进程（优先级：2, 5, 8）
+        \item 3 个 IO 密集型进程（优先级：10, 14, 18）
+    \end{itemize}
+    
+    \textbf{性能指标解释：}
+    \begin{itemize}
+        \item \textbf{就绪时间（Ready Time）}：进程在就绪队列中等待 CPU 的时间
+        \item \textbf{运行时间（Run Time）}：进程实际占用 CPU 执行的时间
+        \item \textbf{休眠时间（Sleep Time）}：进程因等待 IO 等资源而睡眠的时间
+        \item \textbf{周转时间（Turnaround Time）}：进程从创建到完成的总时间
+    \end{itemize}
+    
+   	\subsubsection{运行配置}
+   	\begin{figure}[H] 
+    	\centering
+    	\includegraphics[width=0.5\textwidth]{img/run_result1.png}
+    	\caption{调度算法对比测试完整输出}
+    	\label{fig:run_all}
+    \end{figure}
+    
+	 \subsubsection{各调度算法运行结果}
+	
+	\textbf{1. 优先级调度（Priority）运行结果}
+	
+	\begin{figure}[H] 
+		\centering
+		\includegraphics[width=0.5\textwidth]{img/run_result_priority.png}
+		\caption{优先级调度算法运行结果}
+		\label{fig:run_priority}
+	\end{figure}
+	
+	从优先级调度的运行结果可以看出：高优先级进程（CPU密集型，优先级2/5/8）的就绪时间明显较短，能够快速获得CPU资源。这验证了优先级调度算法的核心特性：\textit{重要任务优先执行}。
+	
+	\textbf{2. 先来先服务（FCFS）运行结果}
+	
+	\begin{figure}[H] 
+		\centering
+		\includegraphics[width=0.5\textwidth]{img/run_result_fifs.png}
+		\caption{FCFS调度算法运行结果}
+		\label{fig:run_fcfs}
+	\end{figure}
+	
+	FCFS调度的结果显示：进程按照创建时间顺序执行，后续进程的就绪时间显著增加，出现了典型的\textbf{护航效应}（Convoy Effect）。
+	
+	\textbf{3. 轮转调度（Round Robin）运行结果}
+	
+	\begin{figure}[H] 
+		\centering
+		\includegraphics[width=0.65\textwidth]{img/run_result_rr.png}
+		\caption{轮转调度算法运行结果}
+		\label{fig:run_rr}
+	\end{figure}
+	
+	轮转调度的结果展示了良好的\textbf{公平性}：所有进程的就绪时间分布较为均匀，没有任何进程被长期饿死。
+	
+	\textbf{4. 静态多级队列（SML）运行结果}
+	
+	\begin{figure}[H] 
+		\centering
+		\includegraphics[width=0.5\textwidth]{img/run_result_sml.png}
+		\caption{静态多级队列调度算法运行结果}
+		\label{fig:run_sml}
+	\end{figure}
+	
+	SML调度结果呈现出\textbf{分层特征}：高优先级队列的进程率先获得调度，同一队列内的进程表现出公平的轮转特性。
+	
+	\subsubsection{运行结果分析}
+	
+	\textbf{一、整体性能对比}
+	\subsubsection{性能可视化分析}
+	为了更直观地展示各调度算法的性能差异，我们使用Python脚本对测试数据进行了可视化分析，生成了以下四张对比图表。
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.8\textwidth]{img/scheduler_comparison_avg.png}
+		\caption{平均性能指标对比}
+		\label{fig:avg_comparison}
+	\end{figure}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.8\textwidth]{img/scheduler_process_details.png}
+		\caption{各进程执行详情}
+		\label{fig:process_details}
+	\end{figure}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.8\textwidth]{img/scheduler_turnaround_comparison.png}
+		\caption{周转时间对比}
+		\label{fig:turnaround_comp}
+	\end{figure}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.8\textwidth]{img/scheduler_radar_chart.png}
+		\caption{综合性能雷达图}
+		\label{fig:radar_chart}
+	\end{figure}
+	
+	\textbf{图表说明：}
+	\begin{itemize}[itemsep=2pt]
+		\item \textbf{图\ref{fig:avg_comparison}}：展示了四种算法在就绪时间、运行时间、休眠时间和周转时间四个维度的平均值对比，可以清晰看出SML在就绪时间上的优势，以及RR在周转时间上的最佳表现。
+		
+		\item \textbf{图\ref{fig:process_details}}：详细展示了每个进程在不同调度算法下的时间分布情况，CPU密集型进程（前3个）和IO密集型进程（后3个）的行为差异一目了然。
+		
+		\item \textbf{图\ref{fig:turnaround_comp}}：聚焦于周转时间这一关键指标，对比了6个进程在四种算法下的表现，可以观察到FCFS的护航效应和RR的公平性特征。
+		
+		\item \textbf{图\ref{fig:radar_chart}}：使用雷达图综合评估四种算法的多维性能，面积越大表示综合性能越好，可以直观看出各算法的优劣势分布。
+	\end{itemize}
+	
+	从四种调度算法的测试结果来看，各算法在平均性能指标上表现如下：
+	\begin{table}[H]
+		\centering
+		\caption{四种调度算法性能指标对比}
+		\begin{tabular}{lcccc}
+			\toprule
+			\textbf{调度算法} & \textbf{平均就绪时间} & \textbf{平均运行时间} & \textbf{平均休眠时间} & \textbf{平均周转时间} \\
+			\midrule
+			PRIORITY & 23 & 5 & 125 & 154 \\
+			FCFS & 24 & 6 & 125 & 155 \\
+			RR & 24 & 6 & 117 & \textbf{147} \\
+			SML & \textbf{20} & 6 & 124 & 150 \\
+			\bottomrule
+		\end{tabular}
+		\label{tab:performance_comparison}
+	\end{table}
+	\textbf{二、关键发现}
+	\textbf{1. 优先级调度（PRIORITY）}
+	\begin{itemize}[itemsep=2pt]
+		\item \textbf{优势}：高优先级进程（PID 4-6）的就绪时间极短（1$\rightarrow$12$\rightarrow$23），体现了优先级调度的核心优势——重要任务快速响应
+		\item \textbf{劣势}：低优先级IO进程的就绪时间显著增加（35-36 ticks），存在一定的不公平性
+		\item \textbf{适用场景}：实时系统、关键任务优先的场景
+	\end{itemize}
+	\textbf{2. 先来先服务（FCFS）}
+	\begin{itemize}[itemsep=2pt]
+		\item \textbf{特征}：进程严格按创建顺序执行，就绪时间呈线性递增（1$\rightarrow$12$\rightarrow$24$\rightarrow$36）
+		\item \textbf{护航效应明显}：CPU密集型进程先执行完毕后，IO密集型进程才开始，导致后续进程等待时间长
+		\item \textbf{周转时间最长}：平均155 ticks，在四种算法中表现最差
+		\item \textbf{适用场景}：简单批处理系统，对响应时间要求不高的场景
+	\end{itemize}
+	\textbf{3. 轮转调度（RR）}
+	\begin{itemize}[itemsep=2pt]
+		\item \textbf{公平性最佳}：所有进程的就绪时间分布均匀（23-25 ticks），没有明显的饥饿现象
+		\item \textbf{周转时间最短}：平均147 ticks，得益于CPU和IO进程交替执行，减少了等待时间
+		\item \textbf{休眠时间最少}：平均117 ticks，说明IO进程能够更及时地进入sleep状态
+		\item \textbf{适用场景}：交互式分时系统，多用户环境
+	\end{itemize}
+	\textbf{4. 静态多级队列（SML）}
+	\begin{itemize}[itemsep=2pt]
+		\item \textbf{就绪时间最优}：平均20 ticks，在四种算法中表现最好
+		\item \textbf{分层特征明显}：高优先级队列进程（PID 22-24）快速完成，中低优先级进程有序执行
+		\item \textbf{综合性能优秀}：周转时间150 ticks，仅次于RR，但在优先级响应上更胜一筹
+		\item \textbf{适用场景}：通用操作系统，需要兼顾效率与公平的场景
+	\end{itemize}
+	\textbf{三、进程类型差异分析}
+	\textbf{CPU密集型进程}（优先级2/5/8）：
+	\begin{itemize}[itemsep=1pt]
+		\item 运行时间稳定在11-13 ticks
+		\item 无休眠时间（sleep=0）
+		\item 周转时间主要由就绪时间和运行时间决定
+	\end{itemize}
+	\textbf{IO密集型进程}（优先级10/14/18）：
+	\begin{itemize}[itemsep=1pt]
+		\item 运行时间极短（0-1 ticks）
+		\item 休眠时间占主导（234-250 ticks）
+		\item 周转时间主要由休眠时间决定，调度算法影响相对较小
+	\end{itemize}
     
     \section{实验总结}
     
-    本次实验围绕进程优先级管理和信号量机制展开，通过实现三个具体的任务，我取得了以下技术成果和理论认识：
+    本次实验围绕进程调度算法展开，通过实现和比较四种调度算法，我取得了以下技术成果和理论认识：
     
-    \subsection{掌握了进程优先级的动态管理}
-    我成功地扩展了 xv6 的进程控制块（\texttt{struct proc}）以包含优先级字段，并实现了 \texttt{setpriority()} 系统调用和用户态 \texttt{nice} 命令。同时，通过实现 \texttt{getptable()} 系统调用和 \texttt{ps} 命令，我学会了如何将内核态的进程信息安全地（通过数据复制）暴露给用户态程序。
+    \subsection{掌握了调度框架的设计方法}
+    我成功设计并实现了一个可扩展的调度框架，通过函数指针实现调度算法的动态切换。这种设计模式使得添加新的调度算法变得简单，只需实现统一接口并注册到函数指针数组即可。
     
-    \subsection{掌握了信号量机制的内核级实现}
-    我成功地在内核中定义了信号量数据结构（\texttt{struct semaphore}），并实现了 \texttt{sem\_init()}、\texttt{sem\_destroy()}、\texttt{sem\_wait()}（P操作）和 \texttt{sem\_signal()}（V操作）四个核心系统调用。这标志着我掌握了这一经典同步机制的原理和实现细节。
+    \subsection{深入理解了不同调度算法的特点}
+    \begin{itemize}
+        \item \textbf{优先级调度}：高优先级进程能快速响应，但可能导致低优先级进程饥饿
+        \item \textbf{FCFS}：实现简单，但对短作业不友好，可能导致护航效应
+        \item \textbf{轮转调度}：公平性好，适合交互式系统，但上下文切换开销较大
+        \item \textbf{静态多级队列}：结合了优先级和轮转的优点，但队列边界的设定需要权衡
+    \end{itemize}
     
-    \subsection{解决了并发环境下的临界区保护}
-    在任务三中，我分析了多进程并发执行“读-修改-写”操作时产生的竞态条件。通过使用实现的信号量作为互斥锁（Mutex），我成功地保护了临界区，确保了操作的原子性，最终在 \texttt{sem\_test.c} 中验证了 500 次累加操作的正确性。
+    \subsection{掌握了进程统计信息收集方法}
+    通过实现 \texttt{update\_statistics()} 和 \texttt{wait2()} 系统调用，我学会了如何在内核中收集进程的运行时统计信息，这对于分析调度算法性能至关重要。
     
-    \subsection{深入理解了 Sleep 和 Wakeup 模型}
-    信号量的实现核心在于进程的阻塞和唤醒。我熟练运用了 xv6 提供的 \texttt{sleep(chan, lock)} 和 \texttt{wakeup(chan)} 原语。我深刻理解了 \texttt{sleep} 如何原子性地释放锁并进入睡眠，以及在被唤醒后如何重新获取锁。特别地，我掌握了使用 \texttt{while} 循环进行条件检查（而非 \texttt{if}），以防止虚假唤醒（Spurious Wakeup）带来的问题。
+    \subsection{理解了调度决策对系统性能的影响}
+    通过对比实验，我直观地观察到不同调度算法在响应时间、周转时间、公平性等方面的差异。这加深了我对"没有万能调度算法"这一理念的理解——选择合适的调度算法需要根据具体应用场景权衡。
     
     \section{实验心得}
     
-    这次实验是继实现 Shell 之后的又一次深入内核的探索，带给我的挑战和收获都非常大。
+    这次实验让我对操作系统调度有了更深刻的认识。
     
-    首先，我深刻体会到了理论与实践的结合。在课堂上学习信号量时，P/V操作似乎很清晰。但在实际实现时，特别是处理原子性和阻塞唤醒的细节时，才发现其复杂性。例如，\texttt{sem\_wait} 中的 \texttt{while} 循环和 \texttt{sleep} 的配合是整个实现的关键。我意识到，必须在持有锁的情况下检查条件，并且依赖 \texttt{sleep} 来原子性地释放锁和阻塞。任何一步顺序的错误都可能导致死锁或同步失败。这个过程让我对锁的使用和进程状态转换有了更深刻的认识。
+    首先，我深刻体会到了调度算法的选择对系统行为的深远影响。在实现和测试不同调度算法的过程中，我发现看似简单的调度决策实际上涉及到响应时间、吞吐量、公平性等多个相互制约的因素。例如，优先级调度虽然能让高优先级进程快速响应，但如果不加限制，低优先级进程可能永远得不到执行机会，这就是所谓的"饥饿"问题。
     
-    其次，任务三的 \texttt{sem\_test} 让我直观地看到了并发错误的发生以及同步机制的强大作用。当注释掉信号量保护后，最终结果几乎总是小于 500，这生动地展示了竞态条件的危害。而加入信号量后，结果稳定为 500，这种从混乱到有序的过程让我对操作系统的核心职责——管理并发——有了更深的认同感。
+    其次，设计可扩展的调度框架让我对软件工程中的抽象和模块化有了新的理解。通过使用函数指针数组，我实现了调度算法的即插即用，这种设计使得添加新算法变得非常简单。这个经验让我意识到，好的架构设计能够极大地降低后续开发和维护的成本。
     
-    最后，通过任务一实现 \texttt{ps} 和 \texttt{nice}，我熟练掌握了添加系统调用的完整流程，极大地提升了我在操作系统内核中进行开发和调试的能力。
+    最后，通过收集和分析进程运行统计数据，我掌握了用数据说话的调试和分析方法。不同调度算法产生的统计数据差异直观地反映了它们的特性，这比单纯阅读理论知识更加印象深刻。
     
     \newpage
     \section{附录：核心代码实现}

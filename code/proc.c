@@ -465,40 +465,50 @@ scheduler(void)
   }
 }
 */
+// scheduler - 调度器主循环函数
+// 功能：操作系统的核心调度循环，负责选择并切换到下一个要执行的进程
+// 说明：此函数永不返回，每个CPU核心启动后会一直在此循环中运行
 void
 scheduler(void)
 {
-  struct proc *p;
-  struct cpu *c = mycpu();
-  c->proc = 0;
+  struct proc *p;                    // 指向被选中进程的指针
+  struct cpu *c = mycpu();           // 获取当前CPU结构体
+  c->proc = 0;                       // 初始化：当前CPU没有运行任何进程
 
-  for(;;) {
-      // Enable interrupts on this processor.
+  for(;;) {                          // 无限循环：调度器永不停止
+      // 步骤1：启用中断
       sti();
 
-      // Loop over process table looking for process to run.
+      // 步骤2：获取进程表锁，准备查找就绪进程
       acquire(&ptable.lock);
-      //p = ready_process();
-
+      
+      // 步骤3：调用当前选定的调度算法选择下一个进程
       acquire(&schedulerlock);
-      p = (*ready_process)();
+      p = (*ready_process)();        // 调用调度算法函数（如priorityScheduler、fcfsScheduler等）
       release(&schedulerlock);
      
+      // 步骤4：如果找到了就绪进程，则进行上下文切换
       if (p != 0) {
-          // Switch to chosen process.  It is the process's job
-          // to release ptable.lock and then reacquire it
-          // before jumping back to us.
+          // 4.1 设置当前CPU正在运行的进程
           c->proc = p;
+          
+          // 4.2 切换到进程的页表（用户地址空间）
           switchuvm(p);
+          
+          // 4.3 将进程状态标记为RUNNING
           p->state = RUNNING;
 
+          // 4.4 执行上下文切换：保存调度器上下文，恢复进程上下
           swtch(&(c->scheduler), p->context);
+          
+          // 4.5 进程p切换回来后，恢复内核页表
           switchkvm();
 
-          // Process is done running for now.
-          // It should have changed its p->state before coming back.
+          // 4.6 清理：当前CPU不再运行任何进程
           c->proc = 0;
       }
+      
+      // 步骤5：释放进程表锁
       release(&ptable.lock);
   }
 }
@@ -933,17 +943,6 @@ setscheduler(int sid)
   }
 
   acquire(&schedulerlock);
-
-  ///////////////////////////////////////////////
-  // Init / remove scheduler policy in runtime //
-  ///////////////////////////////////////////////
-  // if (sid == n) {
-  //    -> init
-  // } else {
-  //    -> remove
-  // }
-  ///////////////////////////////////////////////
-
   ready_process = schedulerFunction[sid];
   schedSelected = sid;
   release(&schedulerlock);
@@ -1068,6 +1067,7 @@ struct proc *smlScheduler() {
   // 如果没有设置优先级的进程(priority为0)，使用默认轮转
   for(i = 0; i < NPROC; i++) {
     lastIdx[0] = (lastIdx[0] + 1) % NPROC;
+    //************************* */
     p = &ptable.proc[lastIdx[0]];
     if(p->state == RUNNABLE) {
       return p;

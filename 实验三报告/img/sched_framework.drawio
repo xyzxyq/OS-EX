@@ -1,0 +1,139 @@
+<mxfile host="app.diagrams.net" modified="2025-12-06T00:00:00.000Z" agent="Mozilla/5.0" version="21.0.0" type="device">
+  <diagram name="调度框架设计" id="sched_framework">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        
+        <!-- 标题 -->
+        <mxCell id="title" value="调度框架设计流程图" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#003366;" vertex="1" parent="1">
+          <mxGeometry x="250" y="20" width="300" height="40" as="geometry"/>
+        </mxCell>
+        
+        <!-- 开始节点 -->
+        <mxCell id="start" value="系统初始化" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="335" y="80" width="130" height="50" as="geometry"/>
+        </mxCell>
+        
+        <!-- 箭头1 -->
+        <mxCell id="arrow1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#003366;" edge="1" parent="1" source="start" target="ds1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <!-- 数据结构1: schedulerName数组 -->
+        <mxCell id="ds1" value="&lt;b&gt;schedulerName[] 数组&lt;/b&gt;&lt;br&gt;[0] &quot;DEFAULT&quot;&lt;br&gt;[1] &quot;PRIORITY&quot;&lt;br&gt;[2] &quot;FCFS&quot;&lt;br&gt;[3] &quot;RR&quot;&lt;br&gt;[4] &quot;SML&quot;" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="295" y="160" width="210" height="100" as="geometry"/>
+        </mxCell>
+        
+        <!-- 箭头2 -->
+        <mxCell id="arrow2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#003366;" edge="1" parent="1" source="ds1" target="ds2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <!-- 数据结构2: schedulerFunction数组 -->
+        <mxCell id="ds2" value="&lt;b&gt;schedulerFunction[] 函数指针数组&lt;/b&gt;&lt;br&gt;[0] defaultScheduler()&lt;br&gt;[1] priorityScheduler()&lt;br&gt;[2] fcfsScheduler()&lt;br&gt;[3] rrScheduler()&lt;br&gt;[4] smlScheduler()" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="275" y="290" width="250" height="110" as="geometry"/>
+        </mxCell>
+        
+        <!-- 箭头3 -->
+        <mxCell id="arrow3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#003366;" edge="1" parent="1" source="ds2" target="var1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <!-- 变量: ready_process -->
+        <mxCell id="var1" value="&lt;b&gt;ready_process&lt;/b&gt;&lt;br&gt;函数指针&lt;br&gt;(指向当前调度函数)" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="305" y="430" width="190" height="70" as="geometry"/>
+        </mxCell>
+        
+        <!-- 箭头4 -->
+        <mxCell id="arrow4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#003366;" edge="1" parent="1" source="var1" target="syscall">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <!-- 系统调用: setscheduler -->
+        <mxCell id="syscall" value="&lt;b&gt;setscheduler(sid)&lt;/b&gt;&lt;br&gt;系统调用" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="320" y="530" width="160" height="50" as="geometry"/>
+        </mxCell>
+        
+        <!-- 箭头5 -->
+        <mxCell id="arrow5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#003366;" edge="1" parent="1" source="syscall" target="decision1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <!-- 判断: sid是否有效 -->
+        <mxCell id="decision1" value="sid 有效?&lt;br&gt;(0 ≤ sid ≤ 4)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="330" y="610" width="140" height="80" as="geometry"/>
+        </mxCell>
+        
+        <!-- 箭头6: 否 -->
+        <mxCell id="arrow6" value="否" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#b85450;fontStyle=1;" edge="1" parent="1" source="decision1" target="ret_fail">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <!-- 返回-1 -->
+        <mxCell id="ret_fail" value="返回 -1" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="625" width="80" height="50" as="geometry"/>
+        </mxCell>
+        
+        <!-- 箭头7: 是 -->
+        <mxCell id="arrow7" value="是" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#82b366;fontStyle=1;" edge="1" parent="1" source="decision1" target="update">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <!-- 更新操作 -->
+        <mxCell id="update" value="&lt;b&gt;更新调度函数指针&lt;/b&gt;&lt;br&gt;ready_process = schedulerFunction[sid]&lt;br&gt;schedSelected = sid" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="280" y="720" width="240" height="60" as="geometry"/>
+        </mxCell>
+        
+        <!-- 箭头8 -->
+        <mxCell id="arrow8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=2;strokeColor=#003366;" edge="1" parent="1" source="update" target="ret_success">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        
+        <!-- 返回成功 -->
+        <mxCell id="ret_success" value="返回 sid" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="355" y="810" width="90" height="50" as="geometry"/>
+        </mxCell>
+        
+        <!-- 图例 -->
+        <mxCell id="legend_box" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#666666;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="620" y="160" width="170" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend_title" value="图例" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="680" y="165" width="50" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend1" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="630" y="190" width="30" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend1_text" value="开始/结束" style="text;html=1;strokeColor=none;fillColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="670" y="190" width="80" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend2" value="" style="shape=parallelogram;perimeter=parallelogramPerimeter;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="630" y="220" width="30" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend2_text" value="数据结构" style="text;html=1;strokeColor=none;fillColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="670" y="220" width="80" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend3" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="630" y="250" width="30" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend3_text" value="操作/处理" style="text;html=1;strokeColor=none;fillColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="670" y="250" width="80" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend4" value="" style="rhombus;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="630" y="280" width="30" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend4_text" value="判断/条件" style="text;html=1;strokeColor=none;fillColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="670" y="280" width="80" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend5" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="630" y="310" width="30" height="20" as="geometry"/>
+        </mxCell>
+        <mxCell id="legend5_text" value="错误返回" style="text;html=1;strokeColor=none;fillColor=none;align=left;" vertex="1" parent="1">
+          <mxGeometry x="670" y="310" width="80" height="20" as="geometry"/>
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

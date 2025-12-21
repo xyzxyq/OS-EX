@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.7.3)  6 DEC 2025 00:05
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.7.3)  19 DEC 2025 11:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1222,7 +1222,7 @@ LaTeX Font Info:    No file TUppl.fd. on input line 145.
 LaTeX Font Warning: Font shape `TU/ppl/m/n' undefined
 (Font)              using `TU/lmr/m/n' instead on input line 145.
 
-No file review.aux.
+(./review.aux)
 \openout1 = `review.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 145.
@@ -1245,6 +1245,7 @@ LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 145.
 LaTeX Font Info:    ... okay on input line 145.
 LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 145.
 LaTeX Font Info:    ... okay on input line 145.
+
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
 *geometry* verbose mode - [ preamble ] result:
@@ -1254,15 +1255,15 @@ LaTeX Font Info:    ... okay on input line 145.
 * layoutoffset:(h,v)=(0.0pt,0.0pt)
 * modes: 
 * h-part:(L,W,R)=(71.13188pt, 455.24411pt, 71.13188pt)
-* v-part:(T,H,B)=(79.6678pt, 694.24716pt, 71.13188pt)
+* v-part:(T,H,B)=(85.35826pt, 688.5567pt, 71.13188pt)
 * \paperwidth=597.50787pt
 * \paperheight=845.04684pt
 * \textwidth=455.24411pt
-* \textheight=694.24716pt
+* \textheight=688.5567pt
 * \oddsidemargin=-1.1381pt
 * \evensidemargin=-1.1381pt
-* \topmargin=-29.60219pt
-* \headheight=12.0pt
+* \topmargin=-36.91173pt
+* \headheight=25.0pt
 * \headsep=25.0pt
 * \topskip=12.0pt
 * \footskip=30.0pt
@@ -1281,11 +1282,9 @@ LaTeX Font Info:    ... okay on input line 145.
 
 \c@lstlisting=\count389
 Package hyperref Info: Link coloring ON on input line 145.
+(./review.out) (./review.out)
 \@outlinefile=\write4
 \openout4 = `review.out'.
-
-
-Package hyperref Warning: Rerun to get /PageLabels entry.
 
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
@@ -1303,8 +1302,8 @@ Package caption Info: End \AtBeginDocument code.
 * \textheight=702.78308pt
 * \oddsidemargin=-15.36449pt
 * \evensidemargin=-15.36449pt
-* \topmargin=-23.91173pt
-* \headheight=12.0pt
+* \topmargin=-36.91173pt
+* \headheight=25.0pt
 * \headsep=25.0pt
 * \topskip=12.0pt
 * \footskip=30.0pt
@@ -1323,6 +1322,7 @@ Package caption Info: End \AtBeginDocument code.
 
 File: img/logo.png Graphic file (type bmp)
 <img/logo.png>
+
 
 LaTeX Font Warning: Font shape `TU/ppl/b/n' undefined
 (Font)              using `TU/ppl/m/n' instead on input line 163.
@@ -1390,23 +1390,19 @@ File: ot1zplm.fd 2002/09/08 Fontinst v1.914 font definitions for OT1/zplm.
 [1
 
 
-]
-No file review.toc.
+] (./review.toc
+
+[1
+
+])
 \tf@toc=\write5
 \openout5 = `review.toc'.
 
 
 
+[2]
 
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[1
-
-]
+[3]
 
 Package fontspec Info: 
 (fontspec)             Could not resolve font "FangSong/BI" (it probably
@@ -1435,142 +1431,150 @@ Package fontspec Info:
 
 
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[2]
-LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <12> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 235.
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[3]
-File: img/1.png Graphic file (type bmp)
-<img/1.png>
-
-Overfull \hbox (5.63107pt too wide) in paragraph at lines 277--278
-[]\TU/SimSun(0)/m/n/12 在 \TU/ppl/b/n/12 xv6 \TU/SimSun(0)/m/n/12 中 添 加 一 个 新 的 
-系 统 调 用 通 常 需 要 修 改 以 下 几 个 文 件：| \TU/lmtt/m/n/12 syscall.h\TU/ppl/b/n/12 , \TU
-/lmtt/m/n/12 syscall.c\TU/ppl/b/n/12 ,
- []
-
-
-LaTeX Warning: Reference `fig:task1_overall' on page 4 undefined on input line 
-283.
-
-
-Overfull \hbox (22.00557pt too wide) in paragraph at lines 283--284
-[]\TU/SimSun(0)/m/n/12 任 务 一 的 目 标 是 实 现 进 程 优 先 级 的 查 看 \TU/ppl/b/n/12 (\TU/lm
-tt/m/n/12 ps \TU/ppl/b/n/12 / \TU/lmtt/m/n/12 getptable\TU/ppl/b/n/12 ) \TU/Sim
-Sun(0)/m/n/12 和 修 改 \TU/ppl/b/n/12 (\TU/lmtt/m/n/12 nice \TU/ppl/b/n/12 / \TU/l
-mtt/m/n/12 setpriority\TU/ppl/b/n/12 )\TU/SimSun(0)/m/n/12 。|
- []
-
-File: img/任务一总体流程.drawio.pdf Graphic file (type pdf)
-<use img/任务一总体流程.drawio.pdf>
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
 [4]
+File: img/sched_framework.drawio.pdf Graphic file (type pdf)
+<use img/sched_framework.drawio.pdf>
 
-LaTeX Warning: Reference `fig:setpriority_flow' on page 5 undefined on input li
-ne 296.
-
-File: img/1_内核态sys_setpriority系统调用实现流程图.drawio.pdf Graphic file (type pdf)
-<use img/1_内核态sys_setpriority系统调用实现流程图.drawio.pdf>
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
 
 [5]
 
-LaTeX Warning: Reference `fig:getptable_flow' on page 6 undefined on input line
- 309.
-
-File: img/1_内核态_sys_getptable系统调用实现流程图.drawio.pdf Graphic file (type pdf)
-<use img/1_内核态_sys_getptable系统调用实现流程图.drawio.pdf>
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
 [6]
+File: img/scheduler1.png Graphic file (type bmp)
+<img/scheduler1.png>
+File: img/scheduler2.png Graphic file (type bmp)
+<img/scheduler2.png>
+File: img/scheduler_main.drawio.pdf Graphic file (type pdf)
+<use img/scheduler_main.drawio.pdf>
 
-LaTeX Warning: Reference `fig:nice_flow' on page 7 undefined on input line 322.
-
-
-File: img/2_用户态程序nice实现流程图.drawio.pdf Graphic file (type pdf)
-<use img/2_用户态程序nice实现流程图.drawio.pdf>
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
 
 [7]
 
-LaTeX Warning: Reference `fig:ps_flow' on page 8 undefined on input line 335.
-
-File: img/2_用户态程序ps实现流程图.drawio.pdf Graphic file (type pdf)
-<use img/2_用户态程序ps实现流程图.drawio.pdf>
-File: img/ps.png Graphic file (type bmp)
-<img/ps.png>
-File: img/nice.png Graphic file (type bmp)
-<img/nice.png>
+LaTeX Font Warning: Font shape `TU/ppl/m/it' undefined
+(Font)              using `TU/ppl/m/n' instead on input line 321.
 
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
 
 [8]
+File: img/priority_scheduler.drawio.pdf Graphic file (type pdf)
+<use img/priority_scheduler.drawio.pdf>
 
-LaTeX Warning: Reference `fig:task2_overall' on page 9 undefined on input line 
-379.
-
-File: img/任务二总体流程.drawio.pdf Graphic file (type pdf)
-<use img/任务二总体流程.drawio.pdf>
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
 
 [9]
+File: img/priority_alg.png Graphic file (type bmp)
+<img/priority_alg.png>
+
+
+[10]
+Overfull \hbox (2.91693pt too wide) in paragraph at lines 378--379
+[]\TU/SimSun(0)/m/n/12 使 用 \TU/lmtt/m/n/12 for \TU/SimSun(0)/m/n/12 循 环 遍 历 整 个
+ 进 程 表，|  从 \TU/lmtt/m/n/12 ptable.proc \TU/SimSun(0)/m/n/12 开 始 到 \TU/lmtt/m/n
+/12 &ptable.proc[NPROC]
+ []
+
+
+
+[11]
+File: img/FIFS.jpeg Graphic file (type bmp)
+<img/FIFS.jpeg>
+File: img/fcfs_scheduler.drawio.pdf Graphic file (type pdf)
+<use img/fcfs_scheduler.drawio.pdf>
+
+
+[12]
+File: img/FIFS_alg.png Graphic file (type bmp)
+<img/FIFS_alg.png>
+
+
+[13]
+
+[14]
+File: img/RoundRobin.jpg Graphic file (type bmp)
+<img/RoundRobin.jpg>
+File: img/rr_scheduler.drawio.pdf Graphic file (type pdf)
+<use img/rr_scheduler.drawio.pdf>
+
+
+[15]
+File: img/RR_alg.png Graphic file (type bmp)
+<img/RR_alg.png>
+
+
+[16]
+File: img/SML.png Graphic file (type bmp)
+<img/SML.png>
+
+
+[17]
+File: img/sml_scheduler.drawio.pdf Graphic file (type pdf)
+<use img/sml_scheduler.drawio.pdf>
+File: img/SML_alg1.png Graphic file (type bmp)
+<img/SML_alg1.png>
+File: img/SML_alg2.png Graphic file (type bmp)
+<img/SML_alg2.png>
+
+
+[18]
+File: img/cpu_task_create.png Graphic file (type bmp)
+<img/cpu_task_create.png>
+
+
+[19]
+File: img/io_task_create.png Graphic file (type bmp)
+<img/io_task_create.png>
+File: img/scheduler_test.drawio.pdf Graphic file (type pdf)
+<use img/scheduler_test.drawio.pdf>
+
+
+[20]
+File: img/wait2.drawio.pdf Graphic file (type pdf)
+<use img/wait2.drawio.pdf>
+
+
+[21]
+
+[22]
+File: img/run_result1.png Graphic file (type bmp)
+<img/run_result1.png>
+File: img/run_result_priority.png Graphic file (type bmp)
+<img/run_result_priority.png>
+File: img/run_result_fifs.png Graphic file (type bmp)
+<img/run_result_fifs.png>
+
+
+[23]
+File: img/run_result_rr.png Graphic file (type bmp)
+<img/run_result_rr.png>
+
+
+[24]
+File: img/run_result_sml.png Graphic file (type bmp)
+<img/run_result_sml.png>
+
+
+[25]
+File: img/scheduler_comparison_avg.png Graphic file (type bmp)
+<img/scheduler_comparison_avg.png>
+
+
+[26]
+File: img/scheduler_process_details.png Graphic file (type bmp)
+<img/scheduler_process_details.png>
+File: img/scheduler_turnaround_comparison.png Graphic file (type bmp)
+<img/scheduler_turnaround_comparison.png>
+
+
+[27]
+File: img/scheduler_radar_chart.png Graphic file (type bmp)
+<img/scheduler_radar_chart.png>
+
+
+[28]
+
+[29]
+
+[30]
+
+[31]
 \g__tcobox_out_iow=\write6
 \openout6 = `review.listing'.
 
@@ -1608,416 +1612,90 @@ File: lstmisc.sty 2024/09/23 1.10c (Carsten Heinz)
 ) (./review.listing
 
 LaTeX Font Warning: Font shape `TU/FangSong(0)/m/it' undefined
-(Font)              using `TU/FangSong(0)/m/n' instead on input line 2.
+(Font)              using `TU/FangSong(0)/m/n' instead on input line 1.
 
 LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 5.
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 8.
 )
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[10]
 \openout6 = `review.listing'.
 
  (./review.listing)
-
-LaTeX Warning: Reference `fig:sem_init_flow' on page 11 undefined on input line
- 428.
-
-File: img/1_sem_init流程图.drawio.pdf Graphic file (type pdf)
-<use img/1_sem_init流程图.drawio.pdf>
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[11]
-
-LaTeX Warning: Reference `fig:sem_destroy_flow' on page 12 undefined on input l
-ine 437.
-
-File: img/2_sem_destroy流程图.drawio.pdf Graphic file (type pdf)
-<use img/2_sem_destroy流程图.drawio.pdf>
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[12]
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[13]
-
-LaTeX Warning: Reference `fig:sem_wait_flow' on page 14 undefined on input line
- 475.
-
-File: img/1_sem_wait流程图.drawio.pdf Graphic file (type pdf)
-<use img/1_sem_wait流程图.drawio.pdf>
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[14]
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[15]
-
-LaTeX Warning: Reference `fig:sem_signal_flow' on page 16 undefined on input li
-ne 508.
-
-File: img/2_sem_signal流程图.drawio.pdf Graphic file (type pdf)
-<use img/2_sem_signal流程图.drawio.pdf>
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[16]
-
-LaTeX Warning: Reference `fig:task3_overall' on page 17 undefined on input line
- 523.
-
-File: img/任务三总体流程.drawio.pdf Graphic file (type pdf)
-<use img/任务三总体流程.drawio.pdf>
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[17]
-
-LaTeX Warning: Reference `fig:sem_test_flow' on page 18 undefined on input line
- 541.
-
-File: img/sem_test流程图.drawio.pdf Graphic file (type pdf)
-<use img/sem_test流程图.drawio.pdf>
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[18]
-File: img/test0_sem_test.png Graphic file (type bmp)
-<img/test0_sem_test.png>
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[19]
-File: img/pass1.png Graphic file (type bmp)
-<img/pass1.png>
-File: img/pass2.png Graphic file (type bmp)
-<img/pass2.png>
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[20]
-Overfull \hbox (17.32512pt too wide) in paragraph at lines 590--591
-[]\TU/SimSun(0)/m/n/12 我 成 功 地 在 内 核 中 定 义 了 信 号 量 数 据 结 构  |（\TU/lmtt/m/n/12 s
-truct semaphore\TU/SimSun(0)/m/n/12 ） ，|  并 实 现 了 \TU/lmtt/m/n/12 sem_init()\TU
-/SimSun(0)/m/n/12 、|
- []
-
-
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[21]
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[22]
-\openout6 = `review.listing'.
-
- (./review.listing)
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[23]
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[24]
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[25]
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[26]
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[27]
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[28]
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[29]
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[30]
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[31]
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
 
 [32]
 \openout6 = `review.listing'.
 
  (./review.listing)
+
+[33]
 \openout6 = `review.listing'.
 
  (./review.listing)
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[33]
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
 
 [34]
 \openout6 = `review.listing'.
 
  (./review.listing)
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
 [35]
 \openout6 = `review.listing'.
 
  (./review.listing)
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
 [36]
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
-[37]
 \openout6 = `review.listing'.
 
  (./review.listing)
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
+[37]
 
 [38]
+\openout6 = `review.listing'.
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
+ (./review.listing)
 
 [39]
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
-
 [40]
+\openout6 = `review.listing'.
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
+ (./review.listing)
 
 [41]
+\openout6 = `review.listing'.
 
+ (./review.listing)
+\openout6 = `review.listing'.
 
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 24.64995pt, for example:
-(fancyhdr)                \setlength{\headheight}{24.64995pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-12.64995pt}.
+ (./review.listing)
 
-[42] (./review.aux)
+[42]
+
+[43]
+\openout6 = `review.listing'.
+
+ (./review.listing)
+
+[44]
+\openout6 = `review.listing'.
+
+ (./review.listing)
+
+[45]
+
+[46]
+\openout6 = `review.listing'.
+
+ (./review.listing)
+
+[47]
+
+[48]
+
+[49]
+
+[50]
+
+[51] (./review.aux)
  ***********
 LaTeX2e <2025-06-01> patch level 1
 L3 programming layer <2022/08/05>
@@ -2026,28 +1704,16 @@ L3 programming layer <2022/08/05>
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package rerunfilecheck Warning: File `review.out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `review.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  BC555C38582143FA299417B7A3768C9E;9767.
+Package rerunfilecheck Info: File `review.out' has not changed.
+(rerunfilecheck)             Checksum: E33CEA563239F871FA683A8A16AAF4FB;8474.
  ) 
 Here is how much of TeX's memory you used:
- 35451 strings out of 468529
- 796609 string characters out of 5451400
- 2131967 words of memory out of 5000000
- 63188 multiletter control sequences out of 15000+600000
+ 35563 strings out of 468529
+ 798820 string characters out of 5451400
+ 2128131 words of memory out of 5000000
+ 63287 multiletter control sequences out of 15000+600000
  641101 words of font info for 122 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 93i,13n,111p,1205b,1758s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 93i,13n,111p,1205b,1757s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on review.pdf (43 pages).
+Output written on review.pdf (52 pages).
