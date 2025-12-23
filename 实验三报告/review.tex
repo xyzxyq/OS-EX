@@ -22,7 +22,7 @@
 \usepackage{mathpazo}       % 使用 Palatino 字体
 \usepackage{caption}        % 图表标题美化
 \usepackage{titletoc}       % 目录美化
-
+\usepackage{multirow}
 % ==========================================
 %   2. 视觉风格定义
 % ==========================================
@@ -256,6 +256,16 @@
     
     \section{实验流程}
     
+    实验三完成思路流程图如下：
+    
+        
+    \begin{figure}[H] 
+	        \centering
+	        \includegraphics[width=1.0\textwidth]{img/experiment_workflow.drawio.pdf}
+	        \caption{实验完成流程}
+	        \label{fig:scheduler_selection}
+   	\end{figure}
+    
     \subsection{实验准备：调度框架设计}
     本次实验需要设计一个可扩展的调度框架，支持在运行时动态切换调度算法。同时需要扩展进程控制块以支持运行时间统计。
     
@@ -274,12 +284,12 @@
     
     调度框架的设计思路如图\ref{fig:sched_framework}所示。
     
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.7\textwidth]{img/sched_framework.drawio.pdf}
-        \caption{调度框架设计流程}
-        \label{fig:sched_framework}
-    \end{figure}
+%    \begin{figure}[H] 
+%        \centering
+%        \includegraphics[width=0.7\textwidth]{img/sched_framework.drawio.pdf}
+%        \caption{调度框架设计流程}
+%        \label{fig:sched_framework}
+%    \end{figure}
     
     \subsubsection{就绪队列实现}
     
@@ -303,13 +313,67 @@
         \item 堆的性质：父节点优先级 $\leq$ 子节点优先级（数值越小优先级越高）
     \end{itemize}
     
-    \textbf{核心函数：}
-    \begin{itemize}
-        \item \texttt{enqueue(q, p)}：将进程 p 添加到队列 q 的尾部，时间复杂度 O(1)
-        \item \texttt{dequeue(q)}：从队列 q 头部取出进程，时间复杂度 O(1)
-        \item \texttt{addToReadyQueues(p)}：根据当前调度器类型，将进程添加到对应队列
-    \end{itemize}
+    \textbf{核心实现：}
     
+    \begin{codeblock}{enqueue}
+    // 入队：将进程添加到队列尾部
+        void enqueue(struct procqueue *q, struct proc *p) {
+        p->next = 0;
+        if (q->tail == 0) {
+            q->head = q->tail = p;
+        } else {
+            q->tail->next = p;
+            q->tail = p;
+        }
+        }
+    \end{codeblock}
+    
+    \begin{codeblock}{dequeue}
+// 出队：从队列头部取出进程
+struct proc *dequeue(struct procqueue *q) {
+    struct proc *p = q->head;
+    if (p == 0)
+    return 0;
+    q->head = p->next;
+    if (q->head == 0) {
+    q->tail = 0;
+    }
+    p->next = 0;
+    return p;
+}
+    \end{codeblock}
+    
+        \begin{codeblock}{addToReadyQueues}
+        
+        // 统一入队函数：进程变为 RUNNABLE 时调用
+        // 根据当前激活的调度器，只添加到对应的队列
+        extern int schedSelected; // 来自 sdh.h，表示当前调度器类型
+        
+        void addToReadyQueues(struct proc *p) { // 将进程p加入到就绪队列
+        switch (schedSelected) {
+            case 0: // DEFAULT - 使用 fcfsQueue
+            case 2: // FCFS
+            case 3: // RR (CFS)
+            enqueue(\&fcfsQueue, p);
+            break;
+            case 1: // PRIORITY - 使用最小堆
+            heapInsert(p);
+            break;
+            case 4: // SML
+            if (p->priority >= 1 \&\& p->priority <= 7) {
+            enqueue(\&smlQueues[0], p);
+            } else if (p->priority >= 8 \&\& p->priority <= 14) {
+            enqueue(\&smlQueues[1], p);
+            } else {
+            enqueue(\&smlQueues[2], p);
+            }
+            break;
+            default:
+            enqueue(\&fcfsQueue, p);
+            break;
+        }
+        }
+    \end{codeblock}
     \textbf{调度器选择机制：}
     
     调度器选择通过编译时宏定义和运行时函数指针两种机制实现：
@@ -320,12 +384,12 @@
     
     调度器选择机制流程如图\ref{fig:scheduler_selection}所示。
     
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.9\textwidth]{img/scheduler_selection_flow.png}
-        \caption{调度器选择机制流程}
-        \label{fig:scheduler_selection}
-    \end{figure}
+%    \begin{figure}[H] 
+%        \centering
+%        \includegraphics[width=0.9\textwidth]{img/scheduler_selection_flow.png}
+%        \caption{调度器选择机制流程}
+%        \label{fig:scheduler_selection}
+%    \end{figure}
     
     \subsubsection{进程统计信息收集}
     实现 \texttt{update\_statistics()} 函数，在每个时钟中断时被调用，根据当前进程状态更新对应的时间计数器。该函数遍历进程表，根据进程的 SLEEPING、RUNNABLE、RUNNING 状态分别递增 \texttt{stime}、\texttt{retime}、\texttt{rutime} 计数器。
@@ -335,25 +399,62 @@
     \subsubsection{调度器主循环}
     修改 \texttt{scheduler()} 函数，使用函数指针 \texttt{ready\_process} 调用当前选择的调度算法，实现调度策略的动态切换。
     
-    调度器函数如图所示：
+   \textbf{ 调度器函数：}
     
-    \begin{figure}[H] 
-    	\centering
-    	\includegraphics[width=0.6\textwidth]{img/scheduler1.png}
-    	\label{fig:scheduler1}
-    \end{figure}
-    \begin{figure}[H] 
-    	\centering
-    	\includegraphics[width=0.6\textwidth]{img/scheduler2.png}
-    	\caption{调度器函数}
-    	\label{fig:scheduler2}
-    \end{figure}
+    \begin{codeblock}{scheduler}
+    // scheduler - 调度器主循环函数
+    // 功能：操作系统的核心调度循环，负责选择并切换到下一个要执行的进程
+    // 说明：此函数永不返回，每个CPU核心启动后会一直在此循环中运行
+    void scheduler(void) {
+    struct proc *p;          // 指向被选中进程的指针
+    struct cpu *c = mycpu(); // 获取当前CPU结构体
+    c->proc = 0;             // 初始化：当前CPU没有运行任何进程
+    
+    for (;;) { // 无限循环：调度器永不停止
+        // 步骤1：启用中断
+        sti(); // SeT Interrupt flag（设置中断标志）主要目的：
+        // 若无就绪进程，CPU会空转，设置中断标志后时钟中断可以触发，从而调用wakeup()。否则会死锁
+        
+        // 步骤2：获取进程表锁，准备查找就绪进程
+        acquire(\&ptable.lock);
+        
+        // 步骤3：调用当前选定的调度算法选择下一个进程
+        acquire(\&schedulerlock);
+        p = (*ready_process)(); // 调用调度算法函数（如priorityScheduler、fcfsScheduler等）
+        release(\&schedulerlock);
+        
+        // 步骤4：如果找到了就绪进程，则进行上下文切换
+        if (p != 0) {
+        // 4.1 设置当前CPU正在运行的进程
+        c->proc = p;
+        
+        // 4.2 切换到进程的页表（用户地址空间）
+        switchuvm(p);
+        
+        // 4.3 将进程状态标记为RUNNING
+        p->state = RUNNING;
+        
+        // 4.4 执行上下文切换：保存调度器上下文，恢复进程上下文
+        swtch(\&(c->scheduler), p->context);
+        
+        // 4.5 进程p切换回来后，恢复内核页表
+        switchkvm();
+        
+        // 4.6 清理：当前CPU不再运行任何进程
+        c->proc = 0;
+        }
+        
+        // 步骤5：释放进程表锁
+        release(\&ptable.lock);
+    }
+    }
+    \end{codeblock}
     
     调度器主循环流程如图\ref{fig:scheduler_main}所示。
     
     \begin{figure}[H] 
         \centering
-        \includegraphics[width=0.7\textwidth]{img/scheduler_main.drawio.pdf}
+        \includegraphics[width=0.8\textwidth]{img/scheduler_main.drawio.pdf}
         \caption{调度器主循环流程}
         \label{fig:scheduler_main}
     \end{figure}
@@ -400,86 +501,42 @@
     
     优先级调度算法的实现流程如图\ref{fig:priority_sched}所示。
     
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.7\textwidth]{img/priority_scheduler.drawio.pdf}
-        \caption{优先级调度算法实现流程}
-        \label{fig:priority_sched}
-    \end{figure}
+%    \begin{figure}[H] 
+%        \centering
+%        \includegraphics[width=0.7\textwidth]{img/priority_scheduler.drawio.pdf}
+%        \caption{优先级调度算法实现流程}
+%        \label{fig:priority_sched}
+%    \end{figure}
     
     \textbf{核心代码实现：}
     
-    优先级调度算法的核心代码实现如图\ref{fig:priority_code}所示。
-    
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=0.5\textwidth]{img/priority_alg.png}
-        \caption{优先级调度算法核心代码}
-        \label{fig:priority_code}
-    \end{figure}
-    
-    \textbf{代码解析：}
-    
-    \begin{enumerate}[itemsep=3pt]
-        \item \textbf{变量初始化}（第1-2行）：
-        \begin{itemize}[itemsep=0pt]
-            \item \texttt{struct proc *p} - 用于遍历进程表的指针
-            \item \texttt{struct proc *highP = 0} - 候选进程指针，初始化为NULL，表示尚未找到候选进程
-        \end{itemize}
-        
-        \item \textbf{遍历进程表}（第4-10行）：
-        \begin{itemize}[itemsep=0pt]
-            \item 使用 \texttt{for} 循环遍历整个进程表，从 \texttt{ptable.proc} 开始到 \texttt{\&ptable.proc[NPROC]} 结束
-            \item 第5-6行：跳过所有非就绪状态的进程（\texttt{p->state != RUNNABLE}）
-            \item 第7-9行：\textbf{核心比较逻辑}
-            \begin{itemize}
-                \item 如果还未找到候选进程（\texttt{highP == 0}），或者
-                \item 当前进程的优先级更高（\texttt{p->priority < highP->priority}，数值越小优先级越高）
-                \item 则更新候选进程为当前进程：\texttt{highP = p}
-            \end{itemize}
-        \end{itemize}
-        
-        \item \textbf{返回结果}（第11行）：
-        \begin{itemize}[itemsep=0pt]
-            \item 返回优先级最高的进程指针 \texttt{highP}
-            \item 如果没有就绪进程，\texttt{highP} 为 NULL (0)，调度器主循环会继续等待
-        \end{itemize}
-    \end{enumerate}
-    
-    \textbf{关键技术点：}
-    \begin{itemize}[itemsep=2pt]
-        \item \textbf{优先级比较}：使用 \texttt{<} 运算符而非 \texttt{>}，因为数值越小优先级越高
-        \item \textbf{首次判断}：\texttt{highP == 0} 确保第一个就绪进程能被选中
-        \item \textbf{时间复杂度}：O(n)，n为进程表大小（NPROC=64）
-        \item \textbf{线程安全}：调用方（\texttt{scheduler()}）已持有 \texttt{ptable.lock}，无需额外加锁
-    \end{itemize}
+    优先级调度算法的核心代码如下。
+    \begin{codeblock}{priorityScheduler}
+        // Priority Scheduler -------------------
+        // 使用最小堆提取优先级最高（数值最小）的 RUNNABLE 进程
+        // 时间复杂度 O(log n)
+        struct proc *priorityScheduler() {
+        return heapExtract();  // 从最小堆中提取堆顶（优先级最高的进程）
+        }
+    \end{codeblock}
+
     
     \subsubsection{先来先服务调度算法（FCFS）}
     
     \textbf{算法原理：}
     
     先来先服务（First-Come First-Served）是最简单直观的调度算法，遵循"先到先得"的公平原则。进程按照进入就绪队列的时间顺序排队，调度器总是选择最早到达的进程执行，直到该进程执行完毕或主动放弃CPU。
-    
-    FCFS算法本质上是一个\textbf{非抢占式队列调度}，类似于日常生活中的"排队买票"——先来的人先得到服务，后来的人必须等待前面所有人处理完毕。
+   
     
     \textbf{实现策略：}
     
-    本实现通过比较进程的创建时间戳（\texttt{ctime}字段）来确定进程到达顺序：
-    \begin{enumerate}[itemsep=2pt]
-        \item 遍历进程表，筛选所有 RUNNABLE 状态的进程
-        \item 维护候选进程指针 \texttt{firstP}，记录创建时间最早的进程
-        \item 对每个就绪进程，比较其 \texttt{ctime} 与当前候选进程
-        \item 选择 \texttt{ctime} 值最小（创建最早）的进程执行
-        \item 该进程将持续运行直到完成或阻塞，\textbf{不会被时钟中断抢占}
-    \end{enumerate}
+    \begin{codeblock}{fcfsScheduler}
+        // FCFS Scheduler -----------------------
+        struct proc *fcfsScheduler() { // 先来先服务
+        return dequeue(\&fcfsQueue);  // 从就绪顺序队列中取出
+        }
+    \end{codeblock}
     
-    \textbf{非抢占式实现：}
-    
-    为实现真正的非抢占式 FCFS，在 \texttt{trap.c} 中修改了时钟中断处理逻辑：
-    \begin{itemize}
-        \item 当调度器为 FCFS (schedSelected == 2) 时，时钟中断不调用 \texttt{yield()}
-        \item 进程只有主动调用 \texttt{sleep()}、\texttt{exit()} 等才会让出 CPU
-    \end{itemize}
     
     \textbf{算法优势：}
     \begin{itemize}[itemsep=0pt]
@@ -498,28 +555,12 @@
     FCFS 调度算法原理如图\ref{fig:FIFS}所示。
     
     \begin{figure}[H] 
-    	\centering
-    	\includegraphics[width=0.85\textwidth]{img/FIFS.jpeg}
-    	\caption{先来先服务调度原理}
-    	\label{fig:FIFS}
-    \end{figure}
-    
-    FCFS 调度算法的实现流程如图\ref{fig:fcfs_sched}所示。
-    
-    \begin{figure}[H] 
         \centering
-        \includegraphics[width=0.85\textwidth]{img/fcfs_scheduler.drawio.pdf}
-        \caption{FCFS调度算法实现流程}
-        \label{fig:fcfs_sched}
+        \includegraphics[width=0.85\textwidth]{img/FIFS.jpeg}
+        \caption{先来先服务调度原理}
+        \label{fig:FIFS}
     \end{figure}
     
-    算法实现如下图所示。
-    \begin{figure}[H] 
-    	\centering
-    	\includegraphics[width=0.5\textwidth]{img/FIFS_alg.png}
-    	\caption{先来先服务调度算法核心代码}
-    	\label{fig:fifs_code}
-    \end{figure}
     
     \subsubsection{轮转调度算法（Round Robin）}
     
@@ -531,14 +572,13 @@
     
     \textbf{实现策略：}
     
-    本实现使用循环索引的方式模拟时间片轮转：
-    \begin{enumerate}[itemsep=2pt]
-        \item 使用静态变量 \texttt{lastIndex} 记录上次调度的进程在进程表中的位置
-        \item 从 \texttt{lastIndex + 1} 开始向后查找下一个就绪进程
-        \item 如果到达进程表末尾，则从头开始继续查找（循环特性）
-        \item 找到第一个 RUNNABLE 进程后立即返回，不再比较优先级或到达时间
-        \item 更新 \texttt{lastIndex}，为下次调度做准备
-    \end{enumerate}
+    \begin{codeblock}{rrScheduler}
+        // Round Robin Scheduler -------------------------
+        struct proc *rrScheduler() {  // 轮转调度
+        return dequeue(\&fcfsQueue); // 从FCFS队列取出，调度后由yield重新入队尾
+        // 当前文件中与先来先服务的实现相同，但是在trap.c中，只有轮转是抢占式，即只有轮转会被时钟中断抢占
+        }
+    \end{codeblock}
     
     \textbf{时间片设置：}在xv6中，时间片由时钟中断频率决定，默认为10ms。\textbf{只有 RR 调度器}在时钟中断时会强制调用 \texttt{yield()} 让出CPU，其他调度器（FCFS、PRIORITY、SML）均为非抢占式。
     
@@ -560,28 +600,12 @@
     轮转调度算法原理如图\ref{fig:RR}所示。
     
     \begin{figure}[H] 
-    	\centering
-    	\includegraphics[width=0.7\textwidth]{img/RoundRobin.jpg}
-    	\caption{轮转调度原理}
-    	\label{fig:RR}
-    \end{figure}
-    
-    轮转调度算法的实现流程如图\ref{fig:rr_sched}所示。
-    
-    \begin{figure}[H] 
         \centering
-        \includegraphics[width=0.7\textwidth]{img/rr_scheduler.drawio.pdf}
-        \caption{轮转调度算法实现流程}
-        \label{fig:rr_sched}
+        \includegraphics[width=0.7\textwidth]{img/RoundRobin.jpg}
+        \caption{轮转调度原理}
+        \label{fig:RR}
     \end{figure}
     
-    算法实现如下图所示。
-    \begin{figure}[H] 
-    	\centering
-    	\includegraphics[width=0.5\textwidth]{img/RR_alg.png}
-    	\caption{轮转调度算法核心代码}
-    	\label{fig:rr_code}
-    \end{figure}
     
     \subsubsection{静态多级队列调度算法（SML）}
     
@@ -603,10 +627,10 @@
      静态多级队列调度算法原理如图\ref{fig:SML}所示。
     
     \begin{figure}[H] 
-    	\centering
-    	\includegraphics[width=0.7\textwidth]{img/SML.png}
-    	\caption{静态多级队列调度原理}
-    	\label{fig:SML}
+        \centering
+        \includegraphics[width=0.7\textwidth]{img/SML.png}
+        \caption{静态多级队列调度原理}
+        \label{fig:SML}
     \end{figure}
     
     \textbf{实现策略：}
@@ -637,70 +661,85 @@
     
     \textbf{改进空间：}可以引入\textit{老化机制}（aging），当低优先级进程等待时间过长时，临时提升其优先级，避免饥饿问题。
     
-    SML 调度算法的实现流程如图\ref{fig:sml_sched}所示。
-    
-    \begin{figure}[H] 
-        \centering
-        \includegraphics[width=1.0\textwidth]{img/sml_scheduler.drawio.pdf}
-        \caption{静态多级队列调度算法实现流程}
-        \label{fig:sml_sched}
-    \end{figure}
+%    \begin{figure}[H] 
+%        \centering
+%        \includegraphics[width=1.0\textwidth]{img/sml_scheduler.drawio.pdf}
+%        \caption{静态多级队列调度算法实现流程}
+%        \label{fig:sml_sched}
+%    \end{figure}
     
     算法实现如下图所示。
-    \begin{figure}[H] 
-    	\centering
-    	\includegraphics[width=0.5\textwidth]{img/SML_alg1.png}
-    	\label{fig:sml_code1}
-    \end{figure}
-    \begin{figure}[H] 
-    	\centering
-    	\includegraphics[width=0.5\textwidth]{img/SML_alg2.png}
-    	\caption{先来先服务调度算法核心代码}
-    	\label{fig:sml_code2}
-    \end{figure}
+    \begin{codeblock}{smlScheduler}
+        // SML (Static Multi-Level Queue) Scheduler ---------------------------
+        // 依次从高、中、低优先级队列出队，实现分层调度
+        // 高优先级队列优先，同级别内 FCFS
+        // 时间复杂度 O(1)
+        struct proc *smlScheduler() {
+        struct proc *p;
+        
+        // 优先从高优先级队列出队
+        p = dequeue\&smlQueues[0]);
+        if (p != 0) return p;
+        
+        // 高优先级队列空，尝试中优先级队列
+        p = dequeue(\&smlQueues[1]);
+        if (p != 0) return p;
+        
+        // 中优先级队列也空，尝试低优先级队列
+        return dequeue(\&smlQueues[2]);
+        }
+    \end{codeblock}
     
     \subsection{任务二：实现测试程序}
     
     \subsubsection{测试程序设计思路}
-    测试程序 \texttt{scheduler\_test.c} 创建两种类型的进程来模拟真实工作负载：
     
-    \textbf{进程并发执行机制：}
-    
-    测试程序通过 \texttt{fork()} 系统调用创建 6 个子进程。\texttt{fork()} 的特性是：
-    \begin{itemize}
-        \item 调用一次，返回两次：父进程返回子进程 PID（$>$0），子进程返回 0
-        \item 父子进程并发执行，由调度器决定谁先运行
-        \item 子进程执行完 \texttt{exit()} 后退出，不会继续循环
-    \end{itemize}
-    
-    这意味着父进程快速完成 6 次 fork 循环后，6 个子进程同时处于 RUNNABLE 状态，由调度器按照当前调度策略选择执行顺序。这正是测试调度算法差异的关键。
-
-     \textbf{(1) CPU 密集型}：执行大量计算操作，很少主动让出 CPU
-     
-     \begin{figure}[H] 
-     	\centering
-     	\includegraphics[width=0.5\textwidth]{img/cpu_task_create.png}
-     	\caption{测试程序设计流程}
-     	\label{cpu_task_create}
-     \end{figure}
-    
-     \textbf{(2) IO 密集型}：频繁调用 \texttt{sleep()} 模拟 IO 等待，经常处于阻塞状态
-
-	 \begin{figure}[H] 
-			\centering
-			\includegraphics[width=0.5\textwidth]{img/io_task_create.png}
-			\caption{测试程序设计流程}
-			\label{io_task_create}
-	\end{figure}
-    
-    测试程序的整体设计流程如图\ref{fig:test_program}所示。
+    测试程序实现思路流程图如下：
     
     \begin{figure}[H] 
-        \centering
-        \includegraphics[width=1.0\textwidth]{img/scheduler_test.drawio.pdf}
-        \caption{测试程序设计流程}
-        \label{fig:test_program}
+    	\centering
+    	\includegraphics[width=1.0\textwidth]{img/scheduler_test.drawio.pdf}
+    	\caption{静态多级队列调度原理}
+    	\label{fig:test}
     \end{figure}
+    
+    为了全面对比不同调度算法的特性，测试程序 \texttt{scheduler\_test.c} 设计了\textbf{三个典型测试场景}，分别针对调度算法的不同弱点进行测试：
+    
+    \textbf{场景1：纯CPU长短作业（车队效应测试）}
+    \begin{itemize}[itemsep=2pt]
+        \item 创建2个长作业（CPU\_WORK）+ 2个短作业（CPU\_WORK/10）+ 2个中等作业（CPU\_WORK/3）
+        \item 所有进程优先级相同（priority=10），排除优先级干扰
+        \item 短作业比长作业晚10个时钟周期创建，模拟作业错峰到达
+        \item \textbf{测试目的}：展示FCFS的护航效应（Convoy Effect）以及RR的公平性优势
+    \end{itemize}
+    
+    \textbf{场景2：交互型vs背景任务（响应性测试）}
+    \begin{itemize}[itemsep=2pt]
+        \item 2个CPU背景任务（低优先级18，执行大量计算）
+        \item 2个交互型任务（高优先级3，短CPU计算 + 频繁sleep模拟用户等待）
+        \item 2个IO背景任务（中优先级12，文件IO + sleep）
+        \item \textbf{测试目的}：展示RR/SML调度器对交互型进程的响应友好性
+    \end{itemize}
+    
+    \textbf{场景3：优先级饥饿测试（公平性测试）}
+    \begin{itemize}[itemsep=2pt]
+        \item 1个超高优先级大任务（priority=1，CPU\_WORK*2，长期霸占CPU）
+        \item 3个中优先级小任务（priority=10）
+        \item 2个低优先级小任务（priority=19，可能发生饥饿）
+        \item \textbf{测试目的}：展示Priority调度的饥饿问题，以及SML/RR如何缓解
+    \end{itemize}
+    
+    \textbf{命令行参数支持：}
+    
+    测试程序支持通过命令行参数选择运行场景：
+    \begin{itemize}[itemsep=0pt]
+        \item \texttt{scheduler\_test} — 运行全部3个场景
+        \item \texttt{scheduler\_test 1} — 仅运行场景1（车队效应）
+        \item \texttt{scheduler\_test 2} — 仅运行场景2（交互响应）
+        \item \texttt{scheduler\_test 3} — 仅运行场景3（优先级饥饿）
+    \end{itemize}
+    
+    每个场景对5种调度算法进行对比测试：DEFAULT、RR（轮转）、PRIORITY、FCFS、SML（多级队列）。测试结果同时输出到屏幕和 \texttt{sched\_result.txt} 文件。
     
     \subsubsection{wait2 系统调用}
     为了收集子进程的运行统计信息，实现 \texttt{wait2()} 系统调用。该系统调用在原有 \texttt{wait()} 的基础上，额外返回子进程的就绪时间、运行时间和休眠时间三个统计指标。
@@ -719,187 +758,184 @@
     编译并启动内核 \texttt{make qemu-nox}，运行 \texttt{scheduler\_test} 测试各调度算法。
     
     \textbf{测试配置：}
-    \begin{itemize}
-        \item 3 个 CPU 密集型进程
-        \item 3 个 IO 密集型进程
-    \end{itemize}
     
-    \textbf{优先级打乱设计：}
-    
-    为避免进程创建顺序与优先级正相关导致 FCFS 和 PRIORITY 调度结果相似，测试程序采用打乱的优先级分配：
-    \begin{itemize}
-        \item CPU 密集型进程（i=0,1,2）优先级分别为：8, 2, 5
-        \item IO 密集型进程（i=3,4,5）优先级分别为：14, 10, 18
+    测试程序按场景分别创建进程：
+    \begin{itemize}[itemsep=2pt]
+        \item \textbf{场景1}（车队效应）：2长作业 + 2短作业 + 2中作业，同优先级
+        \item \textbf{场景2}（交互响应）：2 CPU背景 + 2交互型 + 2 IO背景，差异化优先级
+        \item \textbf{场景3}（优先级饥饿）：1高优先级大任务 + 3中优先级 + 2低优先级
     \end{itemize}
-    这样设计使得 FCFS 按创建顺序调度，而 PRIORITY 按优先级调度，两者执行顺序明显不同。
     
     \textbf{性能指标解释：}
-    \begin{itemize}
+    \begin{itemize}[itemsep=0pt]
         \item \textbf{就绪时间（Ready Time）}：进程在就绪队列中等待 CPU 的时间
         \item \textbf{运行时间（Run Time）}：进程实际占用 CPU 执行的时间
         \item \textbf{休眠时间（Sleep Time）}：进程因等待 IO 等资源而睡眠的时间
-        \item \textbf{周转时间（Turnaround Time）}：进程从创建到完成的总时间
+        \item \textbf{周转时间（Turnaround Time）}：进程从创建到完成的总时间（= 就绪 + 运行 + 休眠）
     \end{itemize}
     
-   	\subsubsection{运行配置}
-   	\begin{figure}[H] 
+    测试运行截图：
+        \begin{figure}[H] 
     	\centering
-    	\includegraphics[width=0.5\textwidth]{img/run_result1.png}
-    	\caption{调度算法对比测试完整输出}
-    	\label{fig:run_all}
+    	\includegraphics[width=0.66\textwidth]{img2/run_result.png}
+    	\caption{测试运行截图}
+    	\label{fig:run1}
     \end{figure}
     
-	 \subsubsection{各调度算法运行结果}
-	
-	\textbf{1. 优先级调度（Priority）运行结果}
-	
-	\begin{figure}[H] 
-		\centering
-		\includegraphics[width=0.5\textwidth]{img/run_result_priority.png}
-		\caption{优先级调度算法运行结果}
-		\label{fig:run_priority}
-	\end{figure}
-	
-	从优先级调度的运行结果可以看出：高优先级进程（CPU密集型，优先级2/5/8）的就绪时间明显较短，能够快速获得CPU资源。这验证了优先级调度算法的核心特性：\textit{重要任务优先执行}。
-	
-	\textbf{2. 先来先服务（FCFS）运行结果}
-	
-	\begin{figure}[H] 
-		\centering
-		\includegraphics[width=0.5\textwidth]{img/run_result_fifs.png}
-		\caption{FCFS调度算法运行结果}
-		\label{fig:run_fcfs}
-	\end{figure}
-	
-	FCFS调度的结果显示：进程按照创建时间顺序执行，后续进程的就绪时间显著增加，出现了典型的\textbf{护航效应}（Convoy Effect）。
-	
-	\textbf{3. 轮转调度（Round Robin）运行结果}
-	
-	\begin{figure}[H] 
-		\centering
-		\includegraphics[width=0.65\textwidth]{img/run_result_rr.png}
-		\caption{轮转调度算法运行结果}
-		\label{fig:run_rr}
-	\end{figure}
-	
-	轮转调度的结果展示了良好的\textbf{公平性}：所有进程的就绪时间分布较为均匀，没有任何进程被长期饿死。
-	
-	\textbf{4. 静态多级队列（SML）运行结果}
-	
-	\begin{figure}[H] 
-		\centering
-		\includegraphics[width=0.5\textwidth]{img/run_result_sml.png}
-		\caption{静态多级队列调度算法运行结果}
-		\label{fig:run_sml}
-	\end{figure}
-	
-	SML调度结果呈现出\textbf{分层特征}：高优先级队列的进程率先获得调度，同一队列内的进程表现出公平的轮转特性。
-	
-	\subsubsection{运行结果分析}
-	
-	\textbf{一、整体性能对比}
-	\subsubsection{性能可视化分析}
-	为了更直观地展示各调度算法的性能差异，我们使用Python脚本对测试数据进行了可视化分析，生成了以下四张对比图表。
-	\begin{figure}[H]
-		\centering
-		\includegraphics[width=0.8\textwidth]{img/scheduler_comparison_avg.png}
-		\caption{平均性能指标对比}
-		\label{fig:avg_comparison}
-	\end{figure}
-	
-	\begin{figure}[H]
-		\centering
-		\includegraphics[width=0.8\textwidth]{img/scheduler_process_details.png}
-		\caption{各进程执行详情}
-		\label{fig:process_details}
-	\end{figure}
-	
-	\begin{figure}[H]
-		\centering
-		\includegraphics[width=0.8\textwidth]{img/scheduler_turnaround_comparison.png}
-		\caption{周转时间对比}
-		\label{fig:turnaround_comp}
-	\end{figure}
-	
-	\begin{figure}[H]
-		\centering
-		\includegraphics[width=0.8\textwidth]{img/scheduler_radar_chart.png}
-		\caption{综合性能雷达图}
-		\label{fig:radar_chart}
-	\end{figure}
-	
-	\textbf{图表说明：}
-	\begin{itemize}[itemsep=2pt]
-		\item \textbf{图\ref{fig:avg_comparison}}：展示了四种算法在就绪时间、运行时间、休眠时间和周转时间四个维度的平均值对比，可以清晰看出SML在就绪时间上的优势，以及RR在周转时间上的最佳表现。
-		
-		\item \textbf{图\ref{fig:process_details}}：详细展示了每个进程在不同调度算法下的时间分布情况，CPU密集型进程（前3个）和IO密集型进程（后3个）的行为差异一目了然。
-		
-		\item \textbf{图\ref{fig:turnaround_comp}}：聚焦于周转时间这一关键指标，对比了6个进程在四种算法下的表现，可以观察到FCFS的护航效应和RR的公平性特征。
-		
-		\item \textbf{图\ref{fig:radar_chart}}：使用雷达图综合评估四种算法的多维性能，面积越大表示综合性能越好，可以直观看出各算法的优劣势分布。
-	\end{itemize}
-	
-	从四种调度算法的测试结果来看，各算法在平均性能指标上表现如下：
-	\begin{table}[H]
-		\centering
-		\caption{四种调度算法性能指标对比}
-		\begin{tabular}{lcccc}
-			\toprule
-			\textbf{调度算法} & \textbf{平均就绪时间} & \textbf{平均运行时间} & \textbf{平均休眠时间} & \textbf{平均周转时间} \\
-			\midrule
-			PRIORITY & 23 & 5 & 125 & 154 \\
-			FCFS & 24 & 6 & 125 & 155 \\
-			RR & 24 & 6 & 117 & \textbf{147} \\
-			SML & \textbf{20} & 6 & 124 & 150 \\
-			\bottomrule
-		\end{tabular}
-		\label{tab:performance_comparison}
-	\end{table}
-	\textbf{二、关键发现}
-	\textbf{1. 优先级调度（PRIORITY）}
-	\begin{itemize}[itemsep=2pt]
-		\item \textbf{优势}：高优先级进程（PID 4-6）的就绪时间极短（1$\rightarrow$12$\rightarrow$23），体现了优先级调度的核心优势——重要任务快速响应
-		\item \textbf{劣势}：低优先级IO进程的就绪时间显著增加（35-36 ticks），存在一定的不公平性
-		\item \textbf{适用场景}：实时系统、关键任务优先的场景
-	\end{itemize}
-	\textbf{2. 先来先服务（FCFS）}
-	\begin{itemize}[itemsep=2pt]
-		\item \textbf{特征}：进程严格按创建顺序执行，就绪时间呈线性递增（1$\rightarrow$12$\rightarrow$24$\rightarrow$36）
-		\item \textbf{护航效应明显}：CPU密集型进程先执行完毕后，IO密集型进程才开始，导致后续进程等待时间长
-		\item \textbf{周转时间最长}：平均155 ticks，在四种算法中表现最差
-		\item \textbf{适用场景}：简单批处理系统，对响应时间要求不高的场景
-	\end{itemize}
-	\textbf{3. 轮转调度（RR）}
-	\begin{itemize}[itemsep=2pt]
-		\item \textbf{公平性最佳}：所有进程的就绪时间分布均匀（23-25 ticks），没有明显的饥饿现象
-		\item \textbf{周转时间最短}：平均147 ticks，得益于CPU和IO进程交替执行，减少了等待时间
-		\item \textbf{休眠时间最少}：平均117 ticks，说明IO进程能够更及时地进入sleep状态
-		\item \textbf{适用场景}：交互式分时系统，多用户环境
-	\end{itemize}
-	\textbf{4. 静态多级队列（SML）}
-	\begin{itemize}[itemsep=2pt]
-		\item \textbf{就绪时间最优}：平均20 ticks，在四种算法中表现最好
-		\item \textbf{分层特征明显}：高优先级队列进程（PID 22-24）快速完成，中低优先级进程有序执行
-		\item \textbf{综合性能优秀}：周转时间150 ticks，仅次于RR，但在优先级响应上更胜一筹
-		\item \textbf{适用场景}：通用操作系统，需要兼顾效率与公平的场景
-	\end{itemize}
-	\textbf{三、进程类型差异分析}
-	\textbf{CPU密集型进程}（优先级2/5/8）：
-	\begin{itemize}[itemsep=1pt]
-		\item 运行时间稳定在11-13 ticks
-		\item 无休眠时间（sleep=0）
-		\item 周转时间主要由就绪时间和运行时间决定
-	\end{itemize}
-	\textbf{IO密集型进程}（优先级10/14/18）：
-	\begin{itemize}[itemsep=1pt]
-		\item 运行时间极短（0-1 ticks）
-		\item 休眠时间占主导（234-250 ticks）
-		\item 周转时间主要由休眠时间决定，调度算法影响相对较小
-	\end{itemize}
+       \subsubsection{场景1：车队效应分析}
+       
+       \textbf{预期行为：}
+       \begin{itemize}[itemsep=1pt]
+           \item \textbf{FCFS}：长作业先执行完，短作业等待时间极长（护航效应）
+           \item \textbf{RR}：长短作业交替执行，短作业周转时间显著减少
+           \item \textbf{PRIORITY/SML}：同优先级下退化为类似 RR 的行为
+       \end{itemize}
+       
+        测试运行截图：
+    \begin{figure}[H] 
+    	\centering
+    	\includegraphics[width=0.66\textwidth]{img2/run_result1.png}
+    	\caption{测试运行截图}
+    	\label{fig:run2}
+    \end{figure}
+       
+       \subsubsection{场景2：交互响应分析}
+       
+       \textbf{预期行为：}
+       \begin{itemize}[itemsep=1pt]
+           \item \textbf{RR}：交互型进程能快速获得响应，但不考虑优先级
+           \item \textbf{PRIORITY/SML}：高优先级交互进程响应最快
+           \item \textbf{FCFS}：交互进程可能被 CPU 背景任务阻塞
+       \end{itemize}
+       
+           测试运行截图：
+       \begin{figure}[H] 
+       	\centering
+       	\includegraphics[width=0.66\textwidth]{img2/run_result2.png}
+       	\caption{测试运行截图}
+       	\label{fig:run3}
+       \end{figure}
+       
+       \subsubsection{场景3：优先级饥饿分析}
+       
+       \textbf{预期行为：}
+       \begin{itemize}[itemsep=1pt]
+           \item \textbf{PRIORITY}：低优先级进程饥饿，等待高优先级大任务完成
+           \item \textbf{RR}：忽略优先级，所有进程公平获得时间片
+           \item \textbf{SML}：队列内轮转，一定程度缓解饥饿
+       \end{itemize}
+       
+           测试运行截图：
+       \begin{figure}[H] 
+       	\centering
+       	\includegraphics[width=0.66\textwidth]{img2/run_result3.png}
+       	\caption{测试运行截图}
+       	\label{fig:run4}
+       \end{figure}
+       
+    
+    \subsubsection{运行结果分析}
+    
+    % ==================== 场景1：车队效应测试结果 ====================
+    
+    \textbf{场景1：车队效应测试结果}
+    
+    \begin{table}[H]
+    	\centering
+    	\caption{场景1各调度算法平均性能对比（单位：ticks）}
+    	\begin{tabular}{lccc|ccc|ccc}
+    		\toprule
+    		\multirow{2}{*}{\textbf{调度器}} & \multicolumn{3}{c|}{\textbf{长作业}} & \multicolumn{3}{c|}{\textbf{短作业}} & \multicolumn{3}{c}{\textbf{中作业}} \\
+    		& 就绪 & 运行 & 周转 & 就绪 & 运行 & 周转 & 就绪 & 运行 & 周转 \\
+    		\midrule
+    		DEFAULT  & 142 & 220 & 363 & 465 & 22 & 488 & 510 & 75 & 586 \\
+    		RR       & 412 & 223 & 635 & 104 & 21 & \textbf{126} & 291 & 73 & 364 \\
+    		PRIORITY & 219 & 219 & 438 & \textbf{22} & 22 & \textbf{44} & \textbf{74} & 73 & \textbf{147} \\
+    		FCFS     & 415 & 224 & 640 & 126 & 22 & 148 & 270 & 74 & 344 \\
+    		SML      & 415 & 224 & 639 & 107 & 22 & 129 & 295 & 74 & 369 \\
+    		\bottomrule
+    	\end{tabular}
+    	\label{tab:scenario1_results}
+    \end{table}
+    
+    \textbf{关键发现：}PRIORITY调度器下短作业周转时间仅44 ticks，远优于其他调度器。这是因为堆结构使短作业能够快速被提取执行。RR/FCFS/SML的短作业周转时间也较短（126-148 ticks），表现出良好的公平性。
+    
+    % ==================== 场景2：交互响应测试结果 ====================
+    
+    \textbf{场景2：交互响应测试结果}
+    
+    \begin{table}[H]
+    	\centering
+    	\caption{场景2各调度算法平均性能对比（单位：ticks）}
+    	\begin{tabular}{lccc|ccc|ccc}
+    		\toprule
+    		\multirow{2}{*}{\textbf{调度器}} & \multicolumn{3}{c|}{\textbf{交互型}} & \multicolumn{3}{c|}{\textbf{CPU背景}} & \multicolumn{3}{c}{\textbf{IO背景}} \\
+    		& 就绪 & 休眠 & 周转 & 就绪 & 运行 & 周转 & 就绪 & 休眠 & 周转 \\
+    		\midrule
+    		DEFAULT  & 485 & 157 & 723 & 123 & 220 & 343 & 472 & 357 & 876 \\
+    		RR       & 399 & 130 & 613 & 447 & 228 & 675 & 439 & 329 & 810 \\
+    		PRIORITY & \textbf{16} & 229 & \textbf{325} & 365 & 239 & 604 & 225 & 495 & 763 \\
+    		FCFS     & 402 & 133 & 618 & 450 & 231 & 681 & 446 & 316 & 804 \\
+    		SML      & 76 & 197 & \textbf{355} & 491 & 240 & 732 & 236 & 409 & 688 \\
+    		\bottomrule
+    	\end{tabular}
+    	\label{tab:scenario2_results}
+    \end{table}
+    
+    \textbf{关键发现：}PRIORITY下交互型进程就绪时间仅16 ticks，周转时间325 ticks；SML下就绪时间76 ticks，周转时间355 ticks。两者都远优于其他调度器，体现了优先级调度对高优先级交互进程的快速响应能力。
+    
+    % ==================== 场景3：优先级饥饿测试结果 ====================
+    
+    \textbf{场景3：优先级饥饿测试结果}
+    
+    \begin{table}[H]
+    	\centering
+    	\caption{场景3各调度算法平均性能对比（单位：ticks）}
+    	\begin{tabular}{lcc|cc|cc}
+    		\toprule
+    		\multirow{2}{*}{\textbf{调度器}} & \multicolumn{2}{c|}{\textbf{高优先级}} & \multicolumn{2}{c|}{\textbf{中优先级}} & \multicolumn{2}{c}{\textbf{低优先级}} \\
+    		& 就绪 & 周转 & 就绪 & 周转 & 就绪 & 周转 \\
+    		\midrule
+    		DEFAULT  & 41  & 482  & 595 & 707 & 844 & 957 \\
+    		RR       & 547 & 1004 & 558 & 667 & 564 & 673 \\
+    		PRIORITY & \textbf{1} & \textbf{440} & 367 & 479 & \textbf{207} & \textbf{324} \\
+    		FCFS     & 551 & 1010 & 558 & 667 & 573 & 683 \\
+    		SML      & \textbf{1} & \textbf{440} & 371 & 484 & 450 & 565 \\
+    		\bottomrule
+    	\end{tabular}
+    	\label{tab:scenario3_results}
+    \end{table}
+    
+    \textbf{关键发现：}
+    \begin{itemize}[itemsep=1pt]
+    	\item PRIORITY/SML：高优先级进程就绪时间仅1 ticks，响应极快
+    	\item PRIORITY：低优先级进程就绪时间仅207 ticks，周转时间324 ticks，表现出乎意料地好（可能因为堆的特性使得进程能较快被调度）
+    	\item RR/FCFS：完全忽略优先级，各优先级组就绪时间接近（约550-570 ticks）
+    \end{itemize}
+    
+    % ==================== 综合性能对比表 ====================
+    
+    \textbf{四、综合性能对比}
+    
+    \begin{table}[H]
+    	\centering
+    	\caption{五种调度算法综合性能评估}
+    	\begin{tabular}{lccccc}
+    		\toprule
+    		\textbf{评估维度} & \textbf{DEFAULT} & \textbf{RR} & \textbf{PRIORITY} & \textbf{FCFS} & \textbf{SML} \\
+    		\midrule
+    		短作业友好性 & 差 & 优 & \textbf{最优} & 优 & 优 \\
+    		交互响应性 & 差 & 中 & \textbf{最优} & 中 & 优 \\
+    		低优先级公平性 & 差 & 优 & \textbf{优} & 优 & 中 \\
+    		高优先级响应 & 中 & 差 & \textbf{最优} & 差 & \textbf{最优} \\
+    		\bottomrule
+    	\end{tabular}
+    	\label{tab:overall_comparison}
+    \end{table}
     
     \section{实验总结}
     
-    本次实验围绕进程调度算法展开，通过实现和比较四种调度算法，我取得了以下技术成果和理论认识：
+    本次实验围绕进程调度算法展开，通过实现和比较多种调度算法，我取得了以下技术成果和理论认识：
     
     \subsection{掌握了调度框架的设计方法}
     我成功设计并实现了一个可扩展的调度框架，通过函数指针实现调度算法的动态切换。这种设计模式使得添加新的调度算法变得简单，只需实现统一接口并注册到函数指针数组即可。
@@ -908,7 +944,7 @@
     \begin{itemize}
         \item \textbf{优先级调度}：采用最小堆实现，时间复杂度 O(log n)；高优先级进程能快速响应，但可能导致低优先级进程饥饿
         \item \textbf{FCFS}：真正的非抢占式调度，进程运行直到主动让出 CPU；实现简单但可能导致护航效应
-        \item \textbf{轮转调度}：唯一的抢占式调度，公平性好，适合交互式系统
+        \item \textbf{轮转调度}：抢占式调度，公平性好，适合交互式系统
         \item \textbf{静态多级队列}：结合了优先级和轮转的优点，在效率与公平之间取得平衡
     \end{itemize}
     

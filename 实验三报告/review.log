@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.7.3)  23 DEC 2025 22:13
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.7.3)  24 DEC 2025 03:25
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1213,6 +1213,13 @@ Package caption Info: listings package is loaded.
 Package: titletoc 2025/01/04 v2.17 TOC entries
 \ttl@leftsep=\dimen341
 )
+(c:/texlive/2025/texmf-dist/tex/latex/multirow/multirow.sty
+Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
+\multirow@colwidth=\skip79
+\multirow@cntb=\count389
+\multirow@dima=\skip80
+\bigstrutjot=\dimen342
+)
 Package hyperref Info: Option `colorlinks' set `true' on input line 48.
 LaTeX Font Info:    Trying to load font information for TU+ppl on input line 14
 5.
@@ -1280,7 +1287,7 @@ LaTeX Font Info:    ... okay on input line 145.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-\c@lstlisting=\count389
+\c@lstlisting=\count390
 Package hyperref Info: Link coloring ON on input line 145.
 (./review.out) (./review.out)
 \@outlinefile=\write4
@@ -1429,164 +1436,17 @@ Package fontspec Info:
 (fontspec)             - 'normal' (m/n) with NFSS spec.:
 (fontspec)             <->"FangSong/OT:script=hani;language=dflt;"
 
+File: img/experiment_workflow.drawio.pdf Graphic file (type pdf)
+<use img/experiment_workflow.drawio.pdf>
 
 
 [4]
-File: img/sched_framework.drawio.pdf Graphic file (type pdf)
-<use img/sched_framework.drawio.pdf>
-
 
 [5]
 
-[6]
-File: img/scheduler_selection_flow.png Graphic file (type bmp)
-<img/scheduler_selection_flow.png>
+LaTeX Warning: Reference `fig:sched_framework' on page 6 undefined on input lin
+e 285.
 
-
-[7]
-File: img/scheduler1.png Graphic file (type bmp)
-<img/scheduler1.png>
-File: img/scheduler2.png Graphic file (type bmp)
-<img/scheduler2.png>
-
-
-[8]
-File: img/scheduler_main.drawio.pdf Graphic file (type pdf)
-<use img/scheduler_main.drawio.pdf>
-
-
-[9]
-
-LaTeX Font Warning: Font shape `TU/ppl/m/it' undefined
-(Font)              using `TU/ppl/m/n' instead on input line 367.
-
-
-
-[10]
-File: img/priority_scheduler.drawio.pdf Graphic file (type pdf)
-<use img/priority_scheduler.drawio.pdf>
-
-
-[11]
-File: img/priority_alg.png Graphic file (type bmp)
-<img/priority_alg.png>
-
-
-[12]
-Overfull \hbox (2.91693pt too wide) in paragraph at lines 432--433
-[]\TU/SimSun(0)/m/n/12 使 用 \TU/lmtt/m/n/12 for \TU/SimSun(0)/m/n/12 循 环 遍 历 整 个
- 进 程 表，|  从 \TU/lmtt/m/n/12 ptable.proc \TU/SimSun(0)/m/n/12 开 始 到 \TU/lmtt/m/n
-/12 &ptable.proc[NPROC]
- []
-
-
-
-[13]
-File: img/FIFS.jpeg Graphic file (type bmp)
-<img/FIFS.jpeg>
-
-
-[14]
-File: img/fcfs_scheduler.drawio.pdf Graphic file (type pdf)
-<use img/fcfs_scheduler.drawio.pdf>
-
-
-[15]
-File: img/FIFS_alg.png Graphic file (type bmp)
-<img/FIFS_alg.png>
-
-
-[16]
-
-[17]
-File: img/RoundRobin.jpg Graphic file (type bmp)
-<img/RoundRobin.jpg>
-File: img/rr_scheduler.drawio.pdf Graphic file (type pdf)
-<use img/rr_scheduler.drawio.pdf>
-
-
-[18]
-File: img/RR_alg.png Graphic file (type bmp)
-<img/RR_alg.png>
-
-
-[19]
-File: img/SML.png Graphic file (type bmp)
-<img/SML.png>
-
-
-[20]
-File: img/sml_scheduler.drawio.pdf Graphic file (type pdf)
-<use img/sml_scheduler.drawio.pdf>
-File: img/SML_alg1.png Graphic file (type bmp)
-<img/SML_alg1.png>
-File: img/SML_alg2.png Graphic file (type bmp)
-<img/SML_alg2.png>
-
-
-[21]
-
-[22]
-File: img/cpu_task_create.png Graphic file (type bmp)
-<img/cpu_task_create.png>
-File: img/io_task_create.png Graphic file (type bmp)
-<img/io_task_create.png>
-File: img/scheduler_test.drawio.pdf Graphic file (type pdf)
-<use img/scheduler_test.drawio.pdf>
-
-
-[23]
-File: img/wait2.drawio.pdf Graphic file (type pdf)
-<use img/wait2.drawio.pdf>
-
-
-[24]
-
-[25]
-File: img/run_result1.png Graphic file (type bmp)
-<img/run_result1.png>
-File: img/run_result_priority.png Graphic file (type bmp)
-<img/run_result_priority.png>
-
-
-[26]
-File: img/run_result_fifs.png Graphic file (type bmp)
-<img/run_result_fifs.png>
-File: img/run_result_rr.png Graphic file (type bmp)
-<img/run_result_rr.png>
-
-
-[27]
-File: img/run_result_sml.png Graphic file (type bmp)
-<img/run_result_sml.png>
-
-
-[28]
-File: img/scheduler_comparison_avg.png Graphic file (type bmp)
-<img/scheduler_comparison_avg.png>
-
-
-[29]
-File: img/scheduler_process_details.png Graphic file (type bmp)
-<img/scheduler_process_details.png>
-File: img/scheduler_turnaround_comparison.png Graphic file (type bmp)
-<img/scheduler_turnaround_comparison.png>
-
-
-[30]
-File: img/scheduler_radar_chart.png Graphic file (type bmp)
-<img/scheduler_radar_chart.png>
-
-
-[31]
-
-[32]
-
-[33]
-
-[34]
-
-[35]
 \g__tcobox_out_iow=\write6
 \openout6 = `review.listing'.
 
@@ -1616,7 +1476,7 @@ Package fontspec Info:
 (fontspec)             - 'bold italic' (b/it) with NFSS spec.: <->"Microsoft
 (fontspec)             YaHei/BI/OT:script=hani;language=dflt;"
 
- (c:/texlive/2025/texmf-dist/tex/latex/listings/lstlang1.sty
+(c:/texlive/2025/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2024/09/23 1.10c listings language file
 )
 (c:/texlive/2025/texmf-dist/tex/latex/listings/lstmisc.sty
@@ -1627,8 +1487,148 @@ LaTeX Font Warning: Font shape `TU/FangSong(0)/m/it' undefined
 (Font)              using `TU/FangSong(0)/m/n' instead on input line 1.
 
 LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10.95> not available
-(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 8.
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 2.
 )
+\openout6 = `review.listing'.
+
+ (./review.listing)
+
+[6]
+\openout6 = `review.listing'.
+
+ (./review.listing)
+
+[7]
+\openout6 = `review.listing'.
+
+ (./review.listing)
+
+[8]
+
+[9]
+File: img/scheduler_main.drawio.pdf Graphic file (type pdf)
+<use img/scheduler_main.drawio.pdf>
+
+
+[10]
+
+[11]
+
+LaTeX Font Warning: Font shape `TU/ppl/m/it' undefined
+(Font)              using `TU/ppl/m/n' instead on input line 468.
+
+
+LaTeX Warning: Reference `fig:priority_sched' on page 12 undefined on input lin
+e 502.
+
+\openout6 = `review.listing'.
+
+(./review.listing)
+
+[12]
+\openout6 = `review.listing'.
+
+ (./review.listing)
+File: img/FIFS.jpeg Graphic file (type bmp)
+<img/FIFS.jpeg>
+
+
+[13]
+\openout6 = `review.listing'.
+
+ (./review.listing)
+
+[14]
+File: img/RoundRobin.jpg Graphic file (type bmp)
+<img/RoundRobin.jpg>
+File: img/SML.png Graphic file (type bmp)
+<img/SML.png>
+
+
+[15]
+
+[16]
+\openout6 = `review.listing'.
+
+ (./review.listing)
+File: img/scheduler_test.drawio.pdf Graphic file (type pdf)
+<use img/scheduler_test.drawio.pdf>
+
+
+[17]
+
+[18]
+File: img/wait2.drawio.pdf Graphic file (type pdf)
+<use img/wait2.drawio.pdf>
+
+
+[19]
+
+[20]
+File: img2/run_result.png Graphic file (type bmp)
+<img2/run_result.png>
+File: img2/run_result1.png Graphic file (type bmp)
+<img2/run_result1.png>
+
+
+[21]
+File: img2/run_result2.png Graphic file (type bmp)
+<img2/run_result2.png>
+File: img2/run_result3.png Graphic file (type bmp)
+<img2/run_result3.png>
+
+
+[22]
+
+[23]
+
+[24]
+
+[25]
+
+[26]
+\openout6 = `review.listing'.
+
+ (./review.listing)
+\openout6 = `review.listing'.
+
+ (./review.listing)
+
+[27]
+\openout6 = `review.listing'.
+
+ (./review.listing)
+
+[28]
+\openout6 = `review.listing'.
+
+ (./review.listing)
+
+[29]
+\openout6 = `review.listing'.
+
+ (./review.listing)
+
+[30]
+\openout6 = `review.listing'.
+
+ (./review.listing)
+
+[31]
+\openout6 = `review.listing'.
+
+ (./review.listing)
+
+[32]
+
+[33]
+\openout6 = `review.listing'.
+
+ (./review.listing)
+
+[34]
+
+[35]
 \openout6 = `review.listing'.
 
  (./review.listing)
@@ -1637,11 +1637,11 @@ LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10.95> not available
 \openout6 = `review.listing'.
 
  (./review.listing)
-
-[37]
 \openout6 = `review.listing'.
 
  (./review.listing)
+
+[37]
 
 [38]
 \openout6 = `review.listing'.
@@ -1654,60 +1654,21 @@ LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10.95> not available
  (./review.listing)
 
 [40]
-\openout6 = `review.listing'.
-
- (./review.listing)
 
 [41]
-
-[42]
 \openout6 = `review.listing'.
 
  (./review.listing)
+
+[42]
 
 [43]
 
 [44]
-\openout6 = `review.listing'.
-
- (./review.listing)
 
 [45]
-\openout6 = `review.listing'.
 
- (./review.listing)
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-[46]
-
-[47]
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-[48]
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-[49]
-
-[50]
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-[51]
-
-[52]
-
-[53]
-
-[54]
-
-[55] (./review.aux)
+[46] (./review.aux)
  ***********
 LaTeX2e <2025-06-01> patch level 1
 L3 programming layer <2022/08/05>
@@ -1716,16 +1677,19 @@ L3 programming layer <2022/08/05>
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
+
+LaTeX Warning: There were undefined references.
+
 Package rerunfilecheck Info: File `review.out' has not changed.
-(rerunfilecheck)             Checksum: 5251D0EE1DC20A7679085D5A1EAA4956;8736.
+(rerunfilecheck)             Checksum: 0B4C19948A178D600FCCE3E0535F09CA;8815.
  ) 
 Here is how much of TeX's memory you used:
- 35573 strings out of 468529
- 799177 string characters out of 5451400
- 2127955 words of memory out of 5000000
- 63296 multiletter control sequences out of 15000+600000
+ 35576 strings out of 468529
+ 798090 string characters out of 5451400
+ 2125350 words of memory out of 5000000
+ 63297 multiletter control sequences out of 15000+600000
  641101 words of font info for 122 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  93i,13n,111p,1205b,1757s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on review.pdf (56 pages).
+Output written on review.pdf (47 pages).

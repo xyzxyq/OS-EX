@@ -35,6 +35,7 @@ int outfd = -1;
 struct child_info {
   int pid;
   int role;
+  int priority;  // 进程优先级
 };
 
 // 同时输出到屏幕和文件
@@ -72,7 +73,7 @@ void cpu_work(int work) {
   }
 }
 
-// IO 密集型工作（包含真实文件IO操作）
+// IO 密集型工作（包含真实文件IO操作 + 少量CPU计算）
 void io_work(int rounds) {
   int i, fd;
   char buf[] = "io test\n";
@@ -82,6 +83,7 @@ void io_work(int rounds) {
       write(fd, buf, sizeof(buf) - 1);
       close(fd);
     }
+    cpu_work(CPU_WORK / 100);  // 添加少量CPU计算，确保rutime可统计
     sleep(15);  // 模拟IO等待
   }
 }
@@ -126,7 +128,7 @@ void test_scenario1(int schedId, char *schedName) {
     cpu_work(cpu_long);
     exit();
   }
-  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_LONG; nchildren++; }
+  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_LONG; info[nchildren].priority = 10; nchildren++; }
   
   // P2: 长作业，到达时间0
   pid = fork();
@@ -135,7 +137,7 @@ void test_scenario1(int schedId, char *schedName) {
     cpu_work(cpu_long);
     exit();
   }
-  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_LONG; nchildren++; }
+  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_LONG; info[nchildren].priority = 10; nchildren++; }
   
   sleep(10);  // 等一会儿再创建短作业
   
@@ -146,7 +148,7 @@ void test_scenario1(int schedId, char *schedName) {
     cpu_work(cpu_short);
     exit();
   }
-  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_SHORT; nchildren++; }
+  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_SHORT; info[nchildren].priority = 10; nchildren++; }
   
   // P4: 短作业
   pid = fork();
@@ -155,7 +157,7 @@ void test_scenario1(int schedId, char *schedName) {
     cpu_work(cpu_short);
     exit();
   }
-  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_SHORT; nchildren++; }
+  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_SHORT; info[nchildren].priority = 10; nchildren++; }
   
   sleep(10);
   
@@ -166,7 +168,7 @@ void test_scenario1(int schedId, char *schedName) {
     cpu_work(cpu_medium);
     exit();
   }
-  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_MEDIUM; nchildren++; }
+  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_MEDIUM; info[nchildren].priority = 10; nchildren++; }
   
   // P6: 中等作业
   pid = fork();
@@ -175,25 +177,28 @@ void test_scenario1(int schedId, char *schedName) {
     cpu_work(cpu_medium);
     exit();
   }
-  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_MEDIUM; nchildren++; }
+  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_MEDIUM; info[nchildren].priority = 10; nchildren++; }
   
   // 收集统计
-  output("PID\t类型\t\t就绪时间\t运行时间\t周转时间\n");
-  output("----\t----\t\t--------\t--------\t--------\n");
+  output("PID\t优先级\t类型\t\t就绪时间\t运行时间\t周转时间\n");
+  output("----\t------\t----\t\t--------\t--------\t--------\n");
   
   for(i = 0; i < nchildren; i++) {
     pid = wait2(&retime, &rutime, &stime);
     if(pid > 0) {
       int turnaround = retime + rutime + stime;
       int role = ROLE_MEDIUM;
+      int priority = 10;
       for(k = 0; k < nchildren; k++) {
-        if(info[k].pid == pid) { role = info[k].role; break; }
+        if(info[k].pid == pid) { role = info[k].role; priority = info[k].priority; break; }
       }
       
       char *type = (role == ROLE_LONG) ? "长作业" : 
                    (role == ROLE_SHORT) ? "短作业" : "中作业";
       
-      output_int(pid); output("\t"); output(type); output("\t\t");
+      output_int(pid); output("\t");
+      output_int(priority); output("\t");
+      output(type); output("\t\t");
       output_int(retime); output("\t\t");
       output_int(rutime); output("\t\t");
       output_int(turnaround); output("\n");
@@ -208,19 +213,19 @@ void test_scenario1(int schedId, char *schedName) {
     }
   }
   
-  output("----\t----\t\t--------\t--------\t--------\n");
+  output("----\t------\t----\t\t--------\t--------\t--------\n");
   if(long_count > 0) {
-    output("长作业平均\t\t"); output_int(long_retime/long_count);
+    output("长作业\t平均\t\t\t"); output_int(long_retime/long_count);
     output("\t\t"); output_int(long_rutime/long_count);
     output("\t\t"); output_int((long_retime+long_rutime)/long_count); output("\n");
   }
   if(short_count > 0) {
-    output("短作业平均\t\t"); output_int(short_retime/short_count);
+    output("短作业\t平均\t\t\t"); output_int(short_retime/short_count);
     output("\t\t"); output_int(short_rutime/short_count);
     output("\t\t"); output_int((short_retime+short_rutime)/short_count); output("\n");
   }
   if(med_count > 0) {
-    output("中作业平均\t\t"); output_int(med_retime/med_count);
+    output("中作业\t平均\t\t\t"); output_int(med_retime/med_count);
     output("\t\t"); output_int(med_rutime/med_count);
     output("\t\t"); output_int((med_retime+med_rutime)/med_count); output("\n");
   }
@@ -253,7 +258,7 @@ void test_scenario2(int schedId, char *schedName) {
       cpu_work(CPU_WORK);
       exit();
     }
-    if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_CPU_BG; nchildren++; }
+    if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_CPU_BG; info[nchildren].priority = 18; nchildren++; }
   }
   
   // 2个交互型任务（高优先级，短CPU+频繁IO）
@@ -264,7 +269,7 @@ void test_scenario2(int schedId, char *schedName) {
       interactive_work(IO_WORK);
       exit();
     }
-    if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_INTER; nchildren++; }
+    if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_INTER; info[nchildren].priority = 3; nchildren++; }
   }
   
   // 2个后台IO任务（中等优先级）
@@ -275,25 +280,28 @@ void test_scenario2(int schedId, char *schedName) {
       io_work(IO_WORK);
       exit();
     }
-    if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_IO_BG; nchildren++; }
+    if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_IO_BG; info[nchildren].priority = 12; nchildren++; }
   }
   
-  output("PID\t类型\t\t就绪时间\t运行时间\t休眠时间\t周转时间\n");
-  output("----\t----\t\t--------\t--------\t--------\t--------\n");
+  output("PID\t优先级\t类型\t\t就绪时间\t运行时间\t休眠时间\t周转时间\n");
+  output("----\t------\t----\t\t--------\t--------\t--------\t--------\n");
   
   for(i = 0; i < nchildren; i++) {
     pid = wait2(&retime, &rutime, &stime);
     if(pid > 0) {
       int turnaround = retime + rutime + stime;
       int role = ROLE_CPU_BG;
+      int priority = 10;
       for(k = 0; k < nchildren; k++) {
-        if(info[k].pid == pid) { role = info[k].role; break; }
+        if(info[k].pid == pid) { role = info[k].role; priority = info[k].priority; break; }
       }
       
       char *type = (role == ROLE_INTER) ? "交互型" :
                    (role == ROLE_CPU_BG) ? "CPU背景" : "IO背景";
       
-      output_int(pid); output("\t"); output(type); output("\t\t");
+      output_int(pid); output("\t");
+      output_int(priority); output("\t");
+      output(type); output("\t\t");
       output_int(retime); output("\t\t");
       output_int(rutime); output("\t\t");
       output_int(stime); output("\t\t");
@@ -309,21 +317,21 @@ void test_scenario2(int schedId, char *schedName) {
     }
   }
   
-  output("----\t----\t\t--------\t--------\t--------\t--------\n");
+  output("----\t------\t----\t\t--------\t--------\t--------\t--------\n");
   if(inter_count > 0) {
-    output("交互型平均\t\t"); output_int(inter_retime/inter_count);
+    output("交互型\t平均\t\t\t"); output_int(inter_retime/inter_count);
     output("\t\t"); output_int(inter_rutime/inter_count);
     output("\t\t"); output_int(inter_stime/inter_count);
     output("\t\t"); output_int((inter_retime+inter_rutime+inter_stime)/inter_count); output("\n");
   }
   if(cpubg_count > 0) {
-    output("CPU背景平均\t\t"); output_int(cpubg_retime/cpubg_count);
+    output("CPU背景\t平均\t\t\t"); output_int(cpubg_retime/cpubg_count);
     output("\t\t"); output_int(cpubg_rutime/cpubg_count);
     output("\t\t0\t\t");
     output_int((cpubg_retime+cpubg_rutime)/cpubg_count); output("\n");
   }
   if(iobg_count > 0) {
-    output("IO背景平均\t\t"); output_int(iobg_retime/iobg_count);
+    output("IO背景\t平均\t\t\t"); output_int(iobg_retime/iobg_count);
     output("\t\t"); output_int(iobg_rutime/iobg_count);
     output("\t\t"); output_int(iobg_stime/iobg_count);
     output("\t\t"); output_int((iobg_retime+iobg_rutime+iobg_stime)/iobg_count); output("\n");
@@ -359,7 +367,7 @@ void test_scenario3(int schedId, char *schedName) {
     cpu_work(cpu_verylong);
     exit();
   }
-  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_HIGH; nchildren++; }
+  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_HIGH; info[nchildren].priority = 1; nchildren++; }
   
   // P2-P4: 中等优先级小任务
   for(i = 0; i < 3; i++) {
@@ -369,7 +377,7 @@ void test_scenario3(int schedId, char *schedName) {
       cpu_work(cpu_medium);
       exit();
     }
-    if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_MID; nchildren++; }
+    if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_MID; info[nchildren].priority = 10; nchildren++; }
   }
   
   // P5-P6: 最低优先级小任务（可能饥饿）
@@ -380,25 +388,28 @@ void test_scenario3(int schedId, char *schedName) {
       cpu_work(cpu_medium);
       exit();
     }
-    if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_LOW; nchildren++; }
+    if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_LOW; info[nchildren].priority = 19; nchildren++; }
   }
   
-  output("PID\t优先级组\t就绪时间\t运行时间\t周转时间\n");
-  output("----\t--------\t--------\t--------\t--------\n");
+  output("PID\t优先级\t优先级组\t就绪时间\t运行时间\t周转时间\n");
+  output("----\t------\t--------\t--------\t--------\t--------\n");
   
   for(i = 0; i < nchildren; i++) {
     pid = wait2(&retime, &rutime, &stime);
     if(pid > 0) {
       int turnaround = retime + rutime + stime;
       int role = ROLE_MID;
+      int priority = 10;
       for(k = 0; k < nchildren; k++) {
-        if(info[k].pid == pid) { role = info[k].role; break; }
+        if(info[k].pid == pid) { role = info[k].role; priority = info[k].priority; break; }
       }
       
       char *type = (role == ROLE_HIGH) ? "高优先级" :
                    (role == ROLE_MID) ? "中优先级" : "低优先级";
       
-      output_int(pid); output("\t"); output(type); output("\t");
+      output_int(pid); output("\t");
+      output_int(priority); output("\t");
+      output(type); output("\t");
       output_int(retime); output("\t\t");
       output_int(rutime); output("\t\t");
       output_int(turnaround); output("\n");
@@ -413,19 +424,19 @@ void test_scenario3(int schedId, char *schedName) {
     }
   }
   
-  output("----\t--------\t--------\t--------\t--------\n");
+  output("----\t------\t--------\t--------\t--------\t--------\n");
   if(high_count > 0) {
-    output("高优平均\t\t"); output_int(high_retime/high_count);
+    output("高优\t平均\t\t\t"); output_int(high_retime/high_count);
     output("\t\t"); output_int(high_rutime/high_count);
     output("\t\t"); output_int((high_retime+high_rutime)/high_count); output("\n");
   }
   if(mid_count > 0) {
-    output("中优平均\t\t"); output_int(mid_retime/mid_count);
+    output("中优\t平均\t\t\t"); output_int(mid_retime/mid_count);
     output("\t\t"); output_int(mid_rutime/mid_count);
     output("\t\t"); output_int((mid_retime+mid_rutime)/mid_count); output("\n");
   }
   if(low_count > 0) {
-    output("低优平均\t\t"); output_int(low_retime/low_count);
+    output("低优\t平均\t\t\t"); output_int(low_retime/low_count);
     output("\t\t"); output_int(low_rutime/low_count);
     output("\t\t"); output_int((low_retime+low_rutime)/low_count); output("\n");
   }
