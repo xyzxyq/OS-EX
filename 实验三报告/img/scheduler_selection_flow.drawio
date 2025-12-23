@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2024-12-21T14:22:00.000Z" agent="Claude" version="21.0.0">
+  <diagram name="调度器选择流程" id="scheduler-flow">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- 标题 -->
+        <mxCell id="title" value="xv6 调度器选择机制流程图" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=20;fontStyle=1;fontColor=#333333;" vertex="1" parent="1">
+          <mxGeometry x="400" y="20" width="300" height="40" as="geometry" />
+        </mxCell>
+        
+        <!-- 编译时阶段标题 -->
+        <mxCell id="phase1-title" value="编译时 (Compile Time)" style="text;html=1;strokeColor=none;fillColor=#dae8fc;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="80" width="200" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- 步骤1: 用户执行make -->
+        <mxCell id="step1" value="用户执行命令&#xa;make SCHEDPOLICY=PRIORITY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="130" width="200" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- 步骤2: Makefile处理 -->
+        <mxCell id="step2" value="Makefile 处理&#xa;CFLAGS += -D $(SCHEDPOLICY)&#xa;→ gcc -DPRIORITY ..." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="200" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 箭头1-2 -->
+        <mxCell id="arrow1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="step1" target="step2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- 步骤3: 预处理器 -->
+        <mxCell id="step3" value="C预处理器检查 sdh.h&#xa;#ifdef PRIORITY → 生效" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="40" y="280" width="200" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- 箭头2-3 -->
+        <mxCell id="arrow2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="step2" target="step3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- 步骤4: 初始化变量 -->
+        <mxCell id="step4" value="初始化全局变量&#xa;ready_process = priorityScheduler&#xa;schedSelected = 1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="350" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 箭头3-4 -->
+        <mxCell id="arrow3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="step3" target="step4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- 运行时阶段标题 -->
+        <mxCell id="phase2-title" value="运行时 (Runtime)" style="text;html=1;strokeColor=none;fillColor=#f8cecc;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="80" width="200" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- 步骤5: scheduler主循环 -->
+        <mxCell id="step5" value="scheduler() 主循环&#xa;proc.c:551" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="130" width="200" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- 步骤6: 调用函数指针 -->
+        <mxCell id="step6" value="调用调度函数&#xa;p = (*ready_process)()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="200" width="200" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- 箭头5-6 -->
+        <mxCell id="arrow5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="step5" target="step6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- 步骤7: 执行具体调度器 -->
+        <mxCell id="step7" value="执行 priorityScheduler()&#xa;从优先级队列取进程" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="270" width="200" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- 箭头6-7 -->
+        <mxCell id="arrow6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="step6" target="step7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- 步骤8: 返回进程 -->
+        <mxCell id="step8" value="返回进程 p&#xa;切换上下文执行" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="300" y="340" width="200" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- 箭头7-8 -->
+        <mxCell id="arrow7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="step7" target="step8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- 动态切换阶段标题 -->
+        <mxCell id="phase3-title" value="动态切换 (可选)" style="text;html=1;strokeColor=none;fillColor=#ffe6cc;align=center;verticalAlign=middle;fontSize=14;fontStyle=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="560" y="80" width="200" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- 步骤A: 用户调用 -->
+        <mxCell id="stepA" value="用户程序调用&#xa;setscheduler(4)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="130" width="200" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- 步骤B: 系统调用 -->
+        <mxCell id="stepB" value="setscheduler() 系统调用&#xa;proc.c:1021" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="200" width="200" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- 箭头A-B -->
+        <mxCell id="arrowA" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="stepA" target="stepB">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- 步骤C: 更新指针 -->
+        <mxCell id="stepC" value="更新函数指针&#xa;ready_process = schedulerFunction[4]&#xa;schedSelected = 4" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="560" y="270" width="200" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 箭头B-C -->
+        <mxCell id="arrowB" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="stepB" target="stepC">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- 步骤D: 重建队列 -->
+        <mxCell id="stepD" value="重建就绪队列&#xa;将RUNNABLE进程重新入队" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="560" y="350" width="200" height="50" as="geometry" />
+        </mxCell>
+        
+        <!-- 箭头C-D -->
+        <mxCell id="arrowC" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="stepC" target="stepD">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        
+        <!-- 连接编译时到运行时 -->
+        <mxCell id="connect1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;dashed=1;strokeColor=#666666;" edge="1" parent="1" source="step4" target="step5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="140" y="420" />
+              <mxPoint x="270" y="420" />
+              <mxPoint x="270" y="155" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 函数指针表 -->
+        <mxCell id="table-title" value="schedulerFunction[] 映射表" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="450" width="200" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="table" value="[0] defaultScheduler&#xa;[1] priorityScheduler&#xa;[2] fcfsScheduler&#xa;[3] rrScheduler&#xa;[4] smlScheduler" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="40" y="470" width="200" height="100" as="geometry" />
+        </mxCell>
+        
+        <!-- 关键变量说明 -->
+        <mxCell id="var-title" value="关键全局变量" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="300" y="450" width="200" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="vars" value="ready_process: 函数指针，指向当前调度函数&#xa;schedSelected: 当前调度器ID (0-4)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="300" y="470" width="250" height="50" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -57,6 +57,7 @@ struct proc {
   int retime;                  // Process READY(RUNNABLE) time
   int rutime;                  // Process RUNNING time
   int sem_held[32];            // Per-semaphore resource count (index == semaphore ID)
+  struct proc *next;           // Ready queue next pointer
 };
 
 // Per-process state (simplified version for user space)

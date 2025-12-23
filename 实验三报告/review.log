@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.7.3)  19 DEC 2025 11:28
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.7.3)  23 DEC 2025 12:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1439,33 +1439,41 @@ File: img/sched_framework.drawio.pdf Graphic file (type pdf)
 [5]
 
 [6]
+File: img/scheduler_selection_flow.png Graphic file (type bmp)
+<img/scheduler_selection_flow.png>
+
+
+[7]
 File: img/scheduler1.png Graphic file (type bmp)
 <img/scheduler1.png>
 File: img/scheduler2.png Graphic file (type bmp)
 <img/scheduler2.png>
+
+
+[8]
 File: img/scheduler_main.drawio.pdf Graphic file (type pdf)
 <use img/scheduler_main.drawio.pdf>
 
 
-[7]
+[9]
 
 LaTeX Font Warning: Font shape `TU/ppl/m/it' undefined
-(Font)              using `TU/ppl/m/n' instead on input line 321.
+(Font)              using `TU/ppl/m/n' instead on input line 367.
 
 
 
-[8]
+[10]
 File: img/priority_scheduler.drawio.pdf Graphic file (type pdf)
 <use img/priority_scheduler.drawio.pdf>
 
 
-[9]
+[11]
 File: img/priority_alg.png Graphic file (type bmp)
 <img/priority_alg.png>
 
 
-[10]
-Overfull \hbox (2.91693pt too wide) in paragraph at lines 378--379
+[12]
+Overfull \hbox (2.91693pt too wide) in paragraph at lines 432--433
 []\TU/SimSun(0)/m/n/12 使 用 \TU/lmtt/m/n/12 for \TU/SimSun(0)/m/n/12 循 环 遍 历 整 个
  进 程 表，|  从 \TU/lmtt/m/n/12 ptable.proc \TU/SimSun(0)/m/n/12 开 始 到 \TU/lmtt/m/n
 /12 &ptable.proc[NPROC]
@@ -1473,38 +1481,41 @@ Overfull \hbox (2.91693pt too wide) in paragraph at lines 378--379
 
 
 
-[11]
+[13]
 File: img/FIFS.jpeg Graphic file (type bmp)
 <img/FIFS.jpeg>
+
+
+[14]
 File: img/fcfs_scheduler.drawio.pdf Graphic file (type pdf)
 <use img/fcfs_scheduler.drawio.pdf>
 
 
-[12]
+[15]
 File: img/FIFS_alg.png Graphic file (type bmp)
 <img/FIFS_alg.png>
 
 
-[13]
+[16]
 
-[14]
+[17]
 File: img/RoundRobin.jpg Graphic file (type bmp)
 <img/RoundRobin.jpg>
 File: img/rr_scheduler.drawio.pdf Graphic file (type pdf)
 <use img/rr_scheduler.drawio.pdf>
 
 
-[15]
+[18]
 File: img/RR_alg.png Graphic file (type bmp)
 <img/RR_alg.png>
 
 
-[16]
+[19]
 File: img/SML.png Graphic file (type bmp)
 <img/SML.png>
 
 
-[17]
+[20]
 File: img/sml_scheduler.drawio.pdf Graphic file (type pdf)
 <use img/sml_scheduler.drawio.pdf>
 File: img/SML_alg1.png Graphic file (type bmp)
@@ -1513,68 +1524,69 @@ File: img/SML_alg2.png Graphic file (type bmp)
 <img/SML_alg2.png>
 
 
-[18]
+[21]
+
+[22]
 File: img/cpu_task_create.png Graphic file (type bmp)
 <img/cpu_task_create.png>
-
-
-[19]
 File: img/io_task_create.png Graphic file (type bmp)
 <img/io_task_create.png>
 File: img/scheduler_test.drawio.pdf Graphic file (type pdf)
 <use img/scheduler_test.drawio.pdf>
 
 
-[20]
+[23]
 File: img/wait2.drawio.pdf Graphic file (type pdf)
 <use img/wait2.drawio.pdf>
 
 
-[21]
+[24]
 
-[22]
+[25]
 File: img/run_result1.png Graphic file (type bmp)
 <img/run_result1.png>
 File: img/run_result_priority.png Graphic file (type bmp)
 <img/run_result_priority.png>
+
+
+[26]
 File: img/run_result_fifs.png Graphic file (type bmp)
 <img/run_result_fifs.png>
-
-
-[23]
 File: img/run_result_rr.png Graphic file (type bmp)
 <img/run_result_rr.png>
 
 
-[24]
+[27]
 File: img/run_result_sml.png Graphic file (type bmp)
 <img/run_result_sml.png>
 
 
-[25]
+[28]
 File: img/scheduler_comparison_avg.png Graphic file (type bmp)
 <img/scheduler_comparison_avg.png>
 
 
-[26]
+[29]
 File: img/scheduler_process_details.png Graphic file (type bmp)
 <img/scheduler_process_details.png>
 File: img/scheduler_turnaround_comparison.png Graphic file (type bmp)
 <img/scheduler_turnaround_comparison.png>
 
 
-[27]
+[30]
 File: img/scheduler_radar_chart.png Graphic file (type bmp)
 <img/scheduler_radar_chart.png>
 
 
-[28]
-
-[29]
-
-[30]
-
 [31]
+
+[32]
+
+[33]
+
+[34]
+
+[35]
 \g__tcobox_out_iow=\write6
 \openout6 = `review.listing'.
 
@@ -1621,32 +1633,15 @@ LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10.95> not available
 
  (./review.listing)
 
-[32]
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-[33]
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-[34]
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-[35]
-\openout6 = `review.listing'.
-
- (./review.listing)
-
 [36]
 \openout6 = `review.listing'.
 
  (./review.listing)
 
 [37]
+\openout6 = `review.listing'.
+
+ (./review.listing)
 
 [38]
 \openout6 = `review.listing'.
@@ -1654,6 +1649,9 @@ LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10.95> not available
  (./review.listing)
 
 [39]
+\openout6 = `review.listing'.
+
+ (./review.listing)
 
 [40]
 \openout6 = `review.listing'.
@@ -1661,19 +1659,13 @@ LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10.95> not available
  (./review.listing)
 
 [41]
-\openout6 = `review.listing'.
-
- (./review.listing)
-\openout6 = `review.listing'.
-
- (./review.listing)
 
 [42]
-
-[43]
 \openout6 = `review.listing'.
 
  (./review.listing)
+
+[43]
 
 [44]
 \openout6 = `review.listing'.
@@ -1681,21 +1673,41 @@ LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10.95> not available
  (./review.listing)
 
 [45]
+\openout6 = `review.listing'.
 
-[46]
+ (./review.listing)
 \openout6 = `review.listing'.
 
  (./review.listing)
 
+[46]
+
 [47]
+\openout6 = `review.listing'.
+
+ (./review.listing)
 
 [48]
+\openout6 = `review.listing'.
+
+ (./review.listing)
 
 [49]
 
 [50]
+\openout6 = `review.listing'.
 
-[51] (./review.aux)
+ (./review.listing)
+
+[51]
+
+[52]
+
+[53]
+
+[54]
+
+[55] (./review.aux)
  ***********
 LaTeX2e <2025-06-01> patch level 1
 L3 programming layer <2022/08/05>
@@ -1705,15 +1717,15 @@ L3 programming layer <2022/08/05>
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 Package rerunfilecheck Info: File `review.out' has not changed.
-(rerunfilecheck)             Checksum: E33CEA563239F871FA683A8A16AAF4FB;8474.
+(rerunfilecheck)             Checksum: 5251D0EE1DC20A7679085D5A1EAA4956;8736.
  ) 
 Here is how much of TeX's memory you used:
- 35563 strings out of 468529
- 798820 string characters out of 5451400
- 2128131 words of memory out of 5000000
- 63287 multiletter control sequences out of 15000+600000
+ 35573 strings out of 468529
+ 799177 string characters out of 5451400
+ 2127955 words of memory out of 5000000
+ 63296 multiletter control sequences out of 15000+600000
  641101 words of font info for 122 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  93i,13n,111p,1205b,1757s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on review.pdf (52 pages).
+Output written on review.pdf (56 pages).

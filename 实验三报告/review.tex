@@ -281,6 +281,52 @@
         \label{fig:sched_framework}
     \end{figure}
     
+    \subsubsection{就绪队列实现}
+    
+    为了提高调度效率，实现了真正的就绪队列数据结构，替代原有的"遍历进程表"方式。
+    
+    \textbf{队列与堆结构设计：}
+    
+    在 \texttt{proc.c} 中定义了不同的数据结构支持各种调度算法：
+    \begin{itemize}
+        \item \texttt{fcfsQueue}：用于 FCFS 和 RR 调度的先进先出队列（1个队列）
+        \item \texttt{pHeap}：用于优先级调度的\textbf{最小堆}结构，时间复杂度 O(log n)
+        \item \texttt{smlQueues[3]}：用于静态多级队列调度（3个队列：高/中/低）
+    \end{itemize}
+    
+    \textbf{最小堆优化说明：}
+    
+    优先级调度采用最小堆而非多级队列实现，具有以下优势：
+    \begin{itemize}
+        \item 插入进程：O(log n)，通过 \texttt{siftUp()} 上浮操作维护堆性质
+        \item 提取最高优先级进程：O(log n)，通过 \texttt{siftDown()} 下沉操作
+        \item 堆的性质：父节点优先级 $\leq$ 子节点优先级（数值越小优先级越高）
+    \end{itemize}
+    
+    \textbf{核心函数：}
+    \begin{itemize}
+        \item \texttt{enqueue(q, p)}：将进程 p 添加到队列 q 的尾部，时间复杂度 O(1)
+        \item \texttt{dequeue(q)}：从队列 q 头部取出进程，时间复杂度 O(1)
+        \item \texttt{addToReadyQueues(p)}：根据当前调度器类型，将进程添加到对应队列
+    \end{itemize}
+    
+    \textbf{调度器选择机制：}
+    
+    调度器选择通过编译时宏定义和运行时函数指针两种机制实现：
+    \begin{enumerate}
+        \item \textbf{编译时}：通过 Makefile 传递 \texttt{SCHEDPOLICY} 宏，在 \texttt{sdh.h} 中初始化 \texttt{ready\_process} 函数指针
+        \item \textbf{运行时}：通过 \texttt{setscheduler(sid)} 系统调用动态切换调度器，同时重建就绪队列
+    \end{enumerate}
+    
+    调度器选择机制流程如图\ref{fig:scheduler_selection}所示。
+    
+    \begin{figure}[H] 
+        \centering
+        \includegraphics[width=0.9\textwidth]{img/scheduler_selection_flow.png}
+        \caption{调度器选择机制流程}
+        \label{fig:scheduler_selection}
+    \end{figure}
+    
     \subsubsection{进程统计信息收集}
     实现 \texttt{update\_statistics()} 函数，在每个时钟中断时被调用，根据当前进程状态更新对应的时间计数器。该函数遍历进程表，根据进程的 SLEEPING、RUNNABLE、RUNNING 状态分别递增 \texttt{stime}、\texttt{retime}、\texttt{rutime} 计数器。
     
@@ -322,7 +368,15 @@
     
     \textbf{实现策略：}
     
-    本实现采用非抢占式优先级调度，具体步骤如下：
+    本实现采用\textbf{最小堆}数据结构实现非抢占式优先级调度，具体设计如下：
+    \begin{enumerate}[itemsep=2pt]
+        \item 使用结构体 \texttt{priorityHeap} 存储就绪进程指针数组和堆大小
+        \item 插入时调用 \texttt{heapInsert()}，将进程放入堆末尾后执行 \texttt{siftUp()} 上浮
+        \item 提取时调用 \texttt{heapExtract()}，取出堆顶后将末尾元素放到堆顶，执行 \texttt{siftDown()} 下沉
+        \item 堆顶始终是优先级最高（数值最小）的进程
+    \end{enumerate}
+    
+    相比遍历进程表的 O(n) 实现，最小堆将提取操作优化到 O(log n)。
     \begin{enumerate}[itemsep=2pt]
         \item 遍历整个进程表，筛选出所有状态为 RUNNABLE 的就绪进程
         \item 维护一个候选进程指针 \texttt{highP}，初始值为 NULL
@@ -416,8 +470,16 @@
         \item 维护候选进程指针 \texttt{firstP}，记录创建时间最早的进程
         \item 对每个就绪进程，比较其 \texttt{ctime} 与当前候选进程
         \item 选择 \texttt{ctime} 值最小（创建最早）的进程执行
-        \item 该进程将持续运行直到完成或阻塞，不会被其他进程抢占
+        \item 该进程将持续运行直到完成或阻塞，\textbf{不会被时钟中断抢占}
     \end{enumerate}
+    
+    \textbf{非抢占式实现：}
+    
+    为实现真正的非抢占式 FCFS，在 \texttt{trap.c} 中修改了时钟中断处理逻辑：
+    \begin{itemize}
+        \item 当调度器为 FCFS (schedSelected == 2) 时，时钟中断不调用 \texttt{yield()}
+        \item 进程只有主动调用 \texttt{sleep()}、\texttt{exit()} 等才会让出 CPU
+    \end{itemize}
     
     \textbf{算法优势：}
     \begin{itemize}[itemsep=0pt]
@@ -478,7 +540,7 @@
         \item 更新 \texttt{lastIndex}，为下次调度做准备
     \end{enumerate}
     
-    \textbf{时间片设置：}在xv6中，时间片由时钟中断频率决定，默认为10ms。进程在时钟中断时会被强制调用 \texttt{yield()} 让出CPU。
+    \textbf{时间片设置：}在xv6中，时间片由时钟中断频率决定，默认为10ms。\textbf{只有 RR 调度器}在时钟中断时会强制调用 \texttt{yield()} 让出CPU，其他调度器（FCFS、PRIORITY、SML）均为非抢占式。
     
     \textbf{算法优势：}
     \begin{itemize}[itemsep=0pt]
@@ -601,6 +663,17 @@
     
     \subsubsection{测试程序设计思路}
     测试程序 \texttt{scheduler\_test.c} 创建两种类型的进程来模拟真实工作负载：
+    
+    \textbf{进程并发执行机制：}
+    
+    测试程序通过 \texttt{fork()} 系统调用创建 6 个子进程。\texttt{fork()} 的特性是：
+    \begin{itemize}
+        \item 调用一次，返回两次：父进程返回子进程 PID（$>$0），子进程返回 0
+        \item 父子进程并发执行，由调度器决定谁先运行
+        \item 子进程执行完 \texttt{exit()} 后退出，不会继续循环
+    \end{itemize}
+    
+    这意味着父进程快速完成 6 次 fork 循环后，6 个子进程同时处于 RUNNABLE 状态，由调度器按照当前调度策略选择执行顺序。这正是测试调度算法差异的关键。
 
      \textbf{(1) CPU 密集型}：执行大量计算操作，很少主动让出 CPU
      
@@ -647,9 +720,18 @@
     
     \textbf{测试配置：}
     \begin{itemize}
-        \item 3 个 CPU 密集型进程（优先级：2, 5, 8）
-        \item 3 个 IO 密集型进程（优先级：10, 14, 18）
+        \item 3 个 CPU 密集型进程
+        \item 3 个 IO 密集型进程
     \end{itemize}
+    
+    \textbf{优先级打乱设计：}
+    
+    为避免进程创建顺序与优先级正相关导致 FCFS 和 PRIORITY 调度结果相似，测试程序采用打乱的优先级分配：
+    \begin{itemize}
+        \item CPU 密集型进程（i=0,1,2）优先级分别为：8, 2, 5
+        \item IO 密集型进程（i=3,4,5）优先级分别为：14, 10, 18
+    \end{itemize}
+    这样设计使得 FCFS 按创建顺序调度，而 PRIORITY 按优先级调度，两者执行顺序明显不同。
     
     \textbf{性能指标解释：}
     \begin{itemize}
@@ -824,11 +906,14 @@
     
     \subsection{深入理解了不同调度算法的特点}
     \begin{itemize}
-        \item \textbf{优先级调度}：高优先级进程能快速响应，但可能导致低优先级进程饥饿
-        \item \textbf{FCFS}：实现简单，但对短作业不友好，可能导致护航效应
-        \item \textbf{轮转调度}：公平性好，适合交互式系统，但上下文切换开销较大
-        \item \textbf{静态多级队列}：结合了优先级和轮转的优点，但队列边界的设定需要权衡
+        \item \textbf{优先级调度}：采用最小堆实现，时间复杂度 O(log n)；高优先级进程能快速响应，但可能导致低优先级进程饥饿
+        \item \textbf{FCFS}：真正的非抢占式调度，进程运行直到主动让出 CPU；实现简单但可能导致护航效应
+        \item \textbf{轮转调度}：唯一的抢占式调度，公平性好，适合交互式系统
+        \item \textbf{静态多级队列}：结合了优先级和轮转的优点，在效率与公平之间取得平衡
     \end{itemize}
+    
+    \subsection{掌握了数据结构优化技术}
+    在优先级调度中，我使用最小堆替代了传统的多级队列或线性遍历方式。堆的上浮（siftUp）和下沉（siftDown）操作确保了 O(log n) 的时间复杂度，这是一个重要的算法优化实践。
     
     \subsection{掌握了进程统计信息收集方法}
     通过实现 \texttt{update\_statistics()} 和 \texttt{wait2()} 系统调用，我学会了如何在内核中收集进程的运行时统计信息，这对于分析调度算法性能至关重要。

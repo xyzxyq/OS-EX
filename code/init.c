@@ -5,8 +5,6 @@
 #include "user.h"
 #include "fcntl.h"
 
-#include "sdh.h"
-
 char *argv[] = { "sh", "lsh", 0 };
 
 int
@@ -21,7 +19,7 @@ main(void)
   dup(0);  // stdout
   dup(0);  // stderr
 
-  printf(1, "Scheduler default policy: %s\n", schedulerName[schedSelected]);
+  printf(1, "Scheduler default policy id: %d\n", getscheduler());
 
   for(;;){
     printf(1, "init: starting lsh\n");
