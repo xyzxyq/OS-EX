@@ -1,180 +1,503 @@
 // scheduler_test.c
-// 调度算法比较测试程序
-// 创建6个进程（3个CPU密集型 + 3个IO密集型）
-// 对比不同调度算法的性能
+// 调度算法测试程序
+// 三个典型场景：车队效应、交互型vs背景、优先级饥饿
+// 对比不同调度算法的性能指标
 
-#include "fcntl.h"
-#include "sdh.h"
 #include "types.h"
 #include "user.h"
+#include "fcntl.h"
 
-// 调度算法名称
-char *sched_names[] = {"DEFAULT", "PRIORITY", "FCFS", "RR", "SML"};
+#define NCHILD 6          // 子进程数量
+#define CPU_WORK 5000000  // CPU 基准工作量（增大10倍确保跨越多个时钟周期）
+#define IO_WORK 20        // IO 基准次数
 
-// CPU密集型任务：大量计算
-void cpu_intensive(int id) {
-  volatile int sum = 0;
+// 调度算法编号（与内核保持一致）
+#define SCHED_DEFAULT  0
+#define SCHED_PRIORITY 1
+#define SCHED_FCFS     2
+#define SCHED_RR       3
+#define SCHED_SML      4
+
+// 任务类型
+#define ROLE_LONG   0  // 长任务
+#define ROLE_SHORT  1  // 短任务
+#define ROLE_MEDIUM 2  // 中等任务
+#define ROLE_INTER  3  // 交互型
+#define ROLE_IO_BG  4  // 后台IO
+#define ROLE_CPU_BG 5  // 后台CPU
+#define ROLE_HIGH   6  // 高优先级
+#define ROLE_MID    7  // 中优先级
+#define ROLE_LOW    8  // 低优先级
+
+// 全局文件描述符，用于输出到文件
+int outfd = -1;
+
+struct child_info {
+  int pid;
+  int role;
+};
+
+// 同时输出到屏幕和文件
+void output(char *s) {
+  printf(1, "%s", s);
+  if(outfd >= 0) {
+    write(outfd, s, strlen(s));
+  }
+}
+
+// 输出数字
+void output_int(int n) {
+  char buf[16];
+  int i = 0, neg = 0;
+  if(n < 0) { neg = 1; n = -n; }
+  do { buf[i++] = '0' + (n % 10); n /= 10; } while(n > 0);
+  if(neg) buf[i++] = '-';
+  char out[16];
+  int j;
+  for(j = 0; j < i; j++) out[j] = buf[i-1-j];
+  out[j] = 0;
+  output(out);
+}
+
+// CPU 密集型工作
+void cpu_work(int work) {
   int i, j;
-  // 使用嵌套循环增加计算量
-  // 原因：可读性	嵌套结构清晰表达"外层控制批次，内层执行计算"
-  // 调试方便	可以单独调整外层（批次数）或内层（每批工作量）
-  // 模拟真实场景	实际CPU密集型任务通常有层次结构（如矩阵运算、图像处理）
-  // 防止迭代次数过多导致溢出
-  for (i = 0; i < 100; i++) {
-    for (j = 0; j < 100000; j++) {
-      sum += j;
-      sum = sum % 1000000; // 防止溢出
-    }
-  }
-  // 输出完成信息
-  printf(1, "CPU Process %d completed (sum=%d)\n", id, sum);
-}
-
-// IO密集型任务：频繁sleep模拟IO等待
-void io_intensive(int id) {
-  int i, j;
   volatile int sum = 0;
-  // 多次短暂计算后进入睡眠
-  for (i = 0; i < 50; i++) {
-    // 少量计算
-    for (j = 0; j < 1000; j++) {
-      sum += j;
+  for(i = 0; i < work; i++) {
+    for(j = 0; j < 100; j++) {
+      int x = i * j + (i ^ j);
+      x = (x << 1) ^ (x >> 1);
+      sum += x;
     }
-    // 模拟IO等待
-    sleep(5);
   }
-  printf(1, "IO Process %d completed\n", id);
 }
 
-// 打印统计信息
-void print_statistics(int sched_id, int retime[], int rutime[], int stime[],
-                      int pids[]) {
-  int total_retime = 0, total_rutime = 0, total_stime = 0;
-  int total_turnaround = 0;
+// IO 密集型工作（包含真实文件IO操作）
+void io_work(int rounds) {
+  int i, fd;
+  char buf[] = "io test\n";
+  for(i = 0; i < rounds; i++) {
+    fd = open("io_test", O_CREATE | O_WRONLY);
+    if(fd >= 0) {
+      write(fd, buf, sizeof(buf) - 1);
+      close(fd);
+    }
+    sleep(15);  // 模拟IO等待
+  }
+}
+
+// 交互型工作：短CPU + 频繁sleep（模拟用户输入等待）
+void interactive_work(int rounds) {
   int i;
-
-  printf(1, "\n---------- %s Scheduler Results ----------\n",
-         sched_names[sched_id]);
-  printf(1, "PID\tReady\tRun\tSleep\tTurnaround\n");
-  printf(1, "-------------------------------------------\n");
-
-  for (i = 0; i < 6; i++) {
-    int turnaround = retime[i] + rutime[i] + stime[i];
-    printf(1, "%d\t%d\t%d\t%d\t%d\n", pids[i], retime[i], rutime[i], stime[i],
-           turnaround);
-    total_retime += retime[i];
-    total_rutime += rutime[i];
-    total_stime += stime[i];
-    total_turnaround += turnaround;
+  for(i = 0; i < rounds; i++) {
+    cpu_work(CPU_WORK / 50);  // 很短的CPU计算
+    sleep(10);                 // 等待用户/IO
   }
-
-  printf(1, "-------------------------------------------\n");
-  printf(1, "Avg:\t%d\t%d\t%d\t%d\n", total_retime / 6, total_rutime / 6,
-         total_stime / 6, total_turnaround / 6);
-  printf(1, "\n");
 }
 
-// 运行单个调度算法的测试
-void run_scheduler_test(int sched_id) {
-  int pids[6];
-  int retime[6], rutime[6], stime[6]; // 记录每个进程的ready,run,sleep时间
-  int i, pid;
-  int status;
-
-  printf(1, "\n========== Testing %s Scheduler ==========\n",
-         sched_names[sched_id]);
-
-  // 设置调度算法
-  status = setscheduler(sched_id);
-  if (status < 0) {
-    printf(1, "Error: Failed to set scheduler %d\n", sched_id);
-    return;
-  }
-
-  // 创建6个子进程
-  // 打乱优先级分配，避免创建顺序与优先级正相关
-  // CPU密集型(i=0,1,2)优先级: 8, 2, 5  IO密集型(i=3,4,5)优先级: 14, 10, 18
-  int priorities[6] = {8, 2, 5, 14, 10, 18};
-
-  for (i = 0; i < 6; i++) {
-    pid = fork();
-    if (pid < 0) {
-      printf(1, "Error: fork failed\n");
-      exit();
-    }
-
-    if (pid == 0) {
-      // 子进程：设置优先级（已打乱）
-      setpriority(getpid(), priorities[i]);
-      if (i < 3) {
-        cpu_intensive(i); // CPU密集型
-      } else {
-        io_intensive(i); // IO密集型
-      }
-      exit();
-    } else {
-      // 父进程记录子进程PID
-      pids[i] = pid;
-    }
-  }
-
-  // 等待所有子进程完成并收集统计信息
-  for (i = 0; i < 6; i++) {
-    wait2(&retime[i], &rutime[i], &stime[i]);
-  }
-
-  // 打印统计结果
-  print_statistics(sched_id, retime, rutime, stime, pids);
-}
-
-// 打印综合对比表格
-void print_summary_header() {
-  printf(1, "\n");
-  printf(1, "============================================\n");
-  printf(1, "         SCHEDULER COMPARISON TEST         \n");
-  printf(1, "============================================\n");
-  printf(1, "Test Configuration:\n");
-  printf(1, "  - 3 CPU-intensive processes (priority: 8, 2, 5)\n");
-  printf(1, "  - 3 IO-intensive processes (priority: 14, 10, 18)\n");
-  printf(1, "============================================\n");
-}
-
-int main(int argc, char *argv[]) {
-  int test_schedulers[] = {1, 2, 3, 4}; // PRIORITY, FCFS, RR, SML
-  int num_schedulers = 4;
-  int i;
-
-  // 如果有命令行参数，只测试指定的调度器
-  if (argc > 1) {
-    int sched_id = atoi(argv[1]);
-    if (sched_id >= 0 && sched_id <= 4) {
-      print_summary_header();
-      run_scheduler_test(sched_id);
-      exit();
-    }
-    printf(1, "Usage: scheduler_test [scheduler_id]\n");
-    printf(1, "  0 - DEFAULT\n");
-    printf(1, "  1 - PRIORITY\n");
-    printf(1, "  2 - FCFS\n");
-    printf(1, "  3 - RR (Round Robin)\n");
-    printf(1, "  4 - SML (Static Multi-Level)\n");
+// ============================================================
+// 场景1：纯CPU长短作业 - 展示FCFS车队效应 & RR公平性
+// ============================================================
+void test_scenario1(int schedId, char *schedName) {
+  int pid, i, k;
+  int retime, rutime, stime;
+  struct child_info info[NCHILD];
+  int nchildren = 0;
+  
+  // 统计变量
+  int long_retime = 0, long_rutime = 0, long_count = 0;
+  int short_retime = 0, short_rutime = 0, short_count = 0;
+  int med_retime = 0, med_rutime = 0, med_count = 0;
+  
+  int cpu_long = CPU_WORK;
+  int cpu_short = CPU_WORK / 10;
+  int cpu_medium = CPU_WORK / 3;
+  
+  output("\n========== ");
+  output(schedName);
+  output(" - 场景1: 纯CPU长短作业(车队效应) ==========\n");
+  
+  setscheduler(schedId);
+  
+  // P1: 长作业，到达时间0
+  pid = fork();
+  if(pid == 0) {
+    setpriority(getpid(), 10);
+    cpu_work(cpu_long);
     exit();
   }
-
-  // 打印测试说明
-  print_summary_header();
-
-  // 依次测试各种调度算法
-  for (i = 0; i < num_schedulers; i++) {
-    run_scheduler_test(test_schedulers[i]);
+  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_LONG; nchildren++; }
+  
+  // P2: 长作业，到达时间0
+  pid = fork();
+  if(pid == 0) {
+    setpriority(getpid(), 10);
+    cpu_work(cpu_long);
+    exit();
   }
+  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_LONG; nchildren++; }
+  
+  sleep(10);  // 等一会儿再创建短作业
+  
+  // P3: 短作业，稍晚到达
+  pid = fork();
+  if(pid == 0) {
+    setpriority(getpid(), 10);
+    cpu_work(cpu_short);
+    exit();
+  }
+  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_SHORT; nchildren++; }
+  
+  // P4: 短作业
+  pid = fork();
+  if(pid == 0) {
+    setpriority(getpid(), 10);
+    cpu_work(cpu_short);
+    exit();
+  }
+  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_SHORT; nchildren++; }
+  
+  sleep(10);
+  
+  // P5: 中等作业
+  pid = fork();
+  if(pid == 0) {
+    setpriority(getpid(), 10);
+    cpu_work(cpu_medium);
+    exit();
+  }
+  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_MEDIUM; nchildren++; }
+  
+  // P6: 中等作业
+  pid = fork();
+  if(pid == 0) {
+    setpriority(getpid(), 10);
+    cpu_work(cpu_medium);
+    exit();
+  }
+  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_MEDIUM; nchildren++; }
+  
+  // 收集统计
+  output("PID\t类型\t\t就绪时间\t运行时间\t周转时间\n");
+  output("----\t----\t\t--------\t--------\t--------\n");
+  
+  for(i = 0; i < nchildren; i++) {
+    pid = wait2(&retime, &rutime, &stime);
+    if(pid > 0) {
+      int turnaround = retime + rutime + stime;
+      int role = ROLE_MEDIUM;
+      for(k = 0; k < nchildren; k++) {
+        if(info[k].pid == pid) { role = info[k].role; break; }
+      }
+      
+      char *type = (role == ROLE_LONG) ? "长作业" : 
+                   (role == ROLE_SHORT) ? "短作业" : "中作业";
+      
+      output_int(pid); output("\t"); output(type); output("\t\t");
+      output_int(retime); output("\t\t");
+      output_int(rutime); output("\t\t");
+      output_int(turnaround); output("\n");
+      
+      if(role == ROLE_LONG) {
+        long_retime += retime; long_rutime += rutime; long_count++;
+      } else if(role == ROLE_SHORT) {
+        short_retime += retime; short_rutime += rutime; short_count++;
+      } else {
+        med_retime += retime; med_rutime += rutime; med_count++;
+      }
+    }
+  }
+  
+  output("----\t----\t\t--------\t--------\t--------\n");
+  if(long_count > 0) {
+    output("长作业平均\t\t"); output_int(long_retime/long_count);
+    output("\t\t"); output_int(long_rutime/long_count);
+    output("\t\t"); output_int((long_retime+long_rutime)/long_count); output("\n");
+  }
+  if(short_count > 0) {
+    output("短作业平均\t\t"); output_int(short_retime/short_count);
+    output("\t\t"); output_int(short_rutime/short_count);
+    output("\t\t"); output_int((short_retime+short_rutime)/short_count); output("\n");
+  }
+  if(med_count > 0) {
+    output("中作业平均\t\t"); output_int(med_retime/med_count);
+    output("\t\t"); output_int(med_rutime/med_count);
+    output("\t\t"); output_int((med_retime+med_rutime)/med_count); output("\n");
+  }
+}
 
-  // 最后恢复默认调度器
-  setscheduler(0);
+// ============================================================
+// 场景2：交互型 vs 背景任务 - 展示RR/SML对交互友好
+// ============================================================
+void test_scenario2(int schedId, char *schedName) {
+  int pid, i, k;
+  int retime, rutime, stime;
+  struct child_info info[NCHILD];
+  int nchildren = 0;
+  
+  int inter_retime = 0, inter_rutime = 0, inter_stime = 0, inter_count = 0;
+  int cpubg_retime = 0, cpubg_rutime = 0, cpubg_count = 0;
+  int iobg_retime = 0, iobg_rutime = 0, iobg_stime = 0, iobg_count = 0;
+  
+  output("\n========== ");
+  output(schedName);
+  output(" - 场景2: 交互型vs背景任务 ==========\n");
+  
+  setscheduler(schedId);
+  
+  // 2个重CPU背景任务（低优先级）
+  for(i = 0; i < 2; i++) {
+    pid = fork();
+    if(pid == 0) {
+      setpriority(getpid(), 18);  // 低优先级
+      cpu_work(CPU_WORK);
+      exit();
+    }
+    if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_CPU_BG; nchildren++; }
+  }
+  
+  // 2个交互型任务（高优先级，短CPU+频繁IO）
+  for(i = 0; i < 2; i++) {
+    pid = fork();
+    if(pid == 0) {
+      setpriority(getpid(), 3);  // 高优先级
+      interactive_work(IO_WORK);
+      exit();
+    }
+    if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_INTER; nchildren++; }
+  }
+  
+  // 2个后台IO任务（中等优先级）
+  for(i = 0; i < 2; i++) {
+    pid = fork();
+    if(pid == 0) {
+      setpriority(getpid(), 12);
+      io_work(IO_WORK);
+      exit();
+    }
+    if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_IO_BG; nchildren++; }
+  }
+  
+  output("PID\t类型\t\t就绪时间\t运行时间\t休眠时间\t周转时间\n");
+  output("----\t----\t\t--------\t--------\t--------\t--------\n");
+  
+  for(i = 0; i < nchildren; i++) {
+    pid = wait2(&retime, &rutime, &stime);
+    if(pid > 0) {
+      int turnaround = retime + rutime + stime;
+      int role = ROLE_CPU_BG;
+      for(k = 0; k < nchildren; k++) {
+        if(info[k].pid == pid) { role = info[k].role; break; }
+      }
+      
+      char *type = (role == ROLE_INTER) ? "交互型" :
+                   (role == ROLE_CPU_BG) ? "CPU背景" : "IO背景";
+      
+      output_int(pid); output("\t"); output(type); output("\t\t");
+      output_int(retime); output("\t\t");
+      output_int(rutime); output("\t\t");
+      output_int(stime); output("\t\t");
+      output_int(turnaround); output("\n");
+      
+      if(role == ROLE_INTER) {
+        inter_retime += retime; inter_rutime += rutime; inter_stime += stime; inter_count++;
+      } else if(role == ROLE_CPU_BG) {
+        cpubg_retime += retime; cpubg_rutime += rutime; cpubg_count++;
+      } else {
+        iobg_retime += retime; iobg_rutime += rutime; iobg_stime += stime; iobg_count++;
+      }
+    }
+  }
+  
+  output("----\t----\t\t--------\t--------\t--------\t--------\n");
+  if(inter_count > 0) {
+    output("交互型平均\t\t"); output_int(inter_retime/inter_count);
+    output("\t\t"); output_int(inter_rutime/inter_count);
+    output("\t\t"); output_int(inter_stime/inter_count);
+    output("\t\t"); output_int((inter_retime+inter_rutime+inter_stime)/inter_count); output("\n");
+  }
+  if(cpubg_count > 0) {
+    output("CPU背景平均\t\t"); output_int(cpubg_retime/cpubg_count);
+    output("\t\t"); output_int(cpubg_rutime/cpubg_count);
+    output("\t\t0\t\t");
+    output_int((cpubg_retime+cpubg_rutime)/cpubg_count); output("\n");
+  }
+  if(iobg_count > 0) {
+    output("IO背景平均\t\t"); output_int(iobg_retime/iobg_count);
+    output("\t\t"); output_int(iobg_rutime/iobg_count);
+    output("\t\t"); output_int(iobg_stime/iobg_count);
+    output("\t\t"); output_int((iobg_retime+iobg_rutime+iobg_stime)/iobg_count); output("\n");
+  }
+}
 
-  printf(1, "\n============================================\n");
-  printf(1, "         ALL TESTS COMPLETED               \n");
-  printf(1, "============================================\n");
+// ============================================================
+// 场景3：优先级饥饿测试 - 展示Priority问题 & SML/RR缓解
+// ============================================================
+void test_scenario3(int schedId, char *schedName) {
+  int pid, i, k;
+  int retime, rutime, stime;
+  struct child_info info[NCHILD];
+  int nchildren = 0;
+  
+  int high_retime = 0, high_rutime = 0, high_count = 0;
+  int mid_retime = 0, mid_rutime = 0, mid_count = 0;
+  int low_retime = 0, low_rutime = 0, low_count = 0;
+  
+  int cpu_verylong = CPU_WORK * 2;
+  int cpu_medium = CPU_WORK / 2;
+  
+  output("\n========== ");
+  output(schedName);
+  output(" - 场景3: 优先级饥饿测试 ==========\n");
+  
+  setscheduler(schedId);
+  
+  // P1: 超高优先级CPU大作业（会霸占CPU）
+  pid = fork();
+  if(pid == 0) {
+    setpriority(getpid(), 1);  // 最高优先级
+    cpu_work(cpu_verylong);
+    exit();
+  }
+  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_HIGH; nchildren++; }
+  
+  // P2-P4: 中等优先级小任务
+  for(i = 0; i < 3; i++) {
+    pid = fork();
+    if(pid == 0) {
+      setpriority(getpid(), 10);  // 中优先级
+      cpu_work(cpu_medium);
+      exit();
+    }
+    if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_MID; nchildren++; }
+  }
+  
+  // P5-P6: 最低优先级小任务（可能饥饿）
+  for(i = 0; i < 2; i++) {
+    pid = fork();
+    if(pid == 0) {
+      setpriority(getpid(), 19);  // 最低优先级
+      cpu_work(cpu_medium);
+      exit();
+    }
+    if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_LOW; nchildren++; }
+  }
+  
+  output("PID\t优先级组\t就绪时间\t运行时间\t周转时间\n");
+  output("----\t--------\t--------\t--------\t--------\n");
+  
+  for(i = 0; i < nchildren; i++) {
+    pid = wait2(&retime, &rutime, &stime);
+    if(pid > 0) {
+      int turnaround = retime + rutime + stime;
+      int role = ROLE_MID;
+      for(k = 0; k < nchildren; k++) {
+        if(info[k].pid == pid) { role = info[k].role; break; }
+      }
+      
+      char *type = (role == ROLE_HIGH) ? "高优先级" :
+                   (role == ROLE_MID) ? "中优先级" : "低优先级";
+      
+      output_int(pid); output("\t"); output(type); output("\t");
+      output_int(retime); output("\t\t");
+      output_int(rutime); output("\t\t");
+      output_int(turnaround); output("\n");
+      
+      if(role == ROLE_HIGH) {
+        high_retime += retime; high_rutime += rutime; high_count++;
+      } else if(role == ROLE_MID) {
+        mid_retime += retime; mid_rutime += rutime; mid_count++;
+      } else {
+        low_retime += retime; low_rutime += rutime; low_count++;
+      }
+    }
+  }
+  
+  output("----\t--------\t--------\t--------\t--------\n");
+  if(high_count > 0) {
+    output("高优平均\t\t"); output_int(high_retime/high_count);
+    output("\t\t"); output_int(high_rutime/high_count);
+    output("\t\t"); output_int((high_retime+high_rutime)/high_count); output("\n");
+  }
+  if(mid_count > 0) {
+    output("中优平均\t\t"); output_int(mid_retime/mid_count);
+    output("\t\t"); output_int(mid_rutime/mid_count);
+    output("\t\t"); output_int((mid_retime+mid_rutime)/mid_count); output("\n");
+  }
+  if(low_count > 0) {
+    output("低优平均\t\t"); output_int(low_retime/low_count);
+    output("\t\t"); output_int(low_rutime/low_count);
+    output("\t\t"); output_int((low_retime+low_rutime)/low_count); output("\n");
+  }
+}
 
+// ============================================================
+// 主函数
+// ============================================================
+int main(int argc, char *argv[]) {
+  int scenario = 0;  // 0 = 全部场景, 1/2/3 = 指定场景
+  
+  // 解析命令行参数
+  if(argc > 1) {
+    scenario = atoi(argv[1]);
+    if(scenario < 0 || scenario > 3) {
+      printf(1, "用法: scheduler_test [场景编号]\n");
+      printf(1, "  无参数 - 运行全部 3 个场景\n");
+      printf(1, "  1      - 仅运行场景1 (车队效应)\n");
+      printf(1, "  2      - 仅运行场景2 (交互响应)\n");
+      printf(1, "  3      - 仅运行场景3 (优先级饥饿)\n");
+      exit();
+    }
+  }
+  
+  // 打开输出文件
+  outfd = open("sched_result.txt", O_CREATE | O_WRONLY);
+  
+  output("==========================================\n");
+  output("      调度算法性能比较测试              \n");
+  output("==========================================\n");
+  if(scenario == 0) {
+    output("运行全部场景:\n");
+  } else {
+    output("运行场景 "); output_int(scenario); output(":\n");
+  }
+  if(scenario == 0 || scenario == 1)
+    output("场景1: 纯CPU长短作业 - 测试车队效应\n");
+  if(scenario == 0 || scenario == 2)
+    output("场景2: 交互型vs背景 - 测试响应性\n");
+  if(scenario == 0 || scenario == 3)
+    output("场景3: 优先级饥饿 - 测试公平性\n");
+  output("==========================================\n");
+  
+  // 调度算法列表
+  int sched_ids[] = { SCHED_DEFAULT, SCHED_RR, SCHED_PRIORITY, SCHED_FCFS, SCHED_SML };
+  char *sched_names[] = {
+    "DEFAULT",
+    "RR(轮转)",
+    "PRIORITY",
+    "FCFS",
+    "SML(多级队列)"
+  };
+  int nsched = 5;
+  
+  int si;
+  for(si = 0; si < nsched; si++) {
+    // 根据参数选择运行哪些场景
+    if(scenario == 0 || scenario == 1)
+      test_scenario1(sched_ids[si], sched_names[si]);
+    if(scenario == 0 || scenario == 2)
+      test_scenario2(sched_ids[si], sched_names[si]);
+    if(scenario == 0 || scenario == 3)
+      test_scenario3(sched_ids[si], sched_names[si]);
+  }
+  
+  output("\n========== 测试完成 ==========\n");
+  output("结果已保存到 sched_result.txt\n");
+  
+  if(outfd >= 0) close(outfd);
+  
+  // 恢复默认调度器
+  setscheduler(SCHED_DEFAULT);
+  
   exit();
 }

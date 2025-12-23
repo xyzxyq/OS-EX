@@ -214,9 +214,14 @@ rsect(uint sec, void *buf)
     perror("lseek");
     exit(1);
   }
-  if(read(fsfd, buf, BSIZE) != BSIZE){
+  int n = read(fsfd, buf, BSIZE);
+  if(n < 0){
     perror("read");
     exit(1);
+  }
+  // Pad with zeros if we read less than BSIZE (can happen on sparse files)
+  if(n < BSIZE){
+    memset((char*)buf + n, 0, BSIZE - n);
   }
 }
 

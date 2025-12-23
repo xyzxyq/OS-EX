@@ -1044,9 +1044,21 @@ defaultScheduler(void) { // 随机调度,从随机位置开始遍历，选择第
 }
 
 // Priority Scheduler -------------------
-// 使用最小堆：提取优先级数值最小（优先级最高）的进程，时间复杂度 O(log n)
+// 遍历进程表，选择优先级数值最小（优先级最高）的 RUNNABLE 进程
+// 时间复杂度 O(n)，但保证使用进程的当前优先级
 struct proc *priorityScheduler() {
-  return heapExtract(); // 从堆中提取最高优先级进程
+  struct proc *p;
+  struct proc *best = 0;
+
+  // 遍历所有进程，找到优先级最高（数值最小）的 RUNNABLE 进程
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if (p->state == RUNNABLE) {
+      if (best == 0 || p->priority < best->priority) {
+        best = p;
+      }
+    }
+  }
+  return best;
 }
 
 // FCFS Scheduler -----------------------
@@ -1061,20 +1073,34 @@ struct proc *rrScheduler() {  // 轮转调度
 }
 
 // SML (Static Multi-Level Queue) Scheduler ---------------------------
-struct proc *smlScheduler() { // 静态多级队列调度：按优先级分为3个队列
+// 遍历进程表，根据当前优先级动态分配到对应队列级别
+// 时间复杂度 O(n)，但保证使用进程的当前优先级
+struct proc *smlScheduler() {
   struct proc *p;
-  int i;
+  struct proc *best = 0;
+  int bestLevel = 3;  // 0=高, 1=中, 2=低, 3=未找到
 
-  // 队列0 (高): priority 1-7
-  // 队列1 (中): priority 8-14
-  // 队列2 (低): priority 15-20
-  // 按优先级顺序检查三个队列
-  for (i = 0; i < 3; i++) {
-    p = dequeue(&smlQueues[i]);
-    if (p)
-      return p;
+  // 遍历所有进程，按优先级级别和在数组中的顺序选择
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if (p->state == RUNNABLE) {
+      int level;
+      // 根据当前优先级确定队列级别
+      if (p->priority >= 1 && p->priority <= 7) {
+        level = 0;  // 高优先级队列
+      } else if (p->priority >= 8 && p->priority <= 14) {
+        level = 1;  // 中优先级队列
+      } else {
+        level = 2;  // 低优先级队列
+      }
+      
+      // 选择级别更高（数值更小）的，同级别选择先遇到的（FCFS）
+      if (level < bestLevel) {
+        best = p;
+        bestLevel = level;
+      }
+    }
   }
-  return 0;
+  return best;
 }
 
 int getptable(void *ubuf, int size) {

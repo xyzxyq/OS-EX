@@ -92,18 +92,12 @@ void trap(struct trapframe *tf) {
   if (myproc() && myproc()->killed && (tf->cs & 3) == DPL_USER)
     exit();
 
-  // Force process to give up CPU on clock tick.
-  // If interrupts were on while locks held, would need to check nlock.
-  // 注意：FCFS (schedSelected == 2) 是非抢占式的，不在时钟中断时让出 CPU
-  extern int schedSelected; // 当前调度器类型（来自 sdh.h）
+  // 所有调度算法都是抢占式的，在时钟中断时让出 CPU
+  // 这确保每个时间片结束时调度器都能重新选择进程
   if (myproc() && myproc()->state == RUNNING &&
       tf->trapno == T_IRQ0 + IRQ_TIMER) {
-    // 只有 RR (3) 是抢占式调度，其他调度器都是非抢占式
-    if (schedSelected == 3) {
-      yield();
-    }
+    yield();  // 无条件让出 CPU，由调度器决定下一个进程
   }
-  // XV6内核中的时钟中断处理机制，原机制任何调度器都会在时钟中断时让出CPU
 
   // Check if the process has been killed since we yielded
   if (myproc() && myproc()->killed && (tf->cs & 3) == DPL_USER)
