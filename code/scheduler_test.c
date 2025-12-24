@@ -1,6 +1,6 @@
 // scheduler_test.c
 // 调度算法测试程序
-// 三个典型场景：车队效应、交互型vs背景、优先级饥饿
+// 四个典型场景：车队效应、交互型vs背景、优先级饥饿、时间片公平性
 // 对比不同调度算法的性能指标
 
 #include "types.h"
@@ -46,26 +46,28 @@ void output(char *s) {
   }
 }
 
-// 输出数字
-void output_int(int n) {
+void output_int(int n) {//将整数转换为字符串提供给output函数，write系统调用只能接受字符串参数
   char buf[16];
   int i = 0, neg = 0;
-  if(n < 0) { neg = 1; n = -n; }
+  if(n < 0) { neg = 1; n = -n; }//负数
   do { buf[i++] = '0' + (n % 10); n /= 10; } while(n > 0);
   if(neg) buf[i++] = '-';
   char out[16];
   int j;
-  for(j = 0; j < i; j++) out[j] = buf[i-1-j];
+  for(j = 0; j < i; j++) out[j] = buf[i-1-j];//反转字符串
   out[j] = 0;
   output(out);
 }
 
 // CPU 密集型工作
-void cpu_work(int work) {
+void cpu_work(int work) {//通过调整参数work的值，可以控制作业的执行时间
   int i, j;
-  volatile int sum = 0;
+  volatile int sum = 0;//防止编译器进行优化，编译器如果发现sum只累加而不使用，可能会删掉整个循环
   for(i = 0; i < work; i++) {
     for(j = 0; j < 100; j++) {
+      //使用两层嵌套循环，防止被编译器优化
+      //真实程序通常有多层嵌套结构
+      //防止溢出
       int x = i * j + (i ^ j);
       x = (x << 1) ^ (x >> 1);
       sum += x;
@@ -80,7 +82,7 @@ void io_work(int rounds) {
   for(i = 0; i < rounds; i++) {
     fd = open("io_test", O_CREATE | O_WRONLY);
     if(fd >= 0) {
-      write(fd, buf, sizeof(buf) - 1);
+      write(fd, buf, sizeof(buf) - 1);//不输入最后的字符串终止符
       close(fd);
     }
     cpu_work(CPU_WORK / 100);  // 添加少量CPU计算，确保rutime可统计
@@ -123,12 +125,13 @@ void test_scenario1(int schedId, char *schedName) {
   
   // P1: 长作业，到达时间0
   pid = fork();
-  if(pid == 0) {
+  if(pid == 0) {//子进程执行的程序
     setpriority(getpid(), 10);
     cpu_work(cpu_long);
     exit();
   }
-  if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_LONG; info[nchildren].priority = 10; nchildren++; }
+  if(pid > 0) //父进程执行
+  { info[nchildren].pid = pid; info[nchildren].role = ROLE_LONG; info[nchildren].priority = 10; nchildren++; }
   
   // P2: 长作业，到达时间0
   pid = fork();
@@ -283,8 +286,8 @@ void test_scenario2(int schedId, char *schedName) {
     if(pid > 0) { info[nchildren].pid = pid; info[nchildren].role = ROLE_IO_BG; info[nchildren].priority = 12; nchildren++; }
   }
   
-  output("PID\t优先级\t类型\t\t就绪时间\t运行时间\t休眠时间\t周转时间\n");
-  output("----\t------\t----\t\t--------\t--------\t--------\t--------\n");
+  output("PID\t优先级\t类型\t\t就绪时间\t运行时间\t休眠时间\t\t周转时间\n");
+  output("----\t------\t----\t\t--------\t--------\t--------\t\t--------\n");
   
   for(i = 0; i < nchildren; i++) {
     pid = wait2(&retime, &rutime, &stime);
@@ -317,7 +320,7 @@ void test_scenario2(int schedId, char *schedName) {
     }
   }
   
-  output("----\t------\t----\t\t--------\t--------\t--------\t--------\n");
+  output("----\t------\t----\t\t--------\t--------\t--------\t\t--------\n");
   if(inter_count > 0) {
     output("交互型\t平均\t\t\t"); output_int(inter_retime/inter_count);
     output("\t\t"); output_int(inter_rutime/inter_count);
@@ -336,6 +339,97 @@ void test_scenario2(int schedId, char *schedName) {
     output("\t\t"); output_int(iobg_stime/iobg_count);
     output("\t\t"); output_int((iobg_retime+iobg_rutime+iobg_stime)/iobg_count); output("\n");
   }
+}
+
+// ============================================================
+// 场景4：时间片公平性测试 - 验证RR时间片分配公平性
+// ============================================================
+void test_scenario4(int schedId, char *schedName) {
+  int pid, i, k;
+  int retime, rutime, stime;
+  struct child_info info[NCHILD];
+  int nchildren = 0;
+  
+  // 统计数组：存储每个进程的运行时间
+  int rutimes[NCHILD];
+  int total_rutime = 0;
+  int avg_rutime = 0;
+  int variance = 0;  // 方差（用于衡量公平性）
+  
+  int cpu_equal = CPU_WORK / 2;  // 所有进程相同工作量
+  
+  output("\n========== ");
+  output(schedName);
+  output(" - 场景4: 时间片公平性测试 ==========\n");
+  
+  setscheduler(schedId);
+  
+  // 创建6个相同优先级、相同工作量的CPU密集型进程
+  for(i = 0; i < NCHILD; i++) {
+    pid = fork();
+    if(pid == 0) {
+      setpriority(getpid(), 10);  // 统一中等优先级
+      cpu_work(cpu_equal);         // 相同工作量
+      exit();
+    }
+    if(pid > 0) { 
+      info[nchildren].pid = pid; 
+      info[nchildren].role = ROLE_LONG; 
+      info[nchildren].priority = 10; 
+      nchildren++; 
+    }
+  }
+  
+  output("PID\t优先级\t就绪时间\t运行时间\t周转时间\n");
+  output("----\t------\t--------\t--------\t--------\n");
+  
+  // 收集每个进程的运行时间
+  for(i = 0; i < nchildren; i++) {
+    pid = wait2(&retime, &rutime, &stime);
+    if(pid > 0) {
+      int turnaround = retime + rutime + stime;
+      int priority = 10;
+      int idx = -1;
+      
+      // 查找进程索引
+      for(k = 0; k < nchildren; k++) {
+        if(info[k].pid == pid) { 
+          priority = info[k].priority; 
+          idx = k;
+          break; 
+        }
+      }
+      
+      // 记录运行时间
+      if(idx >= 0 && idx < NCHILD) {
+        rutimes[idx] = rutime;
+        total_rutime += rutime;
+      }
+      
+      output_int(pid); output("\t");
+      output_int(priority); output("\t");
+      output_int(retime); output("\t\t");
+      output_int(rutime); output("\t\t");
+      output_int(turnaround); output("\n");
+    }
+  }
+  
+  // 计算平均运行时间
+  avg_rutime = total_rutime / nchildren;
+  
+  // 计算方差（衡量公平性的关键指标）
+  // 方差越小说明时间分配越公平
+  for(i = 0; i < nchildren; i++) {
+    int diff = rutimes[i] - avg_rutime;
+    variance += diff * diff;
+  }
+  variance = variance / nchildren;
+  
+  output("----\t------\t--------\t--------\t--------\n");
+  output("统计: 平均运行时间="); output_int(avg_rutime);
+  output("  运行时间方差="); output_int(variance); output("\n");
+  output("说明: 方差越小表示CPU时间分配越公平\n");
+  output("      RR应显示最小方差，FCFS应显示最大方差\n");
 }
 
 // ============================================================
@@ -451,18 +545,21 @@ int main(int argc, char *argv[]) {
   // 解析命令行参数
   if(argc > 1) {
     scenario = atoi(argv[1]);
-    if(scenario < 0 || scenario > 3) {
+    if(scenario < 0 || scenario > 4) {
       printf(1, "用法: scheduler_test [场景编号]\n");
-      printf(1, "  无参数 - 运行全部 3 个场景\n");
+      //xv6的printf函数，参数1是文件描述符，1表示标准输出stdout，0表示标准输入stdin，2表示标准错误stderr
+      printf(1, "  无参数 - 运行全部 4 个场景\n");
       printf(1, "  1      - 仅运行场景1 (车队效应)\n");
       printf(1, "  2      - 仅运行场景2 (交互响应)\n");
       printf(1, "  3      - 仅运行场景3 (优先级饥饿)\n");
+      printf(1, "  4      - 仅运行场景4 (时间片公平性)\n");
       exit();
     }
   }
   
   // 打开输出文件
   outfd = open("sched_result.txt", O_CREATE | O_WRONLY);
+  //xv6的open函数，参数1是文件名，参数2是文件打开模式，O_CREATE表示创建文件，O_WRONLY表示只写
   
   output("==========================================\n");
   output("      调度算法性能比较测试              \n");
@@ -478,6 +575,8 @@ int main(int argc, char *argv[]) {
     output("场景2: 交互型vs背景 - 测试响应性\n");
   if(scenario == 0 || scenario == 3)
     output("场景3: 优先级饥饿 - 测试公平性\n");
+  if(scenario == 0 || scenario == 4)
+    output("场景4: 时间片公平性 - 测试RR公平性\n");
   output("==========================================\n");
   
   // 调度算法列表
@@ -500,6 +599,8 @@ int main(int argc, char *argv[]) {
       test_scenario2(sched_ids[si], sched_names[si]);
     if(scenario == 0 || scenario == 3)
       test_scenario3(sched_ids[si], sched_names[si]);
+    if(scenario == 0 || scenario == 4)
+      test_scenario4(sched_ids[si], sched_names[si]);
   }
   
   output("\n========== 测试完成 ==========\n");

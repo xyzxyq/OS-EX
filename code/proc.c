@@ -507,16 +507,19 @@ int wait(void) {
 }
 
 int wait2(int *retime, int *rutime, int *stime) {
+  //wait系统调用的增强版，除了等待子进程退出，还会返回子进程的时间统计信息
+  //当子进程退出时，它变成 ZOMBIE 状态，但进程表项还保留着
+  //当某个子进程exit调用时会调用该函数让父进程检查
   struct proc *p;
   int havekids, pid;
   acquire(&ptable.lock);
-  for (;;) {
+  for (;;) {//无限循环，直到找到退出的子进程或没有子进程
     // Scan through table looking for zombie children.
-    havekids = 0;
+    havekids = 0;//
     for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
       if (p->parent != myproc())
         continue;
-      havekids = 1;
+      havekids = 1;//布尔变量，判断是否有子进程
       if (p->state == ZOMBIE) {
         // Found one.
         *retime = p->retime;
@@ -555,7 +558,7 @@ int wait2(int *retime, int *rutime, int *stime) {
 // scheduler - 调度器主循环函数
 // 功能：操作系统的核心调度循环，负责选择并切换到下一个要执行的进程
 // 说明：此函数永不返回，每个CPU核心启动后会一直在此循环中运行
-void scheduler(void) {
+void scheduler(void) {//调度切换其他进程
   struct proc *p;          // 指向被选中进程的指针
   struct cpu *c = mycpu(); // 获取当前CPU结构体
   c->proc = 0;             // 初始化：当前CPU没有运行任何进程
@@ -585,7 +588,7 @@ void scheduler(void) {
       p->state = RUNNING;
 
       // 4.4 执行上下文切换：保存调度器上下文，恢复进程上下文
-      swtch(&(c->scheduler), p->context);
+      swtch(&(c->scheduler), p->context);//关键：切换上下文，保存当前进程的上下文，恢复要运行的进程的上下文
 
       // 4.5 进程p切换回来后，恢复内核页表
       switchkvm();
@@ -606,30 +609,33 @@ void scheduler(void) {
 // be proc->intena and proc->ncli, but that would
 // break in the few places where a lock is held but
 // there's no process.
-void sched(void) {
-  int intena;
-  struct proc *p = myproc();
+void sched(void) {//进程切换
+  int intena;//中断使能标志，它用来记录在调用 sched()之前，中断是否应该被启用
+  struct proc *p = myproc();//当前进程
 
-  if (!holding(&ptable.lock))
-    panic("sched ptable.lock");
-  if (mycpu()->ncli != 1)
+  if (!holding(&ptable.lock))//检查必须要有锁才能切换
+    panic("sched ptable.lock");//致命错误处理函数，打印错误信息到控制台，打印错误信息到控制台，永不返回
+  if (mycpu()->ncli != 1)//只能有且只有一个锁
     panic("sched locks");
-  if (p->state == RUNNING)
+  if (p->state == RUNNING)//只能切换RUNNABLE状态的进程
     panic("sched running");
-  if (readeflags() & FL_IF)
+  if (readeflags() & FL_IF)//必须关闭中断
     panic("sched interruptible");
-  intena = mycpu()->intena;
-  swtch(&p->context, mycpu()->scheduler);
-  mycpu()->intena = intena;
+
+  //保存并切换
+  intena = mycpu()->intena;//调度器和其他进程运行，因此先保存在局部变量中
+  swtch(&p->context, mycpu()->scheduler);//关键：切换上下文，保存当前进程的上下文，恢复要运行的进程的上下文
+  mycpu()->intena = intena;//恢复中断使能标志
+  //再次调用该进程时，调用swtch函数，由于该进程的栈中保存了返回地址，因此会执行这句话
 }
 
 // Give up the CPU for one scheduling round.
-void yield(void) {
+void yield(void) {//进程主动放弃CPU资源，用于轮转
   acquire(&ptable.lock); // DOC: yieldlock
   struct proc *curp = myproc();
   curp->state = RUNNABLE;
   addToReadyQueues(curp);
-  sched();
+  sched();//调用调度器
   release(&ptable.lock);
 }
 
@@ -696,7 +702,7 @@ static void wakeup1(void *chan) {
   struct proc *p;
 
   for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-    if (p->state == SLEEPING && p->chan == chan) {
+    if (p->state == SLEEPING && p->chan == chan) {//用进程地址作为通道，唤醒所有睡眠的进程
       p->state = RUNNABLE;
       addToReadyQueues(p);
     }
@@ -716,14 +722,14 @@ void wakeup(void *chan) {
 int kill(int pid) {
   struct proc *p;
 
-  acquire(&ptable.lock);
+  acquire(&ptable.lock);//锁住进程表
   for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
     if (p->pid == pid) {
-      p->killed = 1;
+      p->killed = 1;//标记为死亡，而不立即杀死，防止在杀死时，进程有锁、或者正在文件操作、分配内存
       // Wake process from sleep if necessary.
-      if (p->state == SLEEPING) {
-        p->state = RUNNABLE;
-        addToReadyQueues(p);
+      if (p->state == SLEEPING) {//如果进程正在睡眠，唤醒它
+        p->state = RUNNABLE;//只有进程在要运行时才检查自身是否被标记为死亡，若一直睡眠，则没有机会检查
+        addToReadyQueues(p);//加入就绪队列，发生陷阱/中断（时钟中断、系统调用等），trap() 函数被调用，检查 myproc()->killed == 1，立即exit
       }
       release(&ptable.lock);
       return 0;
@@ -768,7 +774,7 @@ void procdump(void) {
 // priority is the priority value
 // the return value is pid
 // proc.c
-int setpriority(int pid, int priority) {
+int setpriority(int pid, int priority) {//测试时手动设置优先级
   struct proc *p;
   int found = 0;
 
@@ -1003,18 +1009,17 @@ int setscheduler(int sid) { // 更换调度器
   acquire(&ptable.lock);   // 获取进程表锁
 
   // 清空所有队列
-  fcfsQueue.head = fcfsQueue.tail = 0;
+  fcfsQueue.head = fcfsQueue.tail = 0;//清空FCFS队列
   heapClear(); // 清空优先级堆
   for (int i = 0; i < 3; i++) {
-    smlQueues[i].head = smlQueues[i].tail = 0;
+    smlQueues[i].head = smlQueues[i].tail = 0;//清空SML队列
   }
 
   ready_process = schedulerFunction[sid]; // 更新当前的调度器
   schedSelected = sid;                    // 更新当前的调度器ID
 
   // 重新将所有 RUNNABLE 进程入队到新调度器的队列
-  struct proc *
-      p; // 在更换调度器后会创建6个新的进程用于测试，确保测试的公平性，这里将就绪进程重新入队，原因是为了将系统级的旧进程保留而不是测试进程
+  struct proc *p; // 在更换调度器后会创建6个新的进程用于测试，确保测试的公平性，这里将就绪进程重新入队，原因是为了将系统级的旧进程保留而不是测试进程
   for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
     if (p->state == RUNNABLE) {
       p->next = 0; // 清除旧的链表指针

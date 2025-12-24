@@ -8,9 +8,13 @@
 #include "traps.h"
 #include "x86.h"
 
+// 调度器类型定义（与 scheduler_test.c 保持一致）
+#define SCHED_FCFS 2
+
 // Interrupt descriptor table (shared by all CPUs).
 struct gatedesc idt[256];
 extern uint vectors[]; // in vectors.S: array of 256 entry pointers
+extern int schedSelected; // 当前调度器ID，来自 sdh.c
 struct spinlock tickslock;
 uint ticks;
 
@@ -29,7 +33,7 @@ void idtinit(void) { lidt(idt, sizeof(idt)); }
 // PAGEBREAK: 41
 void trap(struct trapframe *tf) {
   if (tf->trapno == T_SYSCALL) {
-    if (myproc()->killed)
+    if (myproc()->killed)//发现被标记为死亡，立即杀死
       exit();
     myproc()->tf = tf;
     syscall();
@@ -92,11 +96,15 @@ void trap(struct trapframe *tf) {
   if (myproc() && myproc()->killed && (tf->cs & 3) == DPL_USER)
     exit();
 
-  // 所有调度算法都是抢占式的，在时钟中断时让出 CPU
-  // 这确保每个时间片结束时调度器都能重新选择进程
+  // 抢占式调度：在时钟中断时让出 CPU
+  // 注意：FCFS（先来先服务）是非抢占式的，进程运行直到完成或主动阻塞
+  // 其他调度算法（DEFAULT、RR、PRIORITY、SML）是抢占式的
   if (myproc() && myproc()->state == RUNNING &&
       tf->trapno == T_IRQ0 + IRQ_TIMER) {
-    yield();  // 无条件让出 CPU，由调度器决定下一个进程
+    if (schedSelected != SCHED_FCFS) {
+      yield();  // 非FCFS调度器：时钟中断时让出CPU，由调度器重新选择进程
+    }
+    // FCFS调度器：不抢占，进程继续运行直到完成或主动阻塞
   }
 
   // Check if the process has been killed since we yielded

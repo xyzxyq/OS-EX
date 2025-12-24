@@ -1,137 +1,39 @@
-        #include "types.h"
-        #include "stat.h"
-        #include "user.h"
-        #include "fcntl.h"
+// wait2 - wait的增强版，返回子进程的时间统计信息
+int wait2(int *retime, int *rutime, int *stime) {
+    struct proc *p;
+    int havekids, pid;
 
-        // 测试参数定义
-        #define NUM_CHILDREN 10              // 并发子进程数量
-        #define TARGET_COUNT_PER_CHILD 50    // 每个子进程的循环次数
-        #define COUNTER_FILE "counter"       // 共享计数器文件名
-        #define SEM_ID 0                     // 使用0号信号量
+    acquire(&ptable.lock);
+    for (;;) {
+        havekids = 0;
+        for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+            if (p->parent != myproc()) continue;
+            havekids = 1;
 
-        // test_counter：信号量互斥测试函数
-        void
-        test_counter()
-        {
-            int i, j;
-            int fd;
-            int val;
+            if (p->state == ZOMBIE) {
+                // 收集时间统计信息
+                *retime = p->retime;  // 就绪等待时间
+                *rutime = p->rutime;  // 实际运行时间
+                *stime = p->stime;    // 睡眠时间
 
-            // ===== 第一部分：初始化 =====
+                pid = p->pid;
+                // 释放进程资源...
+                kfree(p->kstack);
+                p->kstack = 0;
+                freevm(p->pgdir);
+                p->state = UNUSED;
+                // 清零统计字段...
 
-            // 步骤1：创建共享计数器文件并写入初始值0
-            fd = open(COUNTER_FILE, O_CREATE | O_RDWR);
-            if(fd < 0){
-                printf(1, "Error: create counter file failed\n");
-                exit();
+                release(&ptable.lock);
+                return pid;
             }
-            val = 0;
-            write(fd, &val, sizeof(int));  // 写入4字节整数
-            close(fd);
-
-            // 步骤2：初始化互斥信号量（初始值为1，作为互斥锁）
-            if(sem_init(SEM_ID, 1) < 0){
-                printf(1, "Error: sem_init failed\n");
-                exit();
-            }
-
-            printf(1, "Starting %d children, each incrementing %d times...\n",
-            NUM_CHILDREN, TARGET_COUNT_PER_CHILD);
-
-            // ===== 第二部分：创建并发子进程 =====
-
-            for(i = 0; i < NUM_CHILDREN; i++){
-                int pid = fork();
-                if(pid < 0){
-                    printf(1, "fork failed\n");
-                    exit();
-                }
-
-                if(pid == 0){
-                    // --- 子进程代码 ---
-                    for(j = 0; j < TARGET_COUNT_PER_CHILD; j++){
-
-                        // P操作：申请进入临界区
-                        if(sem_wait(SEM_ID, 1) < 0){
-                            printf(1, "Child: sem_wait failed\n");
-                            exit();
-                        }
-
-                        // ========== 临界区开始 ==========
-
-                        // 读取当前计数值
-                        fd = open(COUNTER_FILE, O_RDONLY);
-                        if(fd < 0){
-                            printf(1, "Child: open read failed\n");
-                            exit();
-                        }
-                        if(read(fd, &val, sizeof(int)) != sizeof(int)){
-                            printf(1, "Child: read failed\n");
-                            exit();
-                        }
-                        close(fd);
-
-                        // 更新计数值（加1）
-                        val++;
-
-                        // 写回新值
-                        fd = open(COUNTER_FILE, O_WRONLY);
-                        if(fd < 0){
-                            printf(1, "Child: open write failed\n");
-                            exit();
-                        }
-                        if(write(fd, &val, sizeof(int)) != sizeof(int)){
-                            printf(1, "Child: write failed\n");
-                            exit();
-                        }
-                        close(fd);
-
-                        // ========== 临界区结束 ==========
-
-                        // V操作：离开临界区
-                        if(sem_signal(SEM_ID, 1) < 0){
-                            printf(1, "Child: sem_signal failed\n");
-                            exit();
-                        }
-                    }
-
-                    exit();  // 子进程完成后退出
-                }
-            }
-
-            // ===== 第三部分：等待子进程并验证结果 =====
-
-            // 父进程等待所有子进程退出
-            for(i = 0; i < NUM_CHILDREN; i++){
-                wait();
-            }
-
-            // 读取最终计数值
-            fd = open(COUNTER_FILE, O_RDONLY);
-            read(fd, &val, sizeof(int));
-            close(fd);
-
-            printf(1, "Final counter value: %d\n", val);
-
-            // 验证结果（期望值：10 × 50 = 500）
-            if(val == NUM_CHILDREN * TARGET_COUNT_PER_CHILD){
-                printf(1, "TEST PASSED!\n");
-            } else {
-                printf(1, "TEST FAILED! Expected %d\n",
-                NUM_CHILDREN * TARGET_COUNT_PER_CHILD);
-            }
-
-            // ===== 第四部分：清理资源 =====
-
-            sem_destroy(SEM_ID);    // 销毁信号量
-            unlink(COUNTER_FILE);   // 删除测试文件
-
-            return;
         }
 
-        int
-        main(int argc, char *argv[])
-        {
-            test_counter();
-            return 0;
+        if (!havekids || myproc()->killed) {
+            release(&ptable.lock);
+            return -1;
         }
+
+        sleep(myproc(), &ptable.lock);
+    }
+}

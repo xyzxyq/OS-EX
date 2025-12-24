@@ -10,50 +10,53 @@
 \contentsline {subsection}{\numberline {3.1}任务一：实现调度算法}{4}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}任务二：实现测试程序}{4}{subsection.3.2}%
 \contentsline {section}{\numberline {4}实验流程}{4}{section.4}%
-\contentsline {subsection}{\numberline {4.1}实验准备：调度框架设计}{5}{subsection.4.1}%
-\contentsline {subsubsection}{\numberline {4.1.1}扩展进程控制块}{5}{subsubsection.4.1.1}%
-\contentsline {subsubsection}{\numberline {4.1.2}调度框架设计}{6}{subsubsection.4.1.2}%
-\contentsline {subsubsection}{\numberline {4.1.3}就绪队列实现}{6}{subsubsection.4.1.3}%
-\contentsline {subsubsection}{\numberline {4.1.4}进程统计信息收集}{8}{subsubsection.4.1.4}%
-\contentsline {subsection}{\numberline {4.2}任务一：实现调度算法}{8}{subsection.4.2}%
-\contentsline {subsubsection}{\numberline {4.2.1}调度器主循环}{8}{subsubsection.4.2.1}%
-\contentsline {subsubsection}{\numberline {4.2.2}优先级调度算法（Priority Scheduling）}{11}{subsubsection.4.2.2}%
-\contentsline {subsubsection}{\numberline {4.2.3}先来先服务调度算法（FCFS）}{13}{subsubsection.4.2.3}%
-\contentsline {subsubsection}{\numberline {4.2.4}轮转调度算法（Round Robin）}{14}{subsubsection.4.2.4}%
-\contentsline {subsubsection}{\numberline {4.2.5}静态多级队列调度算法（SML）}{15}{subsubsection.4.2.5}%
-\contentsline {subsection}{\numberline {4.3}任务二：实现测试程序}{17}{subsection.4.3}%
-\contentsline {subsubsection}{\numberline {4.3.1}测试程序设计思路}{17}{subsubsection.4.3.1}%
-\contentsline {subsubsection}{\numberline {4.3.2}wait2 系统调用}{19}{subsubsection.4.3.2}%
-\contentsline {subsection}{\numberline {4.4}测试与验证}{20}{subsection.4.4}%
-\contentsline {subsubsection}{\numberline {4.4.1}场景1：车队效应分析}{21}{subsubsection.4.4.1}%
-\contentsline {subsubsection}{\numberline {4.4.2}场景2：交互响应分析}{22}{subsubsection.4.4.2}%
-\contentsline {subsubsection}{\numberline {4.4.3}场景3：优先级饥饿分析}{22}{subsubsection.4.4.3}%
-\contentsline {subsubsection}{\numberline {4.4.4}运行结果分析}{23}{subsubsection.4.4.4}%
-\contentsline {section}{\numberline {5}实验总结}{24}{section.5}%
-\contentsline {subsection}{\numberline {5.1}掌握了调度框架的设计方法}{24}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}深入理解了不同调度算法的特点}{25}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}掌握了数据结构优化技术}{25}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}掌握了进程统计信息收集方法}{25}{subsection.5.4}%
-\contentsline {subsection}{\numberline {5.5}理解了调度决策对系统性能的影响}{25}{subsection.5.5}%
-\contentsline {section}{\numberline {6}实验心得}{25}{section.6}%
-\contentsline {section}{\numberline {7}附录：核心代码实现}{27}{section.7}%
-\contentsline {subsection}{\numberline {7.1}附录A：数据结构定义}{27}{subsection.7.1}%
-\contentsline {subsubsection}{\numberline {7.1.1}A.1 ptable.h - 进程信息结构}{27}{subsubsection.7.1.1}%
-\contentsline {subsubsection}{\numberline {7.1.2}A.2 proc.h - 进程控制块扩展}{28}{subsubsection.7.1.2}%
-\contentsline {subsubsection}{\numberline {7.1.3}A.3 proc.c - 信号量结构定义}{29}{subsubsection.7.1.3}%
-\contentsline {subsection}{\numberline {7.2}附录B：进程管理系统调用实现}{29}{subsection.7.2}%
-\contentsline {subsubsection}{\numberline {7.2.1}B.1 proc.c - setpriority函数}{29}{subsubsection.7.2.1}%
-\contentsline {subsubsection}{\numberline {7.2.2}B.2 proc.c - getptable函数}{30}{subsubsection.7.2.2}%
-\contentsline {subsubsection}{\numberline {7.2.3}B.3 sysproc.c - 系统调用包装器}{32}{subsubsection.7.2.3}%
-\contentsline {subsection}{\numberline {7.3}附录C：用户态程序实现}{33}{subsection.7.3}%
-\contentsline {subsubsection}{\numberline {7.3.1}C.1 ps.c - 进程查看命令}{33}{subsubsection.7.3.1}%
-\contentsline {subsubsection}{\numberline {7.3.2}C.2 nice.c - 优先级修改命令}{35}{subsubsection.7.3.2}%
-\contentsline {subsection}{\numberline {7.4}附录D：信号量实现}{36}{subsection.7.4}%
-\contentsline {subsubsection}{\numberline {7.4.1}D.1 proc.c - sem\_init函数}{36}{subsubsection.7.4.1}%
-\contentsline {subsubsection}{\numberline {7.4.2}D.2 proc.c - sem\_destroy函数}{37}{subsubsection.7.4.2}%
-\contentsline {subsubsection}{\numberline {7.4.3}D.3 proc.c - sem\_wait函数(P操作)}{38}{subsubsection.7.4.3}%
-\contentsline {subsubsection}{\numberline {7.4.4}D.4 proc.c - sem\_signal函数(V操作)}{39}{subsubsection.7.4.4}%
-\contentsline {subsubsection}{\numberline {7.4.5}D.5 sysproc.c - 信号量系统调用包装器}{40}{subsubsection.7.4.5}%
-\contentsline {subsection}{\numberline {7.5}附录E：信号量测试程序}{42}{subsection.7.5}%
-\contentsline {subsubsection}{\numberline {7.5.1}E.1 sem\_test.c - 完整实现}{42}{subsubsection.7.5.1}%
+\contentsline {subsection}{\numberline {4.1}实验准备：调度框架设计}{6}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}扩展进程控制块}{6}{subsubsection.4.1.1}%
+\contentsline {subsubsection}{\numberline {4.1.2}调度框架设计}{7}{subsubsection.4.1.2}%
+\contentsline {subsubsection}{\numberline {4.1.3}就绪队列实现}{7}{subsubsection.4.1.3}%
+\contentsline {subsubsection}{\numberline {4.1.4}进程统计信息收集}{10}{subsubsection.4.1.4}%
+\contentsline {subsection}{\numberline {4.2}任务一：实现调度算法}{10}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}调度器主循环}{10}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2}优先级调度算法（Priority Scheduling）}{13}{subsubsection.4.2.2}%
+\contentsline {subsubsection}{\numberline {4.2.3}先来先服务调度算法（FCFS）}{15}{subsubsection.4.2.3}%
+\contentsline {subsubsection}{\numberline {4.2.4}轮转调度算法（Round Robin）}{16}{subsubsection.4.2.4}%
+\contentsline {subsubsection}{\numberline {4.2.5}静态多级队列调度算法（SML）}{17}{subsubsection.4.2.5}%
+\contentsline {subsection}{\numberline {4.3}任务二：实现测试程序}{19}{subsection.4.3}%
+\contentsline {subsubsection}{\numberline {4.3.1}测试程序设计思路}{19}{subsubsection.4.3.1}%
+\contentsline {subsubsection}{\numberline {4.3.2}wait2 系统调用}{21}{subsubsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.4}测试与验证}{22}{subsection.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.1}场景1：车队效应分析}{23}{subsubsection.4.4.1}%
+\contentsline {subsubsection}{\numberline {4.4.2}场景2：交互响应分析}{24}{subsubsection.4.4.2}%
+\contentsline {subsubsection}{\numberline {4.4.3}场景3：优先级饥饿分析}{24}{subsubsection.4.4.3}%
+\contentsline {subsubsection}{\numberline {4.4.4}场景4：时间片公平性分析}{25}{subsubsection.4.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.5}运行结果分析}{26}{subsubsection.4.4.5}%
+\contentsline {section}{\numberline {5}实验中遇到的问题及解决方案}{30}{section.5}%
+\contentsline {subsection}{\numberline {5.1}问题1：运行 scheduler\_test 时磁盘块耗尽}{31}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}问题2：PRIORITY/SML 调度器交互响应测试表现异常}{31}{subsection.5.2}%
+\contentsline {section}{\numberline {6}实验结论}{31}{section.6}%
+\contentsline {subsection}{\numberline {6.1}从实验走向现代调度：完全公平调度 (CFS)}{32}{subsection.6.1}%
+\contentsline {section}{\numberline {7}实验心得}{33}{section.7}%
+\contentsline {subsection}{\numberline {7.1}附录A：调度器框架与数据结构}{34}{subsection.7.1}%
+\contentsline {subsubsection}{\numberline {7.1.1}A.1 就绪队列数据结构}{34}{subsubsection.7.1.1}%
+\contentsline {subsubsection}{\numberline {7.1.2}A.2 队列操作函数}{34}{subsubsection.7.1.2}%
+\contentsline {subsubsection}{\numberline {7.1.3}A.3 统一入队函数}{35}{subsubsection.7.1.3}%
+\contentsline {subsection}{\numberline {7.2}附录B：调度算法实现}{36}{subsection.7.2}%
+\contentsline {subsubsection}{\numberline {7.2.1}B.1 优先级调度器（Priority Scheduler）}{36}{subsubsection.7.2.1}%
+\contentsline {subsubsection}{\numberline {7.2.2}B.2 先来先服务调度器（FCFS）}{36}{subsubsection.7.2.2}%
+\contentsline {subsubsection}{\numberline {7.2.3}B.3 轮转调度器（Round Robin）}{37}{subsubsection.7.2.3}%
+\contentsline {subsubsection}{\numberline {7.2.4}B.4 静态多级队列调度器（SML）}{37}{subsubsection.7.2.4}%
+\contentsline {subsection}{\numberline {7.3}附录C：调度器框架}{38}{subsection.7.3}%
+\contentsline {subsubsection}{\numberline {7.3.1}C.1 调度器选择机制（sdh.c）}{38}{subsubsection.7.3.1}%
+\contentsline {subsubsection}{\numberline {7.3.2}C.2 调度器主循环（scheduler函数）}{39}{subsubsection.7.3.2}%
+\contentsline {subsubsection}{\numberline {7.3.3}C.3 进程让出CPU（yield函数）}{40}{subsubsection.7.3.3}%
+\contentsline {subsection}{\numberline {7.4}附录D：时钟中断与进程统计}{40}{subsection.7.4}%
+\contentsline {subsubsection}{\numberline {7.4.1}D.1 时钟中断处理（trap.c）}{40}{subsubsection.7.4.1}%
+\contentsline {subsubsection}{\numberline {7.4.2}D.2 进程时间统计更新}{41}{subsubsection.7.4.2}%
+\contentsline {subsubsection}{\numberline {7.4.3}D.3 wait2系统调用}{42}{subsubsection.7.4.3}%
+\contentsline {section}{\numberline {8}附录：完整实验结果}{44}{section.8}%
+\contentsline {subsection}{\numberline {8.1}场景1：纯CPU长短作业（车队效应测试）}{44}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}场景2：交互型vs背景任务}{46}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}场景3：优先级饥饿测试}{49}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}场景4：时间片公平性测试}{51}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}各场景调度算法性能汇总对比}{53}{subsection.8.5}%
 \contentsfinish 

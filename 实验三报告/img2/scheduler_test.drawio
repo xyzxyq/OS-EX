@@ -1,149 +1,113 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<mxfile host="app.diagrams.net" modified="2024-12-24T03:18:34.000Z" agent="Mozilla/5.0" version="21.0.0" type="device">
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.0.3 Chrome/140.0.7339.249 Electron/38.7.0 Safari/537.36" version="29.0.3">
   <diagram name="测试程序流程" id="scheduler-test-flow">
-    <mxGraphModel dx="1000" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="800" math="0" shadow="0">
+    <mxGraphModel dx="1069" dy="936" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="800" math="0" shadow="0">
       <root>
-        <mxCell id="0"/>
-        <mxCell id="1" parent="0"/>
-        
-        <!-- 标题 -->
-        <mxCell id="title" value="scheduler_test 测试程序流程" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#333333;" vertex="1" parent="1">
-          <mxGeometry x="300" y="20" width="400" height="40" as="geometry"/>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="scheduler_test 测试程序流程" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;fontColor=#333333;" parent="1" vertex="1">
+          <mxGeometry x="300" y="20" width="400" height="40" as="geometry" />
         </mxCell>
-        
-        <!-- 开始节点 -->
-        <mxCell id="start" value="main() 启动" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="420" y="70" width="160" height="50" as="geometry"/>
+        <mxCell id="start" value="main() 启动" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="420" y="70" width="160" height="50" as="geometry" />
         </mxCell>
-        
-        <!-- 解析参数 -->
-        <mxCell id="parse-args" value="解析命令行参数&#xa;argc, argv" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="420" y="140" width="160" height="50" as="geometry"/>
+        <mxCell id="parse-args" value="解析命令行参数&#xa;argc, argv" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="420" y="140" width="160" height="50" as="geometry" />
         </mxCell>
-        
-        <!-- 选择场景 -->
-        <mxCell id="select-scenario" value="选择测试场景&#xa;scenario = 0/1/2/3" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="410" y="210" width="180" height="70" as="geometry"/>
+        <mxCell id="select-scenario" value="选择测试场景&#xa;scenario = 0/1/2/3" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="410" y="210" width="180" height="70" as="geometry" />
         </mxCell>
-        
-        <!-- 外层循环：调度算法 -->
-        <mxCell id="sched-loop" value="for 每种调度算法" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="420" y="310" width="160" height="40" as="geometry"/>
+        <mxCell id="sched-loop" value="for 每种调度算法" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="420" y="310" width="160" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="sched-list" value="DEFAULT → RR →&#xa;PRIORITY → FCFS → SML" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontColor=#666666;" vertex="1" parent="1">
-          <mxGeometry x="610" y="300" width="130" height="50" as="geometry"/>
+        <mxCell id="sched-list" value="DEFAULT → RR →&#xa;PRIORITY → FCFS → SML" style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=left;verticalAlign=top;whiteSpace=wrap;rounded=1;fontSize=10;fontColor=#666666;" parent="1" vertex="1">
+          <mxGeometry x="600" y="305" width="130" height="50" as="geometry" />
         </mxCell>
-        
-        <!-- 切换调度器 -->
-        <mxCell id="set-sched" value="setscheduler(schedId)&#xa;切换调度算法" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="420" y="370" width="160" height="50" as="geometry"/>
+        <mxCell id="set-sched" value="setscheduler(schedId)&#xa;切换调度算法" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="420" y="370" width="160" height="50" as="geometry" />
         </mxCell>
-        
-        <!-- 场景分支区域 -->
-        <mxCell id="scenario-region" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=2;dashed=1;opacity=30;" vertex="1" parent="1">
-          <mxGeometry x="60" y="440" width="880" height="200" as="geometry"/>
+        <mxCell id="scenario-region" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;strokeWidth=2;dashed=1;opacity=30;" parent="1" vertex="1">
+          <mxGeometry x="60" y="440" width="880" height="200" as="geometry" />
         </mxCell>
-        <mxCell id="scenario-title" value="执行测试场景 test_scenario1/2/3()" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#b45f06;" vertex="1" parent="1">
-          <mxGeometry x="70" y="445" width="300" height="25" as="geometry"/>
+        <mxCell id="scenario-title" value="执行测试场景 test_scenario1/2/3()" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#b45f06;" parent="1" vertex="1">
+          <mxGeometry x="70" y="445" width="300" height="25" as="geometry" />
         </mxCell>
-        
-        <!-- 场景1 -->
-        <mxCell id="scenario1" value="场景1: 车队效应&#xa;2长+2短+2中作业&#xa;同优先级" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="1">
-          <mxGeometry x="80" y="480" width="130" height="70" as="geometry"/>
+        <mxCell id="scenario1" value="场景1: 车队效应&#xa;2长+2短+2中作业&#xa;同优先级" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="80" y="480" width="130" height="70" as="geometry" />
         </mxCell>
-        
-        <!-- 场景2 -->
-        <mxCell id="scenario2" value="场景2: 交互响应&#xa;2 CPU背景+2交互&#xa;+2 IO背景" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="1">
-          <mxGeometry x="230" y="480" width="130" height="70" as="geometry"/>
+        <mxCell id="scenario2" value="场景2: 交互响应&#xa;2 CPU背景+2交互&#xa;+2 IO背景" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="230" y="480" width="130" height="70" as="geometry" />
         </mxCell>
-        
-        <!-- 场景3 -->
-        <mxCell id="scenario3" value="场景3: 优先级饥饿&#xa;1高+3中+2低优先级" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" vertex="1" parent="1">
-          <mxGeometry x="380" y="480" width="130" height="70" as="geometry"/>
+        <mxCell id="scenario3" value="场景3: 优先级饥饿&#xa;1高+3中+2低优先级" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="380" y="480" width="130" height="70" as="geometry" />
         </mxCell>
-        
-        <!-- 核心步骤 -->
-        <mxCell id="step-fork" value="① fork() 创建子进程&#xa;② setpriority() 设置优先级&#xa;③ 执行工作负载" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d4e5f7;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
-          <mxGeometry x="560" y="480" width="170" height="70" as="geometry"/>
+        <mxCell id="step-fork" value="① fork() 创建子进程&#xa;② setpriority() 设置优先级&#xa;③ 执行工作负载" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d4e5f7;strokeColor=#6c8ebf;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="560" y="480" width="170" height="70" as="geometry" />
         </mxCell>
-        
-        <!-- 收集统计 -->
-        <mxCell id="step-wait" value="④ wait2() 收集统计&#xa;retime/rutime/stime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d4e5f7;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
-          <mxGeometry x="760" y="480" width="160" height="70" as="geometry"/>
+        <mxCell id="step-wait" value="④ wait2() 收集统计&#xa;retime/rutime/stime" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d4e5f7;strokeColor=#6c8ebf;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="760" y="480" width="160" height="70" as="geometry" />
         </mxCell>
-        
-        <!-- 输出结果 -->
-        <mxCell id="step-output" value="⑤ 计算平均值&#xa;⑥ 输出结果表格" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" vertex="1" parent="1">
-          <mxGeometry x="640" y="570" width="160" height="50" as="geometry"/>
+        <mxCell id="step-output" value="⑤ 计算平均值&#xa;⑥ 输出结果表格" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=10;" parent="1" vertex="1">
+          <mxGeometry x="640" y="570" width="160" height="50" as="geometry" />
         </mxCell>
-        
-        <!-- 循环结束判断 -->
-        <mxCell id="loop-check" value="所有调度算法&#xa;测试完成?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" vertex="1" parent="1">
-          <mxGeometry x="420" y="670" width="160" height="60" as="geometry"/>
+        <mxCell id="loop-check" value="所有调度算法&#xa;测试完成?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=11;" parent="1" vertex="1">
+          <mxGeometry x="420" y="670" width="160" height="60" as="geometry" />
         </mxCell>
-        
-        <!-- 结束节点 -->
-        <mxCell id="end" value="输出完成&#xa;退出程序" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" vertex="1" parent="1">
-          <mxGeometry x="420" y="760" width="160" height="50" as="geometry"/>
+        <mxCell id="end" value="输出完成&#xa;退出程序" style="ellipse;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="420" y="760" width="160" height="50" as="geometry" />
         </mxCell>
-        
-        <!-- 连接线 -->
-        <mxCell id="arrow1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" edge="1" parent="1" source="start" target="parse-args">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="arrow1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" parent="1" source="start" target="parse-args" edge="1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="arrow2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" edge="1" parent="1" source="parse-args" target="select-scenario">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="arrow2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" parent="1" source="parse-args" target="select-scenario" edge="1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="arrow3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" edge="1" parent="1" source="select-scenario" target="sched-loop">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="arrow3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" parent="1" source="select-scenario" target="sched-loop" edge="1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="arrow4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" edge="1" parent="1" source="sched-loop" target="set-sched">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="arrow4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" parent="1" source="sched-loop" target="set-sched" edge="1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="arrow5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#d79b00;" edge="1" parent="1" source="set-sched" target="scenario1">
+        <mxCell id="arrow5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#d79b00;" parent="1" source="set-sched" target="scenario1" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="500" y="430"/>
-              <mxPoint x="145" y="430"/>
+              <mxPoint x="500" y="430" />
+              <mxPoint x="145" y="430" />
             </Array>
           </mxGeometry>
         </mxCell>
-        
-        <!-- 场景间连接 -->
-        <mxCell id="s1-fork" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6c8ebf;dashed=1;" edge="1" parent="1" source="scenario1" target="step-fork">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="s1-fork" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6c8ebf;dashed=1;" parent="1" source="scenario1" target="step-fork" edge="1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="s2-fork" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6c8ebf;dashed=1;" edge="1" parent="1" source="scenario2" target="step-fork">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="s2-fork" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6c8ebf;dashed=1;" parent="1" source="scenario2" target="step-fork" edge="1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="s3-fork" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6c8ebf;dashed=1;" edge="1" parent="1" source="scenario3" target="step-fork">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="s3-fork" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6c8ebf;dashed=1;" parent="1" source="scenario3" target="step-fork" edge="1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="fork-wait" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6c8ebf;" edge="1" parent="1" source="step-fork" target="step-wait">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="fork-wait" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#6c8ebf;" parent="1" source="step-fork" target="step-wait" edge="1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="wait-output" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#82b366;" edge="1" parent="1" source="step-wait" target="step-output">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        
-        <!-- 输出到循环检查 -->
-        <mxCell id="output-check" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" edge="1" parent="1" source="step-output" target="loop-check">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        
-        <!-- 循环回连 -->
-        <mxCell id="loop-no" value="否" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#9673a6;strokeWidth=2;fontColor=#9673a6;fontSize=11;fontStyle=1;dashed=1;" edge="1" parent="1" source="loop-check" target="sched-loop">
+        <mxCell id="wait-output" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#82b366;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="step-wait" target="step-output" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="280" y="700"/>
-              <mxPoint x="280" y="330"/>
+              <mxPoint x="840" y="595" />
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="loop-yes" value="是" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#82b366;strokeWidth=2;fontColor=#82b366;fontSize=11;fontStyle=1;" edge="1" parent="1" source="loop-check" target="end">
-          <mxGeometry relative="1" as="geometry"/>
+        <mxCell id="output-check" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#666666;" parent="1" source="step-output" target="loop-check" edge="1">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        
+        <mxCell id="loop-no" value="否" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#9673a6;strokeWidth=2;fontColor=#9673a6;fontSize=11;fontStyle=1;dashed=1;" parent="1" source="loop-check" target="sched-loop" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="40" y="700" />
+              <mxPoint x="40" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="loop-yes" value="是" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#82b366;strokeWidth=2;fontColor=#82b366;fontSize=11;fontStyle=1;" parent="1" source="loop-check" target="end" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>

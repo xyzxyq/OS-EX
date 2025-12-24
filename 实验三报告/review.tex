@@ -89,36 +89,32 @@
 
 
 \newtcblisting{codeblock}[2][]{%
-    enhanced, breakable, listing engine=listings, listing only,%
-    title={#2}, coltitle=black!70, fonttitle=\small\bfseries\sffamily,%
-    attach boxed title to top left={xshift=22mm, yshift=-4mm},%
-    boxed title style={empty, size=minimal, bottom=0pt, top=0pt},%
-    colback=CodeBg, colframe=gray!30, boxrule=0.5pt, arc=6mm,%
-    left=6mm, right=2mm, top=10mm, bottom=2mm,%
-    drop shadow,%
-    % 【修复1】使用 underlay 确保背景画在文字下面
-    underlay={%
-        \begin{tcbclipinterior}
-            \fill[LineNumBg] (frame.north west) rectangle ([yshift=-8mm]frame.north east);
-            \fill[LineNumBg] (frame.south west) rectangle ([xshift=5.5mm]frame.north west);
-        \end{tcbclipinterior}%
-    },%
-    % 【修复2】overlay 只画装饰点，确保在最上层
-    overlay={%
-        \node[anchor=west, font=\small\bfseries\sffamily, text=black!70]
-        at ([xshift=22mm, yshift=-4mm]frame.north west) {\tcbtitletext};
-        \fill[red!70] ([xshift=6mm, yshift=-4mm]frame.north west) circle (2.5pt);
-        \fill[orange!70] ([xshift=11mm, yshift=-4mm]frame.north west) circle (2.5pt);
-        \fill[green!60!black] ([xshift=16mm, yshift=-4mm]frame.north west) circle (2.5pt);
-    },%
-    listing options={%
-        language=C, basicstyle=\ttfamily\small, keywordstyle=\color{CodePurple}\bfseries,%
-        commentstyle=\color{CodeGreen}\itshape, stringstyle=\color{orange!80!black},%
-        ndkeywordstyle=\color{CodeBlue}\bfseries, numbers=left, numberstyle=\tiny\color{gray!60}\ttfamily,%
-        stepnumber=1, numbersep=10pt, breaklines=true, tabsize=4, showstringspaces=false,%
-        frame=none, escapeinside={(*@}{@*)}, columns=fixed, keepspaces=true%
-    },%
-    #1%
+	enhanced, breakable, listing engine=listings, listing only,%
+	title={#2}, coltitle=black!80, fonttitle=\footnotesize\bfseries\sffamily,%
+	attach boxed title to top left={xshift=22mm, yshift=-3.5mm},%
+	boxed title style={empty, size=minimal, bottom=0pt, top=0pt},%
+	colback=CodeBg, colframe=gray!25, boxrule=0.5pt, arc=4mm,%
+	left=6mm, right=4mm, top=10mm, bottom=4mm,%
+	drop shadow={opacity=0.15},%
+	underlay={%
+		\begin{tcbclipinterior}
+			\fill[gray!5] (frame.north west) rectangle ([yshift=-9mm]frame.north east);
+			\fill[LineNumBg] (frame.south west) rectangle ([xshift=5.5mm]frame.north west);
+		\end{tcbclipinterior}%
+	},%
+	overlay={%
+		\draw[fill=red!60, draw=red!70] ([xshift=6mm, yshift=-4.5mm]frame.north west) circle (2pt);
+		\draw[fill=orange!60, draw=orange!70] ([xshift=11mm, yshift=-4.5mm]frame.north west) circle (2pt);
+		\draw[fill=green!60!black!60, draw=green!60!black!70] ([xshift=16mm, yshift=-4.5mm]frame.north west) circle (2pt);
+	},%
+	listing options={%
+		language=C, basicstyle=\ttfamily\footnotesize, keywordstyle=\color{CodePurple}\bfseries,%
+		commentstyle=\color{CodeGreen}\itshape, stringstyle=\color{orange!80!black},%
+		ndkeywordstyle=\color{CodeBlue}\bfseries, numbers=left, numberstyle=\tiny\color{gray!60}\ttfamily,%
+		stepnumber=1, numbersep=10pt, breaklines=true, tabsize=4, showstringspaces=false,%
+		frame=none, escapeinside={(*@}{@*)}, columns=fixed, keepspaces=true%
+	},%
+	#1%
 }
 
 % 图片占位宏 (修复版)
@@ -258,6 +254,12 @@
     
     实验三完成思路流程图如下：
     
+       	\begin{figure}[H] 
+    	\centering
+    	\includegraphics[width=1.0\textwidth]{img3/project_framework.drawio.pdf}
+    	\caption{本项目总体框架}
+    	\label{fig:code_framework}
+    \end{figure}
         
     \begin{figure}[H] 
 	        \centering
@@ -282,14 +284,7 @@
     \subsubsection{调度框架设计}
     在 \texttt{sdh.h} 中设计可扩展的调度框架，核心思想是使用函数指针数组存储各调度算法，通过 \texttt{setscheduler()} 系统调用动态切换当前使用的调度函数。
     
-    调度框架的设计思路如图\ref{fig:sched_framework}所示。
-    
-%    \begin{figure}[H] 
-%        \centering
-%        \includegraphics[width=0.7\textwidth]{img/sched_framework.drawio.pdf}
-%        \caption{调度框架设计流程}
-%        \label{fig:sched_framework}
-%    \end{figure}
+    调度框架的设计思路如图\ref{fig:scheduler_selection}所示。
     
     \subsubsection{就绪队列实现}
     
@@ -382,7 +377,15 @@ struct proc *dequeue(struct procqueue *q) {
         \item \textbf{运行时}：通过 \texttt{setscheduler(sid)} 系统调用动态切换调度器，同时重建就绪队列
     \end{enumerate}
     
-    调度器选择机制流程如图\ref{fig:scheduler_selection}所示。
+    调度器选择机制流程如图\ref{fig:sched_framework}所示。
+    
+    \begin{figure}[H] 
+    	\centering
+    	\includegraphics[width=0.7\textwidth]{img/setscheduler.drawio.pdf}
+    	\caption{调度器选择框架设计流程}
+    	\label{fig:sched_framework}
+    \end{figure}
+    
     
 %    \begin{figure}[H] 
 %        \centering
@@ -703,7 +706,7 @@ struct proc *dequeue(struct procqueue *q) {
     	\label{fig:test}
     \end{figure}
     
-    为了全面对比不同调度算法的特性，测试程序 \texttt{scheduler\_test.c} 设计了\textbf{三个典型测试场景}，分别针对调度算法的不同弱点进行测试：
+    为了全面对比不同调度算法的特性，测试程序 \texttt{scheduler\_test.c} 设计了\textbf{四个典型测试场景}，分别针对调度算法的不同弱点进行测试：
     
     \textbf{场景1：纯CPU长短作业（车队效应测试）}
     \begin{itemize}[itemsep=2pt]
@@ -729,14 +732,23 @@ struct proc *dequeue(struct procqueue *q) {
         \item \textbf{测试目的}：展示Priority调度的饥饿问题，以及SML/RR如何缓解
     \end{itemize}
     
+    \textbf{场景4：时间片公平性测试（CPU时间分配测试）}
+    \begin{itemize}[itemsep=2pt]
+        \item 创建6个相同优先级（priority=10）、相同工作量的CPU密集型进程
+        \item 所有进程同时创建，模拟并发负载
+        \item 统计每个进程的运行时间（rutime），计算方差
+        \item \textbf{测试目的}：验证RR调度器的时间片分配公平性，方差越小表示CPU时间分配越公平
+    \end{itemize}
+    
     \textbf{命令行参数支持：}
     
     测试程序支持通过命令行参数选择运行场景：
     \begin{itemize}[itemsep=0pt]
-        \item \texttt{scheduler\_test} — 运行全部3个场景
+        \item \texttt{scheduler\_test} — 运行全部4个场景
         \item \texttt{scheduler\_test 1} — 仅运行场景1（车队效应）
         \item \texttt{scheduler\_test 2} — 仅运行场景2（交互响应）
         \item \texttt{scheduler\_test 3} — 仅运行场景3（优先级饥饿）
+        \item \texttt{scheduler\_test 4} — 仅运行场景4（时间片公平性）
     \end{itemize}
     
     每个场景对5种调度算法进行对比测试：DEFAULT、RR（轮转）、PRIORITY、FCFS、SML（多级队列）。测试结果同时输出到屏幕和 \texttt{sched\_result.txt} 文件。
@@ -764,15 +776,21 @@ struct proc *dequeue(struct procqueue *q) {
         \item \textbf{场景1}（车队效应）：2长作业 + 2短作业 + 2中作业，同优先级
         \item \textbf{场景2}（交互响应）：2 CPU背景 + 2交互型 + 2 IO背景，差异化优先级
         \item \textbf{场景3}（优先级饥饿）：1高优先级大任务 + 3中优先级 + 2低优先级
+        \item \textbf{场景4}（时间片公平性）：6个相同优先级、相同工作量的CPU密集型进程
     \end{itemize}
     
     \textbf{性能指标解释：}
-    \begin{itemize}[itemsep=0pt]
-        \item \textbf{就绪时间（Ready Time）}：进程在就绪队列中等待 CPU 的时间
-        \item \textbf{运行时间（Run Time）}：进程实际占用 CPU 执行的时间
-        \item \textbf{休眠时间（Sleep Time）}：进程因等待 IO 等资源而睡眠的时间
-        \item \textbf{周转时间（Turnaround Time）}：进程从创建到完成的总时间（= 就绪 + 运行 + 休眠）
-    \end{itemize}
+\begin{table}[H]
+	\centering
+	\caption{进程时间相关概念}
+	\begin{tabular}{ll}
+		\textbf{就绪时间} (Ready Time) & 等待 CPU 的时间 \\
+		\textbf{运行时间} (Run Time) & 实际占用 CPU 的时间 \\
+		\textbf{休眠时间} (Sleep Time) & 等待 IO 的睡眠时间 \\
+		\textbf{周转时间} (Turnaround) & 创建到完成的总时间 \\
+	\end{tabular}
+\end{table}
+
     
     测试运行截图：
         \begin{figure}[H] 
@@ -782,14 +800,11 @@ struct proc *dequeue(struct procqueue *q) {
     	\label{fig:run1}
     \end{figure}
     
+    \textbf{实验具体运行结果展示在附录\ref{appendix:full-results}中。}
+    
        \subsubsection{场景1：车队效应分析}
-       
-       \textbf{预期行为：}
-       \begin{itemize}[itemsep=1pt]
-           \item \textbf{FCFS}：长作业先执行完，短作业等待时间极长（护航效应）
-           \item \textbf{RR}：长短作业交替执行，短作业周转时间显著减少
-           \item \textbf{PRIORITY/SML}：同优先级下退化为类似 RR 的行为
-       \end{itemize}
+     \textbf{场景预期结果：}
+     这个场景主要测试调度算法对长短作业混合负载的处理能力。在FCFS调度下，由于采用非抢占式策略，先到达的长作业会一直占用CPU直到完成，后到达的短作业只能排队等待，形成所谓的"护航效应"——短作业被迫跟在长作业后面缓慢"行驶"。而RR调度器会给每个进程分配固定时间片，长短作业交替执行，虽然长作业的总周转时间会增加，但短作业能够更快完成，整体响应性更好。对于PRIORITY和SML，由于本场景所有进程优先级相同，它们的行为会退化为类似RR的轮转调度。
        
         测试运行截图：
     \begin{figure}[H] 
@@ -801,12 +816,8 @@ struct proc *dequeue(struct procqueue *q) {
        
        \subsubsection{场景2：交互响应分析}
        
-       \textbf{预期行为：}
-       \begin{itemize}[itemsep=1pt]
-           \item \textbf{RR}：交互型进程能快速获得响应，但不考虑优先级
-           \item \textbf{PRIORITY/SML}：高优先级交互进程响应最快
-           \item \textbf{FCFS}：交互进程可能被 CPU 背景任务阻塞
-       \end{itemize}
+       \textbf{场景预期结果：}
+       这个场景模拟了桌面系统的典型工作场景：用户在进行交互操作的同时，后台还有CPU密集型和IO密集型任务在运行。PRIORITY和SML调度器应该表现最好，因为它们能识别高优先级的交互型进程（优先级3），让这些进程优先获得CPU，从而保证用户操作的流畅性。RR调度器虽然不考虑优先级，但由于时间片轮转机制，交互型进程也能较快获得响应。FCFS调度器在这个场景下表现最差——如果CPU背景任务先到达并开始执行，交互型进程就必须等待它完成，用户会明显感受到系统"卡顿"。
        
            测试运行截图：
        \begin{figure}[H] 
@@ -818,12 +829,8 @@ struct proc *dequeue(struct procqueue *q) {
        
        \subsubsection{场景3：优先级饥饿分析}
        
-       \textbf{预期行为：}
-       \begin{itemize}[itemsep=1pt]
-           \item \textbf{PRIORITY}：低优先级进程饥饿，等待高优先级大任务完成
-           \item \textbf{RR}：忽略优先级，所有进程公平获得时间片
-           \item \textbf{SML}：队列内轮转，一定程度缓解饥饿
-       \end{itemize}
+       \textbf{场景预期结果：}
+       这个场景专门测试优先级调度可能带来的"饥饿"问题。我们创建了一个工作量很大的高优先级进程和若干中低优先级进程。在纯粹的PRIORITY调度下，高优先级进程会一直占用CPU，中低优先级进程只能等待它完成后才能执行，如果高优先级进程持续产生，低优先级进程可能永远得不到执行机会，这就是所谓的"饥饿"。RR调度器完全忽略优先级，按照时间片轮转执行，虽然失去了优先级调度的好处，但能保证每个进程都能公平获得CPU时间。SML采用折中策略，虽然高优先级队列优先调度，但队列内部采用轮转，能在一定程度上缓解饥饿问题。
        
            测试运行截图：
        \begin{figure}[H] 
@@ -833,6 +840,21 @@ struct proc *dequeue(struct procqueue *q) {
        	\label{fig:run4}
        \end{figure}
        
+       \subsubsection{场景4：时间片公平性分析}
+       
+       \textbf{场景预期结果：}
+       这个场景创建了多个完全相同的进程，用于验证调度算法的"公平性"。我们通过计算各进程运行时间的方差来衡量公平性——方差越小说明CPU时间分配越均匀。RR调度器应该表现最优，因为它的设计初衷就是让每个进程公平获得时间片，理论上方差应该接近于0。由于所有进程优先级相同且工作量相等，PRIORITY和SML会退化为轮转行为，表现也应该不错。FCFS虽然是按顺序执行，但由于每个进程工作量相同，最终各进程的运行时间也会非常接近，方差同样很小。
+       
+       \textbf{关键指标：运行时间方差}（variance）衡量 CPU 时间分配的公平性，方差越小表示分配越公平。
+       
+       运行结果截图：
+       
+        \begin{figure}[H] 
+       	\centering
+       	\includegraphics[width=0.66\textwidth]{img3/scene4.png}
+       	\caption{测试运行截图}
+       	\label{fig:run43}
+       \end{figure}
     
     \subsubsection{运行结果分析}
     
@@ -848,18 +870,26 @@ struct proc *dequeue(struct procqueue *q) {
     		\multirow{2}{*}{\textbf{调度器}} & \multicolumn{3}{c|}{\textbf{长作业}} & \multicolumn{3}{c|}{\textbf{短作业}} & \multicolumn{3}{c}{\textbf{中作业}} \\
     		& 就绪 & 运行 & 周转 & 就绪 & 运行 & 周转 & 就绪 & 运行 & 周转 \\
     		\midrule
-    		DEFAULT  & 142 & 220 & 363 & 465 & 22 & 488 & 510 & 75 & 586 \\
-    		RR       & 412 & 223 & 635 & 104 & 21 & \textbf{126} & 291 & 73 & 364 \\
-    		PRIORITY & 219 & 219 & 438 & \textbf{22} & 22 & \textbf{44} & \textbf{74} & 73 & \textbf{147} \\
-    		FCFS     & 415 & 224 & 640 & 126 & 22 & 148 & 270 & 74 & 344 \\
-    		SML      & 415 & 224 & 639 & 107 & 22 & 129 & 295 & 74 & 369 \\
+    		DEFAULT  & 143 & 218 & 362 & 465 & 22 & 487 & 508 & 75 & 583 \\
+    		RR       & 407 & 220 & 628 & 124 & 21 & \textbf{146} & 266 & 73 & 339 \\
+    		PRIORITY & 215 & 215 & 430 & \textbf{22} & 21 & \textbf{44} & \textbf{73} & 72 & \textbf{145} \\
+    		FCFS     & 107 & 214 & 321 & 11 & 22 & 33 & 36 & 71 & 108 \\
+    		SML      & 405 & 221 & 627 & 108 & 21 & 129 & 286 & 71 & 358 \\
     		\bottomrule
     	\end{tabular}
     	\label{tab:scenario1_results}
     \end{table}
     
-    \textbf{关键发现：}PRIORITY调度器下短作业周转时间仅44 ticks，远优于其他调度器。这是因为堆结构使短作业能够快速被提取执行。RR/FCFS/SML的短作业周转时间也较短（126-148 ticks），表现出良好的公平性。
+    从数据来看，PRIORITY调度器下短作业的周转时间仅为44 ticks，表现最佳。这是因为本场景所有进程优先级相同，PRIORITY调度器的堆结构在同优先级情况下能让先完成的进程快速出队。RR和SML的短作业周转时间也较短（129-146 ticks），说明时间片轮转机制确实能缓解车队效应。值得注意的是，FCFS在这个测试中短作业周转时间反而最低（33 ticks），这是因为测试中短作业恰好排在前面被先执行，但这只是偶然情况，实际负载下FCFS很容易产生护航效应。
     
+    \begin{figure}[H]
+    	\centering
+    	\includegraphics[width=0.77\textwidth]{img3/scenario1_convoy_effect.png}
+    	\caption{场景1：车队效应测试 - 不同作业周转时间对比}
+    	\label{fig:scenario1_chart}
+    \end{figure}
+    
+    \textbf{图表分析：}从柱状图可以直观看出，PRIORITY调度器在短作业和中作业上表现最优，周转时间分别仅为44和145 ticks。这验证了基于堆的优先级调度能够快速完成短任务的优势。RR和SML虽然短作业周转时间较长，但长作业的周转时间控制得较好，体现了时间片轮转对公平性的保障。FCFS的表现较为特殊，短作业周转时间最短是因为测试中恰好先创建了短作业，但在实际应用中这种情况难以保证。
     % ==================== 场景2：交互响应测试结果 ====================
     
     \textbf{场景2：交互响应测试结果}
@@ -872,18 +902,26 @@ struct proc *dequeue(struct procqueue *q) {
     		\multirow{2}{*}{\textbf{调度器}} & \multicolumn{3}{c|}{\textbf{交互型}} & \multicolumn{3}{c|}{\textbf{CPU背景}} & \multicolumn{3}{c}{\textbf{IO背景}} \\
     		& 就绪 & 休眠 & 周转 & 就绪 & 运行 & 周转 & 就绪 & 休眠 & 周转 \\
     		\midrule
-    		DEFAULT  & 485 & 157 & 723 & 123 & 220 & 343 & 472 & 357 & 876 \\
-    		RR       & 399 & 130 & 613 & 447 & 228 & 675 & 439 & 329 & 810 \\
-    		PRIORITY & \textbf{16} & 229 & \textbf{325} & 365 & 239 & 604 & 225 & 495 & 763 \\
-    		FCFS     & 402 & 133 & 618 & 450 & 231 & 681 & 446 & 316 & 804 \\
-    		SML      & 76 & 197 & \textbf{355} & 491 & 240 & 732 & 236 & 409 & 688 \\
+    		DEFAULT  & 477 & 155 & 712 & 118 & 216 & 334 & 429 & 389 & 863 \\
+    		RR       & 398 & 86 & 565 & 449 & 225 & 674 & 456 & 288 & 789 \\
+    		PRIORITY & \textbf{72} & 200 & \textbf{353} & 477 & 234 & 711 & 227 & 422 & 690 \\
+    		FCFS     & 530 & 102 & 714 & 108 & 214 & 323 & 594 & 224 & 859 \\
+    		SML      & 75 & 198 & \textbf{353} & 478 & 236 & 714 & 231 & 417 & 689 \\
     		\bottomrule
     	\end{tabular}
     	\label{tab:scenario2_results}
     \end{table}
     
-    \textbf{关键发现：}PRIORITY下交互型进程就绪时间仅16 ticks，周转时间325 ticks；SML下就绪时间76 ticks，周转时间355 ticks。两者都远优于其他调度器，体现了优先级调度对高优先级交互进程的快速响应能力。
+    实验结果完美验证了我们的预期。PRIORITY和SML调度器下，高优先级的交互型进程就绪时间仅为72-75 ticks，周转时间都只有353 ticks，远优于其他调度器。这充分说明优先级调度能有效保障交互型应用的响应性。相比之下，FCFS调度器下交互型进程的就绪时间高达530 ticks，因为它们必须等待先到达的CPU背景任务执行完毕。RR调度器表现中等，虽然不考虑优先级，但时间片轮转机制让交互型进程也能较快获得响应。
     
+    \begin{figure}[H]
+    	\centering
+    	\includegraphics[width=0.77\textwidth]{img3/scenario2_interactive_response.png}
+    	\caption{场景2：交互响应性测试结果对比}
+    	\label{fig:scenario2_chart}
+    \end{figure}
+    
+    左图清晰展示了PRIORITY和SML在交互型进程就绪时间上的巨大优势（72-75 ticks），远低于其他调度器。FCFS的就绪时间高达530 ticks，形成鲜明对比。右图的周转时间对比进一步证实了这一点——PRIORITY和SML都达到了353 ticks的最优值。这组对比图直观说明了优先级调度机制对提升交互体验的重要性。
     % ==================== 场景3：优先级饥饿测试结果 ====================
     
     \textbf{场景3：优先级饥饿测试结果}
@@ -896,26 +934,60 @@ struct proc *dequeue(struct procqueue *q) {
     		\multirow{2}{*}{\textbf{调度器}} & \multicolumn{2}{c|}{\textbf{高优先级}} & \multicolumn{2}{c|}{\textbf{中优先级}} & \multicolumn{2}{c}{\textbf{低优先级}} \\
     		& 就绪 & 周转 & 就绪 & 周转 & 就绪 & 周转 \\
     		\midrule
-    		DEFAULT  & 41  & 482  & 595 & 707 & 844 & 957 \\
-    		RR       & 547 & 1004 & 558 & 667 & 564 & 673 \\
-    		PRIORITY & \textbf{1} & \textbf{440} & 367 & 479 & \textbf{207} & \textbf{324} \\
-    		FCFS     & 551 & 1010 & 558 & 667 & 573 & 683 \\
-    		SML      & \textbf{1} & \textbf{440} & 371 & 484 & 450 & 565 \\
+    		DEFAULT  & 40  & 476  & 585 & 695 & 830 & 941 \\
+    		RR       & 540 & 986 & 537 & 645 & 562 & 670 \\
+    		PRIORITY & \textbf{1} & \textbf{428} & 298 & 407 & 425 & 538 \\
+    		FCFS     & 2 & 439 & 546 & 654 & 815 & 923 \\
+    		SML      & \textbf{1} & 430 & 647 & 757 & 870 & 983 \\
     		\bottomrule
     	\end{tabular}
     	\label{tab:scenario3_results}
     \end{table}
     
-    \textbf{关键发现：}
-    \begin{itemize}[itemsep=1pt]
-    	\item PRIORITY/SML：高优先级进程就绪时间仅1 ticks，响应极快
-    	\item PRIORITY：低优先级进程就绪时间仅207 ticks，周转时间324 ticks，表现出乎意料地好（可能因为堆的特性使得进程能较快被调度）
-    	\item RR/FCFS：完全忽略优先级，各优先级组就绪时间接近（约550-570 ticks）
-    \end{itemize}
+    这个场景的结果很有意思。PRIORITY和SML调度器下，高优先级进程的就绪时间仅为1 ticks，几乎是立即响应，这正是优先级调度的优势。但让人意外的是，PRIORITY调度器下低优先级进程的表现也不差（就绪时间425 ticks，周转时间538 ticks），这是因为堆结构在高优先级进程执行完毕后会快速调度下一个进程。RR和FCFS完全忽略优先级，各优先级组的就绪时间都很接近（约540-580 ticks），体现了公平但无差别的调度策略。SML虽然保证了高优先级的快速响应，但低优先级进程被"饿"得比较严重，就绪时间高达870 ticks。
     
+    \begin{figure}[H]
+    	\centering
+    	\includegraphics[width=0.77\textwidth]{img3/scenario3_priority_starvation.png}
+    	\caption{场景3：优先级饥饿测试 - 不同优先级组就绪时间对比}
+    	\label{fig:scenario3_chart}
+    \end{figure}
+    
+    该图展示了各调度器对不同优先级进程的差异化处理。PRIORITY和SML的高优先级进程就绪时间几乎为0，但SML的低优先级进程就绪时间高达870 ticks，显示出明显的"饥饿"现象。RR和FCFS的三组柱子高度接近，验证了它们对优先级的忽略。值得注意的是PRIORITY调度器虽然优先处理高优先级任务，但其低优先级进程的就绪时间（425 ticks）反而优于SML，这得益于其堆结构的高效调度。
+    % ==================== 场景4：时间片公平性测试结果 ====================
+    
+    \textbf{场景4：时间片公平性测试结果}
+    
+    \begin{table}[H]
+    	\centering
+    	\caption{场景4各调度算法运行时间方差对比}
+    	\begin{tabular}{lccc}
+    		\toprule
+    		\textbf{调度器} & \textbf{平均运行时间} & \textbf{运行时间方差} & \textbf{公平性评价} \\
+    		\midrule
+    		DEFAULT  & 110 & 1 & 优 \\
+    		RR       & 107 & \textbf{0} & \textbf{最优} \\
+    		PRIORITY & 107 & \textbf{0} & \textbf{最优} \\
+    		FCFS     & 106 & 1 & 优 \\
+    		SML      & 107 & 1 & 优 \\
+    		\bottomrule
+    	\end{tabular}
+    	\label{tab:scenario4_results}
+    \end{table}
+    
+   这个场景专门验证CPU时间分配的公平性，结果符合预期。RR和PRIORITY调度器的运行时间方差为0，说明每个进程获得了完全相同的CPU时间，公平性达到最优。这对于RR来说是理所当然的——时间片轮转机制本身就是为公平性设计的。PRIORITY调度器在所有进程优先级相同时退化为轮转行为，也表现出了很好的公平性。其他调度器的方差也只有1，说明在进程完全相同的情况下，大多数调度算法都能做到较为公平的分配。
+    
+    \begin{figure}[H]
+    	\centering
+    	\includegraphics[width=0.7\textwidth]{img3/scenario4_fairness.png}
+    	\caption{场景4：时间片公平性测试 - 运行时间方差对比}
+    	\label{fig:scenario4_chart}
+    \end{figure}
+    
+    该柱状图以方差作为公平性的量化指标，数值越低代表CPU时间分配越均匀。RR和PRIORITY达到了0方差的理想状态，意味着所有进程获得完全相同的CPU时间。其他三个调度器的方差为1，虽然略高但仍属于优秀范围。这个测试证明了在进程特征完全相同的情况下，现代调度算法都能较好地保证公平性。
     % ==================== 综合性能对比表 ====================
     
-    \textbf{四、综合性能对比}
+    \textbf{综合性能对比}
     
     \begin{table}[H]
     	\centering
@@ -924,725 +996,962 @@ struct proc *dequeue(struct procqueue *q) {
     		\toprule
     		\textbf{评估维度} & \textbf{DEFAULT} & \textbf{RR} & \textbf{PRIORITY} & \textbf{FCFS} & \textbf{SML} \\
     		\midrule
-    		短作业友好性 & 差 & 优 & \textbf{最优} & 优 & 优 \\
-    		交互响应性 & 差 & 中 & \textbf{最优} & 中 & 优 \\
-    		低优先级公平性 & 差 & 优 & \textbf{优} & 优 & 中 \\
-    		高优先级响应 & 中 & 差 & \textbf{最优} & 差 & \textbf{最优} \\
+    		短作业友好性 & 差 & 优 & \textbf{最优} & 中 & 优 \\
+    		交互响应性 & 差 & 中 & \textbf{最优} & 差 & \textbf{最优} \\
+    		低优先级公平性 & 差 & 优 & 中 & 优 & 差 \\
+    		高优先级响应 & 中 & 差 & \textbf{最优} & 中 & \textbf{最优} \\
+    		时间片公平性 & 优 & \textbf{最优} & \textbf{最优} & 优 & 优 \\
     		\bottomrule
     	\end{tabular}
     	\label{tab:overall_comparison}
     \end{table}
     
-    \section{实验总结}
+    \begin{figure}[H]
+    	\centering
+    	\includegraphics[width=0.6\textwidth]{img3/overall_performance_radar.png}
+    	\caption{五种调度算法综合性能评估雷达图}
+    	\label{fig:overall_radar}
+    \end{figure}
     
-    本次实验围绕进程调度算法展开，通过实现和比较多种调度算法，我取得了以下技术成果和理论认识：
+    雷达图以五个维度全面评估各调度器的性能特征。PRIORITY调度器的覆盖面积最大，在短作业友好性、交互响应性和高优先级响应三个维度都达到最优，但在低优先级公平性上有所不足。RR调度器的图形较为均衡，在时间片公平性上表现最佳，适合需要公平调度的场景。SML综合了优先级和轮转的优点，在交互响应性和高优先级响应上达到最优。DEFAULT调度器在所有维度上表现平庸。FCFS在低优先级公平性上表现不错，但交互响应性较差。该图直观展示了"没有万能调度算法"的核心观点——应根据具体应用场景选择合适的调度策略。
     
-    \subsection{掌握了调度框架的设计方法}
-    我成功设计并实现了一个可扩展的调度框架，通过函数指针实现调度算法的动态切换。这种设计模式使得添加新的调度算法变得简单，只需实现统一接口并注册到函数指针数组即可。
+    \section{实验中遇到的问题及解决方案}
     
-    \subsection{深入理解了不同调度算法的特点}
+    在本次实验过程中，遇到了多个技术问题。通过分析和调试，逐一找到了问题的根源并予以解决。以下是主要问题的记录与分析。
+        
+    \subsection{问题1：运行 scheduler\_test 时磁盘块耗尽}
+    
+    \textbf{现象：}运行 \texttt{scheduler\_test} 测试程序时，内核 panic：\texttt{"balloc: out of blocks"}
+    
+    \textbf{原因分析：}xv6 文件系统默认只有 1000 个块（约 500KB）。测试程序需要创建多个子进程，每个进程都会进行文件 IO 操作，加上结果输出文件的写入，很快就耗尽了磁盘空间。
+    
+    \textbf{解决方案：}修改 \texttt{param.h} 中的文件系统大小常量：
+    \begin{codeblock}
+	\#define FSSIZE 10000  // 从 1000 增加到 10000
+    \end{codeblock}
+    
+    \subsection{问题2：PRIORITY/SML 调度器交互响应测试表现异常}
+    
+    \textbf{现象：}在场景2测试中，PRIORITY 调度器下高优先级的交互型任务（优先级3）平均就绪时间反而高于低优先级的 CPU 背景任务（优先级18），与预期相反。
+    
+    这是由多个因素共同导致的：
+    \begin{enumerate}
+        \item \textbf{非抢占式调度}：PRIORITY 和 SML 调度器只在进程主动让出 CPU 时才重新调度。CPU 密集型任务没有 \texttt{yield/sleep/exit} 调用，会一直运行到完成。
+        \item \textbf{setpriority 时机问题}：测试程序中，子进程在 \texttt{fork()} 后才执行 \texttt{setpriority()}。在此之前，其他 CPU 密集型进程可能已经开始运行并占用 CPU。
+        \item \textbf{进程创建顺序}：测试按顺序先创建 CPU 背景任务，再创建交互型任务。当交互型任务被创建时，CPU 背景任务已在运行且不会主动让出。
+    \end{enumerate}
+    
+    \textbf{解决方案：}实现抢占式优先级调度，在时钟中断时检查是否有更高优先级进程就绪。
+
+    
+    \section{实验结论}
+    
+    本实验通过在 xv6 内核中实现并对比轮转（RR）、优先级（Priority）、先来先服务（FCFS）和静态多级队列（SML）四种调度算法，结合 \texttt{test\_scheduler.c} 构造的四个典型测试场景，深入分析了不同调度策略对系统性能的影响。
+    
+    实验数据表明，没有一种单一的简单调度算法能在所有场景下胜出。各算法的特性及适用场景总结如下：
+    
+    \begin{table}[H]
+        \centering
+        \caption{调度算法特性与适用场景分析}
+        \begin{tabular}{|p{2.5cm}|p{4cm}|p{4cm}|p{3.5cm}|}
+            \hline
+            \textbf{调度算法} & \textbf{优势} & \textbf{劣势} & \textbf{适用场景} \\ \hline
+            \textbf{FCFS} & 实现简单，无进程切换开销 & 严重的车队效应，短作业等待时间长，交互体验差 & 批处理系统，后台计算任务 \\ \hline
+            \textbf{RR (轮转)} & 响应时间短，公平性好（方差小），防止饥饿 & 频繁切换开销大，未区分进程重要性，关键任务得不到优先处理 & 分时系统，多用户交互环境 \\ \hline
+            \textbf{Priority} & 关键任务响应极快，支持不同服务等级 & 低优先级进程可能"饥饿"，优先级反转风险 & 实时系统，区分用户等级的系统 \\ \hline
+            \textbf{SML (多级队列)} & 结合了响应性和灵活性，兼顾多种需求 & 静态队列配置死板，低优先级队列仍可能饥饿 & 复杂的通用操作系统 \\ \hline
+        \end{tabular}
+    \end{table}
+    
+    \subsection{从实验走向现代调度：完全公平调度 (CFS)}
+    
+    通过实验我们发现，传统的调度算法往往陷入"公平性"与"交互性"的博弈中：
     \begin{itemize}
-        \item \textbf{优先级调度}：采用最小堆实现，时间复杂度 O(log n)；高优先级进程能快速响应，但可能导致低优先级进程饥饿
-        \item \textbf{FCFS}：真正的非抢占式调度，进程运行直到主动让出 CPU；实现简单但可能导致护航效应
-        \item \textbf{轮转调度}：抢占式调度，公平性好，适合交互式系统
-        \item \textbf{静态多级队列}：结合了优先级和轮转的优点，在效率与公平之间取得平衡
+        \item RR 追求绝对的时间片公平，却牺牲了重要进程的优先权；
+        \item Priority 追求重要性优先，却带来了严重的饥饿和不公平问题；
+        \item SML 虽然试图折中，但静态的队列划分依然不够灵活，难以应对瞬息万变的负载。
     \end{itemize}
     
-    \subsection{掌握了数据结构优化技术}
-    在优先级调度中，我使用最小堆替代了传统的多级队列或线性遍历方式。堆的上浮（siftUp）和下沉（siftDown）操作确保了 O(log n) 的时间复杂度，这是一个重要的算法优化实践。
+    这正是现代 Linux 内核抛弃这些传统算法的原因。为了同时解决上述问题，Linux 2.6.23 引入了 完全公平调度器（Completely Fair Scheduler, CFS）。
     
-    \subsection{掌握了进程统计信息收集方法}
-    通过实现 \texttt{update\_statistics()} 和 \texttt{wait2()} 系统调用，我学会了如何在内核中收集进程的运行时统计信息，这对于分析调度算法性能至关重要。
+    CFS不再使用离散的时间片和静态优先级，而是基于\textbf{虚拟运行时间 (vruntime)} 的概念。它通过红黑树结构动态维护进程队列，每次总是选择 vruntime 最小的进程运行。这种设计带来了质的飞跃：
+    \begin{enumerate}
+        \item \textbf{动态公平}：不需要复杂的时间片计算，vruntime 自动体现了进程占用 CPU 的"不公平程度"，调度器只需不断补偿"最不公平"的进程。
+        \item \textbf{平滑优先级}：优先级被转化为权重，影响 vruntime 的增长速度。高优先级进程 vruntime 涨得慢，从而获得更多 CPU 时间，但不会像传统 Priority 那样完全饿死低优先级进程。
+        \item \textbf{交互优化}：睡眠的交互进程唤醒时 vruntime 较小，能立即抢占 CPU，天然保证了低延迟。
+    \end{enumerate}
     
-    \subsection{理解了调度决策对系统性能的影响}
-    通过对比实验，我直观地观察到不同调度算法在响应时间、周转时间、公平性等方面的差异。这加深了我对"没有万能调度算法"这一理念的理解——选择合适的调度算法需要根据具体应用场景权衡。
+        \begin{figure}[H]
+    	\centering
+    	\includegraphics[width=0.45\textwidth]{img3/CFS.pdf}
+    	\caption{完全公平调度算法大概流程图}
+    	\label{fig:cfs}
+    \end{figure}
+    
+    本次实验实现的算法是操作系统调度的基石，而理解它们的缺陷，正是理解 CFS 等现代复杂调度算法设计哲学的关键一把钥匙。
+
     
     \section{实验心得}
     
     这次实验让我对操作系统调度有了更深刻的认识。
     
-    首先，我深刻体会到了调度算法的选择对系统行为的深远影响。在实现和测试不同调度算法的过程中，我发现看似简单的调度决策实际上涉及到响应时间、吞吐量、公平性等多个相互制约的因素。例如，优先级调度虽然能让高优先级进程快速响应，但如果不加限制，低优先级进程可能永远得不到执行机会，这就是所谓的"饥饿"问题。
+    我深刻体会到了调度算法的选择对系统行为的深远影响。在实现和测试不同调度算法的过程中，我发现看似简单的调度决策实际上涉及到响应时间、吞吐量、公平性等多个相互制约的因素。例如，优先级调度虽然能让高优先级进程快速响应，但如果不加限制，低优先级进程可能永远得不到执行机会，这就是所谓的饥饿问题。
     
-    其次，设计可扩展的调度框架让我对软件工程中的抽象和模块化有了新的理解。通过使用函数指针数组，我实现了调度算法的即插即用，这种设计使得添加新算法变得非常简单。这个经验让我意识到，好的架构设计能够极大地降低后续开发和维护的成本。
-    
-    最后，通过收集和分析进程运行统计数据，我掌握了用数据说话的调试和分析方法。不同调度算法产生的统计数据差异直观地反映了它们的特性，这比单纯阅读理论知识更加印象深刻。
+    此外，设计可扩展的调度框架让我对软件工程中的抽象和模块化有了新的理解。通过使用函数指针数组，我实现了调度算法的即插即用，这种设计使得添加新算法变得非常简单。这个经验让我意识到，好的架构设计能够极大地降低后续开发和维护的成本。
+   
     
     \newpage
-    \section{附录：核心代码实现}
-    \subsection{附录A：数据结构定义}
+    \subsection{附录A：调度器框架与数据结构}
     
-    \subsubsection{A.1 ptable.h - 进程信息结构}
+    \subsubsection{A.1 就绪队列数据结构}
     
-    \begin{codeblock}{ptable.h}
-        // ptable.h - 进程信息结构定义，用于内核与用户态程序之间传递进程信息
-        #ifndef _PTABLE_H_
-        #define _PTABLE_H_
-        
-        #include "param.h" // 引入NPROC常量定义
-        
-        // proc_info结构体：轻量级进程快照，专为用户态程序(如ps命令)设计
-        struct proc_info {
-            int pid;                   // 进程ID，唯一标识一个进程
-            int ppid;                  // 父进程ID，如果没有父进程则为-1
-            int priority;              // 进程调度优先级(1-20，数值越小优先级越高)
-            int mem_size;              // 进程占用的内存大小(字节数)
-            enum procstate state;      // 进程状态
-            char name[16];             // 进程命令名(最多16字节)
-        };
-        
-        #endif
+    \begin{codeblock}{proc.c - 队列与堆结构定义}
+// 通用队列结构单元
+struct procqueue {
+    struct proc *head;
+    struct proc *tail;
+};
+
+// FCFS/RR 队列（1个）
+struct procqueue fcfsQueue;
+
+// Priority 最小堆，优先级越小越靠前
+struct priorityHeap {
+    struct proc *procs[NPROC]; // 堆数组
+    int size;                  // 当前堆大小
+} pHeap;
+
+// SML 队列（3个：0=高优先级1-7, 1=中优先级8-14, 2=低优先级15-20）
+struct procqueue smlQueues[3];
     \end{codeblock}
     
-    \subsubsection{A.2 proc.h - 进程控制块扩展}
+    \subsubsection{A.2 队列操作函数}
     
-    \begin{codeblock}{proc.h (关键部分)}
-        // 进程状态枚举
-        enum procstate { 
-            UNUSED,    // 进程槽位未使用
-            EMBRYO,    // 进程正在创建中
-            SLEEPING,  // 进程因等待某个事件而睡眠
-            RUNNABLE,  // 进程就绪，等待被调度执行
-            RUNNING,   // 进程正在CPU上运行
-            ZOMBIE     // 进程已终止，等待父进程回收
-        };
-        
-        // 进程控制块(PCB)：内核中描述每个进程的核心数据结构
-        struct proc {
-            uint sz;                     // 进程地址空间大小(字节)
-            pde_t* pgdir;                // 进程页目录的虚拟地址
-            char *kstack;                // 进程内核栈的底部地址
-            enum procstate state;        // 进程当前状态
-            int pid;                     // 进程ID
-            int priority;                // 新增：进程优先级(1-20)
-            struct proc *parent;         // 指向父进程的指针
-            struct trapframe *tf;        // 保存用户态寄存器状态
-            struct context *context;     // 进程上下文(用于上下文切换)
-            void *chan;                  // 睡眠通道
-            int killed;                  // 非零表示进程被标记为终止
-            struct file *ofile[NOFILE];  // 打开的文件描述符数组
-            struct inode *cwd;           // 当前工作目录
-            char name[16];               // 进程名称
-            int sem_held[32];            // 新增：记录进程持有的信号量资源
-        };
+    \begin{codeblock}{enqueue/dequeue 实现}
+// 入队：将进程添加到队列尾部
+void enqueue(struct procqueue *q, struct proc *p) {
+    p->next = 0;
+    if (q->tail == 0) {
+        q->head = q->tail = p;
+    } else {
+        q->tail->next = p;
+        q->tail = p;
+    }
+}
+
+// 出队：从队列头部取出进程
+struct proc *dequeue(struct procqueue *q) {
+    struct proc *p = q->head;
+    if (p == 0) return 0;
+    q->head = p->next;
+    if (q->head == 0) {
+        q->tail = 0;
+    }
+    p->next = 0;
+    return p;
+}
     \end{codeblock}
     
-    \subsubsection{A.3 proc.c - 信号量结构定义}
+    \subsubsection{A.3 统一入队函数}
     
-    \begin{codeblock}{proc.c (信号量定义)}
-        // 内核信号量结构：用于进程间的同步与互斥
-        struct semaphore {
-            int value;              // 信号量的当前值(可用资源数量)
-            int active;             // 标志位：1表示该信号量槽位已初始化
-            struct spinlock lock;   // 保护value和active字段的自旋锁
-        };
-        
-        // 全局信号量表：系统最多支持32个信号量
-        struct semaphore sema[32];
+    \begin{codeblock}{addToReadyQueues 实现}
+// 统一入队函数：进程变为 RUNNABLE 时调用
+// 根据当前激活的调度器，只添加到对应的队列
+extern int schedSelected; // 来自 sdh.h，表示当前调度器类型
+
+void addToReadyQueues(struct proc *p) {
+    switch (schedSelected) {
+    case 0: // DEFAULT
+    case 2: // FCFS
+    case 3: // RR
+        enqueue(&fcfsQueue, p);
+        break;
+    case 1: // PRIORITY - 使用最小堆
+        heapInsert(p);
+        break;
+    case 4: // SML
+        if (p->priority >= 1 && p->priority <= 7) {
+            enqueue(&smlQueues[0], p);
+        } else if (p->priority >= 8 && p->priority <= 14) {
+            enqueue(&smlQueues[1], p);
+        } else {
+            enqueue(&smlQueues[2], p);
+        }
+        break;
+    default:
+        enqueue(&fcfsQueue, p);
+        break;
+    }
+}
     \end{codeblock}
     
-    \subsection{附录B：进程管理系统调用实现}
+    \subsection{附录B：调度算法实现}
     
-    \subsubsection{B.1 proc.c - setpriority函数}
+    \subsubsection{B.1 优先级调度器（Priority Scheduler）}
     
-    \begin{codeblock}{setpriority实现}
-        // setpriority：修改指定进程的优先级
-        // 参数：pid - 目标进程ID，priority - 新优先级值(1-20)
-        // 返回值：0表示成功，-1表示失败
-        int
-        setpriority(int pid, int priority)
-        {
-            struct proc *p;          // 用于遍历进程表的指针
-            int found = 0;           // 标志：是否找到目标进程
+    \begin{codeblock}{priorityScheduler 实现}
+// 优先级调度器：遍历进程表，选择优先级最高（数值最小）的就绪进程
+// 时间复杂度 O(n)，但能实时反映优先级变化
+struct proc *priorityScheduler() {
+    struct proc *p, *best = 0;
+    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+        if (p->state == RUNNABLE) {
+            if (best == 0 || p->priority < best->priority)
+                best = p;
+        }
+    }
+    if (best != 0) best->state = RUNNING;
+    return best;
+}
+    \end{codeblock}
+    
+    \subsubsection{B.2 先来先服务调度器（FCFS）}
+    
+    \begin{codeblock}{fcfsScheduler 实现}
+// 先来先服务调度器：从队列头部取出进程
+// 非抢占式，进程运行直到主动让出CPU
+struct proc *fcfsScheduler() {
+    return dequeue(&fcfsQueue);
+}
+    \end{codeblock}
+    
+    \subsubsection{B.3 轮转调度器（Round Robin）}
+    
+    \begin{codeblock}{rrScheduler 实现}
+// 轮转调度器：从FCFS队列取出，调度后由yield重新入队尾
+// 与FCFS共用队列，但在trap.c中会被时钟中断抢占
+struct proc *rrScheduler() {
+    return dequeue(&fcfsQueue);
+}
+    \end{codeblock}
+    
+    \subsubsection{B.4 静态多级队列调度器（SML）}
+    
+    \begin{codeblock}{smlScheduler 实现}
+// 静态多级队列调度器：依次从高、中、低优先级队列出队
+// 高优先级队列优先，同级别内轮转（FCFS）
+// 时间复杂度 O(1)
+struct proc *smlScheduler() {
+    struct proc *p;
+    
+    // 优先从高优先级队列出队
+    p = dequeue(&smlQueues[0]);
+    if (p != 0) return p;
+    
+    // 高优先级队列空，尝试中优先级队列
+    p = dequeue(&smlQueues[1]);
+    if (p != 0) return p;
+    
+    // 中优先级队列也空，尝试低优先级队列
+    return dequeue(&smlQueues[2]);
+}
+    \end{codeblock}
+    
+    \subsection{附录C：调度器框架}
+    
+    \subsubsection{C.1 调度器选择机制（sdh.c）}
+    
+    \begin{codeblock}{sdh.c - 调度器函数指针数组}
+#include "types.h"
+#include "defs.h"
+#include "proc.h"
+#include "sdh.h"
+
+// 全局调度器ID（默认为0）
+int schedSelected = 0;
+
+// 调度算法函数指针数组
+struct proc *(*schedulerFunction[5])(void);
+
+// 当前激活的调度函数指针
+struct proc *(*ready_process)(void);
+
+// 初始化调度器
+void initScheduler(void) {
+    schedulerFunction[0] = defaultScheduler;  // DEFAULT
+    schedulerFunction[1] = priorityScheduler; // PRIORITY
+    schedulerFunction[2] = fcfsScheduler;     // FCFS
+    schedulerFunction[3] = rrScheduler;       // RR
+    schedulerFunction[4] = smlScheduler;      // SML
+    
+    ready_process = schedulerFunction[0];
+}
+
+// 切换调度器
+int setscheduler(int schedId) {
+    if (schedId < 0 || schedId > 4) return -1;
+    schedSelected = schedId;
+    ready_process = schedulerFunction[schedId];
+    return 0;
+}
+    \end{codeblock}
+    
+    \subsubsection{C.2 调度器主循环（scheduler函数）}
+    
+    \begin{codeblock}{proc.c - scheduler函数}
+// scheduler - 调度器主循环函数
+// 功能：操作系统的核心调度循环，负责选择并切换到下一个要执行的进程
+// 说明：此函数永不返回，每个CPU核心启动后会一直在此循环中运行
+void scheduler(void) {
+    struct proc *p;
+    struct cpu *c = mycpu();
+    c->proc = 0;
+    
+    for (;;) {
+        // 步骤1：启用中断，防止死锁
+        sti();
+        
+        // 步骤2：获取进程表锁
+        acquire(&ptable.lock);
+        
+        // 步骤3：调用当前选定的调度算法选择下一个进程
+        acquire(&schedulerlock);
+        p = (*ready_process)();
+        release(&schedulerlock);
+        
+        // 步骤4：如果找到了就绪进程，则进行上下文切换
+        if (p != 0) {
+            c->proc = p;
+            switchuvm(p);           // 切换到进程的页表
+            p->state = RUNNING;
+            swtch(&(c->scheduler), p->context);  // 上下文切换
+            switchkvm();            // 恢复内核页表
+            c->proc = 0;
+        }
+        
+        // 步骤5：释放进程表锁
+        release(&ptable.lock);
+    }
+}
+    \end{codeblock}
+    
+    \subsubsection{C.3 进程让出CPU（yield函数）}
+    
+    \begin{codeblock}{proc.c - yield函数}
+// yield - 进程主动放弃CPU资源
+// 用于实现轮转调度的时间片机制
+void yield(void) {
+    acquire(&ptable.lock);
+    struct proc *curp = myproc();
+    curp->state = RUNNABLE;
+    addToReadyQueues(curp);  // 重新加入就绪队列
+    sched();                  // 切换到调度器
+    release(&ptable.lock);
+}
+    \end{codeblock}
+    
+    \subsection{附录D：时钟中断与进程统计}
+    
+    \subsubsection{D.1 时钟中断处理（trap.c）}
+    
+    \begin{codeblock}{trap.c - 时钟中断处理}
+void trap(struct trapframe *tf) {
+    // ... 省略系统调用处理 ...
+    
+    switch (tf->trapno) {
+    case T_IRQ0 + IRQ_TIMER:  // 时钟中断
+        if (cpuid() == 0) {
+            acquire(&tickslock);
+            ticks++;                  // 增加全局时钟计数
+            update_statistics();      // 更新进程时间统计
+            wakeup(&ticks);           // 唤醒等待时钟的进程
+            release(&tickslock);
+        }
+        lapiceoi();
+        break;
+    // ... 省略其他中断处理 ...
+    }
+    
+    // 抢占式调度：时间片用完就让出CPU
+    if (myproc() && myproc()->state == RUNNING &&
+        tf->trapno == T_IRQ0 + IRQ_TIMER) {
+        yield();  // 无条件让出CPU，由调度器决定下一个进程
+    }
+}
+    \end{codeblock}
+    
+    \subsubsection{D.2 进程时间统计更新}
+    
+    \begin{codeblock}{proc.c - update\_statistics函数}
+// update_statistics - 更新所有进程的时间统计
+// 每个时钟中断调用一次
+void update_statistics(void) {
+    struct proc *p;
+    acquire(&ptable.lock);
+    
+    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+        switch (p->state) {
+        case RUNNING:
+            p->rutime++;   // 运行时间 +1
+            break;
+        case RUNNABLE:
+            p->retime++;   // 就绪等待时间 +1
+            break;
+        case SLEEPING:
+            p->stime++;    // 睡眠时间 +1
+            break;
+        default:
+            break;
+        }
+    }
+    
+    release(&ptable.lock);
+}
+    \end{codeblock}
+    
+    \subsubsection{D.3 wait2系统调用}
+    
+    \begin{codeblock}{proc.c - wait2函数}
+// wait2 - wait的增强版，返回子进程的时间统计信息
+int wait2(int *retime, int *rutime, int *stime) {
+    struct proc *p;
+    int havekids, pid;
+    
+    acquire(&ptable.lock);
+    for (;;) {
+        havekids = 0;
+        for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+            if (p->parent != myproc()) continue;
+            havekids = 1;
             
-            // 步骤1：参数校验 - 优先级必须在[1, 20]范围内
-            if(priority < 1 || priority > 20)
-            return -1;
-            
-            // 步骤2：获取进程表锁，确保互斥访问
-            acquire(&ptable.lock);
-            
-            // 步骤3：遍历进程表，查找目标进程
-            for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-                if(p->pid == pid){
-                    p->priority = priority;  // 修改优先级
-                    found = 1;
-                    break;
-                }
+            if (p->state == ZOMBIE) {
+                // 收集时间统计信息
+                *retime = p->retime;  // 就绪等待时间
+                *rutime = p->rutime;  // 实际运行时间
+                *stime = p->stime;    // 睡眠时间
+                
+                pid = p->pid;
+                // 释放进程资源...
+                kfree(p->kstack);
+                p->kstack = 0;
+                freevm(p->pgdir);
+                p->state = UNUSED;
+                // 清零统计字段...
+                
+                release(&ptable.lock);
+                return pid;
             }
-            
-            // 步骤4：释放进程表锁
+        }
+        
+        if (!havekids || myproc()->killed) {
             release(&ptable.lock);
-            
-            // 步骤5：返回结果
-            return found ? 0 : -1;
-        }
-    \end{codeblock}
-    
-    \subsubsection{B.2 proc.c - getptable函数}
-    
-    \begin{codeblock}{getptable实现}
-        // getptable：将内核进程表信息复制到用户空间
-        // 参数：ubuf - 用户空间缓冲区地址，size - 缓冲区大小
-        // 返回值：0表示成功，-1表示失败
-        int 
-        getptable(void *ubuf, int size)
-        {
-            struct proc *p;              // 进程表遍历指针
-            struct proc_info pi;         // 临时变量，用于构造进程信息
-            char *uptr = (char*)ubuf;    // 用户缓冲区指针
-            int i = 0;                   // 进程计数器
-            
-            // 步骤1：缓冲区大小检查
-            if(size < NPROC * sizeof(struct proc_info))
             return -1;
-            
-            // 步骤2：获取进程表锁
-            acquire(&ptable.lock);
-            
-            // 步骤3：遍历进程表
-            for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-                // 清零临时结构体
-                memset(&pi, 0, sizeof(pi));
-                
-                // 如果槽位正在使用，填充信息
-                if(p->state != UNUSED){
-                    pi.pid = p->pid;
-                    pi.ppid = (p->parent) ? p->parent->pid : -1; 
-                    pi.priority = p->priority;
-                    pi.mem_size = p->sz;
-                    pi.state = p->state;
-                    safestrcpy(pi.name, p->name, sizeof(pi.name));
-                }
-                
-                // 步骤4：复制到用户空间
-                if(copyout(myproc()->pgdir, 
-                (uint)(uptr + i * sizeof(struct proc_info)), 
-                (char*)&pi, sizeof(pi)) < 0){
-                    release(&ptable.lock);
-                    return -1;
-                }
-                i++;
-            }
-            
-            // 步骤5：释放锁并返回
-            release(&ptable.lock);
-            return 0;
-        }
-    \end{codeblock}
-    
-    \subsubsection{B.3 sysproc.c - 系统调用包装器}
-    
-    \begin{codeblock}{系统调用包装器}
-        // sys_setpriority：setpriority系统调用包装器
-        int
-        sys_setpriority(void)
-        {
-            int pid, priority;
-            
-            // 从系统调用参数栈中解析参数
-            if(argint(0, &pid) < 0)        // 参数0：进程ID
-            return -1;
-            if(argint(1, &priority) < 0)   // 参数1：优先级值
-            return -1;
-            
-            // 调用内核实现函数
-            return setpriority(pid, priority);
         }
         
-        // sys_getptable：getptable系统调用包装器
-        int
-        sys_getptable(void)
-        {
-            char *buf;  // 用户空间缓冲区指针
-            int size;   // 缓冲区大小
-            
-            // 解析参数并验证用户地址有效性
-            if(argptr(0, &buf, sizeof(struct proc_info) * NPROC) || 
-            argint(1, &size))
-            return -1;
-            
-            // 调用内核实现函数
-            return getptable(buf, size);
-        }
+        sleep(myproc(), &ptable.lock);
+    }
+}
     \end{codeblock}
     
-    \subsection{附录C：用户态程序实现}
-    
-    \subsubsection{C.1 ps.c - 进程查看命令}
-    
-    \begin{codeblock}{ps.c}
-        #include "types.h"
-        #include "stat.h"
-        #include "user.h"
-        #include "param.h"     // 包含NPROC常量定义
-        #include "mmu.h"
-        #include "proc.h"      // 包含procstate枚举定义
-        #include "ptable.h"    // 包含proc_info结构定义
-        
-        // 进程状态字符串数组：将状态枚举转换为可读字符串
-        static char *states[] = {
-            [UNUSED]    "UNUSED  ",  // 补空格对齐到8字符
-            [EMBRYO]    "EMBRYO  ",
-            [SLEEPING]  "SLEEPING",
-            [RUNNABLE]  "RUNNABLE",
-            [RUNNING]   "RUNNING ",
-            [ZOMBIE]    "ZOMBIE  "
-        };
-        
-        int
-        main(int argc, char *argv[])
-        {
-            struct proc_info pinfo[NPROC];  // 接收进程信息的缓冲区
-            
-            // 步骤1：清零缓冲区，防止打印垃圾数据
-            memset(pinfo, 0, sizeof(pinfo));
-            
-            // 步骤2：调用getptable系统调用获取进程表信息
-            if(getptable(pinfo, sizeof(pinfo)) < 0){
-                printf(2, "ps: getptable failed\n");
-                exit();
-            }
-            
-            // 步骤3：打印表头
-            printf(1, "PID    PPID    PRI    MEM    STATE        CMD\n");
-            
-            // 步骤4：遍历并打印每个进程的信息
-            for(int i = 0; i < NPROC; i++){
-                // 跳过未使用的进程槽位
-                if(pinfo[i].pid == 0)
-                continue;
-                
-                // 打印PID
-                printf(1, "%d    ", pinfo[i].pid);
-                
-                // 打印PPID（-1则显示N/A）
-                if(pinfo[i].ppid == -1)
-                printf(1, "N/A    ");
-                else
-                printf(1, "%d    ", pinfo[i].ppid);
-                
-                // 打印优先级和内存大小
-                printf(1, "%d    %d    ", pinfo[i].priority, pinfo[i].mem_size);
-                
-                // 打印进程状态
-                if(pinfo[i].state >= 0 && pinfo[i].state < 6)
-                printf(1, "%s    ", states[pinfo[i].state]);
-                else
-                printf(1, "???    ");
-                
-                // 打印进程名称
-                printf(1, "%s\n", pinfo[i].name);
-            }
-            
-            exit();
-        }
-    \end{codeblock}
-    
-    \subsubsection{C.2 nice.c - 优先级修改命令}
-    
-    \begin{codeblock}{nice.c}
-        #include "types.h"
-        #include "stat.h"
-        #include "user.h"
-        #include "fcntl.h"
-        
-        int
-        main(int argc, char *argv[])
-        {
-            int pid, priority;
-            
-            // 步骤1：参数检查 - 需要两个参数：pid和priority
-            if(argc != 3){
-                printf(2, "Usage: nice pid priority\n");
-                exit();
-            }
-            
-            // 步骤2：解析命令行参数
-            pid = atoi(argv[1]);       // 第一个参数：进程ID
-            priority = atoi(argv[2]);  // 第二个参数：优先级值
-            
-            // 步骤3：参数校验 - 优先级必须在[1, 20]范围内
-            if (priority < 1 || priority > 20) {
-                printf(2, "nice: priority must be between 1 and 20\n");
-                exit();
-            }
-            
-            // 步骤4：调用setpriority系统调用
-            if(setpriority(pid, priority) < 0){
-                printf(2, "nice: failed to set priority (pid %d not found?)\n", pid);
-            } else {
-                printf(1, "nice: priority of process %d set to %d\n", pid, priority);
-            }
-            
-            exit();
-        }
-    \end{codeblock}
-    
-    \subsection{附录D：信号量实现}
-    
-    \subsubsection{D.1 proc.c - sem\_init函数}
-    
-    \begin{codeblock}{sem\_init实现}
-        // sem_init：初始化一个信号量
-        // 参数：sem - 信号量ID(0-31)，value - 信号量初始值
-        // 返回值：0表示成功，-1表示失败
-        int
-        sem_init(int sem, int value)
-        {
-            // 步骤1：参数校验
-            if(sem < 0 || sem >= 32)
-            return -1;
-            
-            // 步骤2：获取该信号量的锁
-            acquire(&sema[sem].lock);
-            
-            // 步骤3：检查是否已被初始化
-            if(sema[sem].active == 1) {
-                release(&sema[sem].lock);
-                return -1;  // 已在使用，不允许重复初始化
-            }
-            
-            // 步骤4：初始化信号量
-            sema[sem].value = value;  // 设置初始值
-            sema[sem].active = 1;     // 标记为活跃状态
-            
-            // 步骤5：释放锁
-            release(&sema[sem].lock);
-            
-            return 0;
-        }
-    \end{codeblock}
-    
-    \subsubsection{D.2 proc.c - sem\_destroy函数}
-    
-    \begin{codeblock}{sem\_destroy实现}
-        // sem_destroy：销毁一个信号量
-        // 参数：sem - 信号量ID(0-31)
-        // 返回值：0表示成功，-1表示失败
-        int
-        sem_destroy(int sem)
-        {
-            // 步骤1：参数校验
-            if(sem < 0 || sem >= 32)
-            return -1;
-            
-            // 步骤2：获取锁
-            acquire(&sema[sem].lock);
-            
-            // 步骤3：检查是否处于活跃状态
-            if(sema[sem].active == 0) {
-                release(&sema[sem].lock);
-                return -1;
-            }
-            
-            // 步骤4：销毁信号量
-            sema[sem].active = 0;  // 标记为未使用
-            sema[sem].value = 0;   // 清零计数值
-            
-            // 步骤5：释放锁
-            release(&sema[sem].lock);
-            
-            return 0;
-        }
-    \end{codeblock}
-    
-    \subsubsection{D.3 proc.c - sem\_wait函数(P操作)}
-    
-    \begin{codeblock}{sem\_wait实现}
-        // sem_wait：P操作，申请资源，资源不足则阻塞
-        // 参数：sem - 信号量ID，count - 需要申请的资源数量
-        // 返回值：0表示成功，-1表示失败
-        int 
-        sem_wait(int sem, int count)
-        {
-            // 步骤1：参数校验
-            if(sem < 0 || sem >= 32)
-            return -1;
-            
-            // 步骤2：获取信号量锁
-            acquire(&sema[sem].lock);
-            
-            // 步骤3：检查是否处于活跃状态
-            if(sema[sem].active == 0){
-                release(&sema[sem].lock);
-                return -1;
-            }
-            
-            // 步骤4：循环检查资源是否足够（核心逻辑）
-            // 使用while而非if，防止虚假唤醒
-            while(sema[sem].value < count){
-                // 资源不足，进程进入睡眠
-                // sleep的参数1：睡眠通道（使用信号量地址）
-                // sleep的参数2：当前持有的锁
-                // sleep会原子性地释放锁并进入SLEEPING状态
-                sleep(&sema[sem], &sema[sem].lock);
-                
-                // 被唤醒后，回到while开头重新检查条件
-                
-                // 防御性检查：信号量是否在睡眠期间被销毁
-                if(sema[sem].active == 0){
-                    release(&sema[sem].lock);
-                    return -1;
-                }
-            }
-            
-            // 步骤5：资源充足，消耗资源
-            sema[sem].value -= count;
-            
-            // 步骤6：记账，用于进程退出时的自动资源回收
-            myproc()->sem_held[sem] += count;
-            
-            // 步骤7：释放锁
-            release(&sema[sem].lock);
-            
-            return 0;
-        }
-    \end{codeblock}
-    
-    \subsubsection{D.4 proc.c - sem\_signal函数(V操作)}
-    
-    \begin{codeblock}{sem\_signal实现}
-        // sem_signal：V操作，释放资源并唤醒等待者
-        // 参数：sem - 信号量ID，count - 需要释放的资源数量
-        // 返回值：0表示成功，-1表示失败
-        int 
-        sem_signal(int sem, int count)
-        {
-            // 步骤1：参数校验
-            if(sem < 0 || sem >= 32)
-            return -1;
-            
-            // 步骤2：获取信号量锁
-            acquire(&sema[sem].lock);
-            
-            // 步骤3：检查活跃状态
-            if(sema[sem].active == 0){
-                release(&sema[sem].lock);
-                return -1;
-            }
-            
-            // 步骤4：释放资源，增加信号量的值
-            sema[sem].value += count;
-            
-            // 步骤5：销账，减少当前进程的资源持有计数
-            if(myproc()->sem_held[sem] >= count) {
-                myproc()->sem_held[sem] -= count;
-            } else {
-                // 防御性处理：持有计数不足，清零
-                myproc()->sem_held[sem] = 0;
-            }
-            
-            // 步骤6：唤醒所有等待该信号量的进程
-            // wakeup将所有在该通道上睡眠的进程状态改为RUNNABLE
-            wakeup(&sema[sem]);
-            
-            // 步骤7：释放锁
-            release(&sema[sem].lock);
-            
-            return 0;
-        }
-    \end{codeblock}
-    
-    \subsubsection{D.5 sysproc.c - 信号量系统调用包装器}
-    
-    \begin{codeblock}{信号量系统调用包装器}
-        // sys_sem_init：sem_init系统调用包装器
-        int
-        sys_sem_init(void)
-        {
-            int sem, value;
-            
-            if (argint(0, &sem) < 0)      // 解析参数0：信号量ID
-            return -1;
-            if (argint(1, &value) < 0)    // 解析参数1：初始值
-            return -1;
-            
-            return sem_init(sem, value);
-        }
-        
-        // sys_sem_destroy：sem_destroy系统调用包装器
-        int
-        sys_sem_destroy(void)
-        {
-            int sem;
-            
-            if (argint(0, &sem) < 0)
-            return -1;
-            
-            return sem_destroy(sem);
-        }
-        
-        // sys_sem_wait：sem_wait系统调用包装器
-        int 
-        sys_sem_wait(void)
-        {
-            int sem, count;
-            
-            if (argint(0, &sem) < 0)      // 解析参数0：信号量ID
-            return -1;
-            if (argint(1, &count) < 0)    // 解析参数1：资源数量
-            return -1;
-            
-            return sem_wait(sem, count);
-        }
-        
-        // sys_sem_signal：sem_signal系统调用包装器
-        int 
-        sys_sem_signal(void)
-        {
-            int sem, count;
-            
-            if (argint(0, &sem) < 0)
-            return -1;
-            if (argint(1, &count) < 0)
-            return -1;
-            
-            return sem_signal(sem, count);
-        }
-    \end{codeblock}
-    
-    \subsection{附录E：信号量测试程序}
-    
-    \subsubsection{E.1 sem\_test.c - 完整实现}
-    
-    \begin{codeblock}{sem\_test.c}
-        #include "types.h"
-        #include "stat.h"
-        #include "user.h"
-        #include "fcntl.h"
-        
-        // 测试参数定义
-        #define NUM_CHILDREN 10              // 并发子进程数量
-        #define TARGET_COUNT_PER_CHILD 50    // 每个子进程的循环次数
-        #define COUNTER_FILE "counter"       // 共享计数器文件名
-        #define SEM_ID 0                     // 使用0号信号量
-        
-        // test_counter：信号量互斥测试函数
-        void
-        test_counter()
-        {
-            int i, j;
-            int fd;
-            int val;
-            
-            // ===== 第一部分：初始化 =====
-            
-            // 步骤1：创建共享计数器文件并写入初始值0
-            fd = open(COUNTER_FILE, O_CREATE | O_RDWR);
-            if(fd < 0){
-                printf(1, "Error: create counter file failed\n");
-                exit();
-            }
-            val = 0;
-            write(fd, &val, sizeof(int));  // 写入4字节整数
-            close(fd);
-            
-            // 步骤2：初始化互斥信号量（初始值为1，作为互斥锁）
-            if(sem_init(SEM_ID, 1) < 0){
-                printf(1, "Error: sem_init failed\n");
-                exit();
-            }
-            
-            printf(1, "Starting %d children, each incrementing %d times...\n", 
-            NUM_CHILDREN, TARGET_COUNT_PER_CHILD);
-            
-            // ===== 第二部分：创建并发子进程 =====
-            
-            for(i = 0; i < NUM_CHILDREN; i++){
-                int pid = fork();
-                if(pid < 0){
-                    printf(1, "fork failed\n");
-                    exit();
-                }
-                
-                if(pid == 0){
-                    // --- 子进程代码 ---
-                    for(j = 0; j < TARGET_COUNT_PER_CHILD; j++){
-                        
-                        // P操作：申请进入临界区
-                        if(sem_wait(SEM_ID, 1) < 0){
-                            printf(1, "Child: sem_wait failed\n");
-                            exit();
-                        }
-                        
-                        // ========== 临界区开始 ==========
-                        
-                        // 读取当前计数值
-                        fd = open(COUNTER_FILE, O_RDONLY);
-                        if(fd < 0){
-                            printf(1, "Child: open read failed\n");
-                            exit();
-                        }
-                        if(read(fd, &val, sizeof(int)) != sizeof(int)){
-                            printf(1, "Child: read failed\n");
-                            exit();
-                        }
-                        close(fd);
-                        
-                        // 更新计数值（加1）
-                        val++;
-                        
-                        // 写回新值
-                        fd = open(COUNTER_FILE, O_WRONLY); 
-                        if(fd < 0){
-                            printf(1, "Child: open write failed\n");
-                            exit();
-                        }
-                        if(write(fd, &val, sizeof(int)) != sizeof(int)){
-                            printf(1, "Child: write failed\n");
-                            exit();
-                        }
-                        close(fd);
-                        
-                        // ========== 临界区结束 ==========
-                        
-                        // V操作：离开临界区
-                        if(sem_signal(SEM_ID, 1) < 0){
-                            printf(1, "Child: sem_signal failed\n");
-                            exit();
-                        }
-                    }
-                    
-                    exit();  // 子进程完成后退出
-                }
-            }
-            
-            // ===== 第三部分：等待子进程并验证结果 =====
-            
-            // 父进程等待所有子进程退出
-            for(i = 0; i < NUM_CHILDREN; i++){
-                wait();
-            }
-            
-            // 读取最终计数值
-            fd = open(COUNTER_FILE, O_RDONLY);
-            read(fd, &val, sizeof(int));
-            close(fd);
-            
-            printf(1, "Final counter value: %d\n", val);
-            
-            // 验证结果（期望值：10 × 50 = 500）
-            if(val == NUM_CHILDREN * TARGET_COUNT_PER_CHILD){
-                printf(1, "TEST PASSED!\n");
-            } else {
-                printf(1, "TEST FAILED! Expected %d\n", 
-                NUM_CHILDREN * TARGET_COUNT_PER_CHILD);
-            }
-            
-            // ===== 第四部分：清理资源 =====
-            
-            sem_destroy(SEM_ID);    // 销毁信号量
-            unlink(COUNTER_FILE);   // 删除测试文件
-            
-            return;
-        }
-        
-        int
-        main(int argc, char *argv[])
-        {
-            test_counter();
-            return 0;
-        }
-    \end{codeblock}
-    
+% ==========================================
+% 附录：完整实验结果
+% ==========================================
+\section{附录：完整实验结果}\label{appendix:full-results}
+
+% ============================================================
+% 场景1：纯CPU长短作业（车队效应测试）
+% ============================================================
+\subsection{场景1：纯CPU长短作业（车队效应测试）}
+
+\begin{table}[H]
+	\centering
+	\caption{场景1 - DEFAULT调度器测试结果}
+	\begin{tabular}{cccrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{类型} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{周转时间} \\
+		\midrule
+		4 & 10 & 长作业 & 24 & 219 & 243 \\
+		5 & 10 & 长作业 & 263 & 218 & 481 \\
+		6 & 10 & 短作业 & 460 & 22 & 550 \\
+		7 & 10 & 短作业 & 471 & 22 & 623 \\
+		8 & 10 & 中作业 & 478 & 75 & 621 \\
+		9 & 10 & 中作业 & 538 & 75 & 627 \\
+		\midrule
+		\multicolumn{3}{c}{长作业平均} & 143 & 218 & 362 \\
+		\multicolumn{3}{c}{短作业平均} & 465 & 22 & 487 \\
+		\multicolumn{3}{c}{中作业平均} & 508 & 75 & 583 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景1 - RR(轮转)调度器测试结果}
+	\begin{tabular}{cccrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{类型} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{周转时间} \\
+		\midrule
+		30 & 10 & 短作业 & 102 & 21 & 123 \\
+		31 & 10 & 短作业 & 147 & 22 & 382 \\
+		32 & 10 & 中作业 & 266 & 74 & 370 \\
+		33 & 10 & 中作业 & 266 & 72 & 370 \\
+		28 & 10 & 长作业 & 407 & 225 & 639 \\
+		29 & 10 & 长作业 & 408 & 216 & 637 \\
+		\midrule
+		\multicolumn{3}{c}{长作业平均} & 407 & 220 & 628 \\
+		\multicolumn{3}{c}{短作业平均} & 124 & 21 & 146 \\
+		\multicolumn{3}{c}{中作业平均} & 266 & 73 & 339 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景1 - PRIORITY调度器测试结果}
+	\begin{tabular}{cccrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{类型} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{周转时间} \\
+		\midrule
+		52 & 10 & 长作业 & 215 & 217 & 432 \\
+		53 & 10 & 长作业 & 215 & 214 & 429 \\
+		54 & 10 & 短作业 & 24 & 21 & 45 \\
+		55 & 10 & 短作业 & 21 & 22 & 43 \\
+		56 & 10 & 中作业 & 73 & 71 & 144 \\
+		57 & 10 & 中作业 & 73 & 74 & 147 \\
+		\midrule
+		\multicolumn{3}{c}{长作业平均} & 215 & 215 & 430 \\
+		\multicolumn{3}{c}{短作业平均} & 22 & 21 & 44 \\
+		\multicolumn{3}{c}{中作业平均} & 73 & 72 & 145 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景1 - FCFS调度器测试结果}
+	\begin{tabular}{cccrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{类型} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{周转时间} \\
+		\midrule
+		76 & 10 & 长作业 & 1 & 214 & 215 \\
+		77 & 10 & 长作业 & 214 & 214 & 428 \\
+		78 & 10 & 短作业 & 0 & 22 & 22 \\
+		79 & 10 & 短作业 & 22 & 22 & 44 \\
+		80 & 10 & 中作业 & 1 & 71 & 72 \\
+		81 & 10 & 中作业 & 72 & 72 & 144 \\
+		\midrule
+		\multicolumn{3}{c}{长作业平均} & 107 & 214 & 321 \\
+		\multicolumn{3}{c}{短作业平均} & 11 & 22 & 33 \\
+		\multicolumn{3}{c}{中作业平均} & 36 & 71 & 108 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景1 - SML(多级队列)调度器测试结果}
+	\begin{tabular}{cccrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{类型} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{周转时间} \\
+		\midrule
+		102 & 10 & 短作业 & 106 & 21 & 134 \\
+		103 & 10 & 短作业 & 110 & 22 & 134 \\
+		104 & 10 & 中作业 & 287 & 72 & 515 \\
+		100 & 10 & 长作业 & 404 & 227 & 631 \\
+		101 & 10 & 长作业 & 407 & 216 & 631 \\
+		105 & 10 & 中作业 & 286 & 71 & 515 \\
+		\midrule
+		\multicolumn{3}{c}{长作业平均} & 405 & 221 & 627 \\
+		\multicolumn{3}{c}{短作业平均} & 108 & 21 & 129 \\
+		\multicolumn{3}{c}{中作业平均} & 286 & 71 & 358 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+% ============================================================
+% 场景2：交互型vs背景任务
+% ============================================================
+\subsection{场景2：交互型vs背景任务}
+
+\begin{table}[H]
+	\centering
+	\caption{场景2 - DEFAULT调度器测试结果}
+	\begin{tabular}{cccrrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{类型} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{休眠时间} & \textbf{周转时间} \\
+		\midrule
+		10 & 18 & CPU背景 & 9 & 217 & 225 & 451 \\
+		11 & 18 & CPU背景 & 228 & 215 & 9 & 452 \\
+		12 & 3 & 交互型 & 440 & 80 & 189 & 709 \\
+		13 & 3 & 交互型 & 514 & 81 & 121 & 716 \\
+		14 & 12 & IO背景 & 593 & 45 & 222 & 860 \\
+		15 & 12 & IO背景 & 265 & 46 & 556 & 867 \\
+		\midrule
+		\multicolumn{3}{c}{交互型平均} & 477 & 80 & 155 & 712 \\
+		\multicolumn{3}{c}{CPU背景平均} & 118 & 216 & 0 & 334 \\
+		\multicolumn{3}{c}{IO背景平均} & 429 & 45 & 389 & 863 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景2 - RR(轮转)调度器测试结果}
+	\begin{tabular}{cccrrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{类型} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{休眠时间} & \textbf{周转时间} \\
+		\midrule
+		36 & 3 & 交互型 & 398 & 81 & 86 & 565 \\
+		37 & 3 & 交互型 & 398 & 81 & 86 & 565 \\
+		34 & 18 & CPU背景 & 447 & 236 & 6 & 689 \\
+		35 & 18 & CPU背景 & 451 & 215 & 23 & 689 \\
+		38 & 12 & IO背景 & 458 & 44 & 275 & 777 \\
+		39 & 12 & IO背景 & 455 & 45 & 301 & 801 \\
+		\midrule
+		\multicolumn{3}{c}{交互型平均} & 398 & 81 & 86 & 565 \\
+		\multicolumn{3}{c}{CPU背景平均} & 449 & 225 & 0 & 674 \\
+		\multicolumn{3}{c}{IO背景平均} & 456 & 44 & 288 & 789 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景2 - PRIORITY调度器测试结果}
+	\begin{tabular}{cccrrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{类型} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{休眠时间} & \textbf{周转时间} \\
+		\midrule
+		60 & 3 & 交互型 & 73 & 80 & 200 & 353 \\
+		61 & 3 & 交互型 & 72 & 81 & 200 & 353 \\
+		62 & 12 & IO背景 & 230 & 41 & 396 & 667 \\
+		63 & 12 & IO背景 & 225 & 40 & 448 & 713 \\
+		58 & 18 & CPU背景 & 475 & 236 & 10 & 721 \\
+		59 & 18 & CPU背景 & 480 & 232 & 13 & 725 \\
+		\midrule
+		\multicolumn{3}{c}{交互型平均} & 72 & 80 & 200 & 353 \\
+		\multicolumn{3}{c}{CPU背景平均} & 477 & 234 & 0 & 711 \\
+		\multicolumn{3}{c}{IO背景平均} & 227 & 40 & 422 & 690 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景2 - FCFS调度器测试结果}
+	\begin{tabular}{cccrrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{类型} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{休眠时间} & \textbf{周转时间} \\
+		\midrule
+		82 & 18 & CPU背景 & 1 & 215 & 0 & 216 \\
+		83 & 18 & CPU背景 & 216 & 214 & 0 & 430 \\
+		84 & 3 & 交互型 & 523 & 80 & 108 & 711 \\
+		85 & 3 & 交互型 & 538 & 84 & 96 & 718 \\
+		86 & 12 & IO背景 & 592 & 41 & 222 & 855 \\
+		87 & 12 & IO背景 & 597 & 41 & 226 & 864 \\
+		\midrule
+		\multicolumn{3}{c}{交互型平均} & 530 & 82 & 102 & 714 \\
+		\multicolumn{3}{c}{CPU背景平均} & 108 & 214 & 0 & 323 \\
+		\multicolumn{3}{c}{IO背景平均} & 594 & 41 & 224 & 859 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景2 - SML(多级队列)调度器测试结果}
+	\begin{tabular}{cccrrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{类型} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{休眠时间} & \textbf{周转时间} \\
+		\midrule
+		108 & 3 & 交互型 & 73 & 80 & 200 & 353 \\
+		109 & 3 & 交互型 & 77 & 80 & 196 & 353 \\
+		110 & 12 & IO背景 & 240 & 40 & 367 & 647 \\
+		106 & 18 & CPU背景 & 477 & 239 & 0 & 716 \\
+		107 & 18 & CPU背景 & 480 & 233 & 9 & 722 \\
+		111 & 12 & IO背景 & 223 & 41 & 467 & 731 \\
+		\midrule
+		\multicolumn{3}{c}{交互型平均} & 75 & 80 & 198 & 353 \\
+		\multicolumn{3}{c}{CPU背景平均} & 478 & 236 & 0 & 714 \\
+		\multicolumn{3}{c}{IO背景平均} & 231 & 40 & 417 & 689 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+% ============================================================
+% 场景3：优先级饥饿测试
+% ============================================================
+\subsection{场景3：优先级饥饿测试}
+
+\begin{table}[H]
+	\centering
+	\caption{场景3 - DEFAULT调度器测试结果}
+	\begin{tabular}{cccrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{优先级组} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{周转时间} \\
+		\midrule
+		16 & 1 & 高优先级 & 40 & 436 & 476 \\
+		17 & 10 & 中优先级 & 481 & 111 & 592 \\
+		18 & 10 & 中优先级 & 586 & 110 & 696 \\
+		19 & 10 & 中优先级 & 688 & 110 & 798 \\
+		20 & 19 & 低优先级 & 780 & 111 & 891 \\
+		21 & 19 & 低优先级 & 880 & 112 & 992 \\
+		\midrule
+		\multicolumn{3}{c}{高优平均} & 40 & 436 & 476 \\
+		\multicolumn{3}{c}{中优平均} & 585 & 110 & 695 \\
+		\multicolumn{3}{c}{低优平均} & 830 & 111 & 941 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景3 - RR(轮转)调度器测试结果}
+	\begin{tabular}{cccrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{优先级组} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{周转时间} \\
+		\midrule
+		41 & 10 & 中优先级 & 539 & 108 & 647 \\
+		42 & 10 & 中优先级 & 537 & 107 & 644 \\
+		43 & 10 & 中优先级 & 537 & 107 & 644 \\
+		44 & 19 & 低优先级 & 540 & 108 & 648 \\
+		45 & 19 & 低优先级 & 584 & 108 & 933 \\
+		40 & 1 & 高优先级 & 540 & 446 & 988 \\
+		\midrule
+		\multicolumn{3}{c}{高优平均} & 540 & 446 & 986 \\
+		\multicolumn{3}{c}{中优平均} & 537 & 107 & 645 \\
+		\multicolumn{3}{c}{低优平均} & 562 & 108 & 670 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景3 - PRIORITY调度器测试结果}
+	\begin{tabular}{cccrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{优先级组} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{周转时间} \\
+		\midrule
+		64 & 1 & 高优先级 & 1 & 427 & 428 \\
+		66 & 10 & 中优先级 & 124 & 107 & 301 \\
+		65 & 10 & 中优先级 & 554 & 107 & 805 \\
+		67 & 10 & 中优先级 & 217 & 113 & 377 \\
+		69 & 19 & 低优先级 & 409 & 112 & 521 \\
+		68 & 19 & 低优先级 & 442 & 113 & 556 \\
+		\midrule
+		\multicolumn{3}{c}{高优平均} & 1 & 427 & 428 \\
+		\multicolumn{3}{c}{中优平均} & 298 & 109 & 407 \\
+		\multicolumn{3}{c}{低优平均} & 425 & 112 & 538 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景3 - FCFS调度器测试结果}
+	\begin{tabular}{cccrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{优先级组} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{周转时间} \\
+		\midrule
+		88 & 1 & 高优先级 & 2 & 437 & 439 \\
+		89 & 10 & 中优先级 & 439 & 108 & 547 \\
+		90 & 10 & 中优先级 & 547 & 107 & 654 \\
+		91 & 10 & 中优先级 & 654 & 109 & 763 \\
+		92 & 19 & 低优先级 & 762 & 107 & 869 \\
+		93 & 19 & 低优先级 & 869 & 108 & 977 \\
+		\midrule
+		\multicolumn{3}{c}{高优平均} & 2 & 437 & 439 \\
+		\multicolumn{3}{c}{中优平均} & 546 & 108 & 654 \\
+		\multicolumn{3}{c}{低优平均} & 815 & 107 & 923 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景3 - SML(多级队列)调度器测试结果}
+	\begin{tabular}{cccrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{优先级组} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{周转时间} \\
+		\midrule
+		112 & 1 & 高优先级 & 1 & 429 & 430 \\
+		114 & 10 & 中优先级 & 648 & 108 & 756 \\
+		115 & 10 & 中优先级 & 648 & 107 & 755 \\
+		113 & 10 & 中优先级 & 647 & 113 & 899 \\
+		116 & 19 & 低优先级 & 870 & 112 & 982 \\
+		117 & 19 & 低优先级 & 871 & 114 & 989 \\
+		\midrule
+		\multicolumn{3}{c}{高优平均} & 1 & 429 & 430 \\
+		\multicolumn{3}{c}{中优平均} & 647 & 109 & 757 \\
+		\multicolumn{3}{c}{低优平均} & 870 & 113 & 983 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+% ============================================================
+% 场景4：时间片公平性测试
+% ============================================================
+\subsection{场景4：时间片公平性测试}
+
+\begin{table}[H]
+	\centering
+	\caption{场景4 - DEFAULT调度器测试结果}
+	\begin{tabular}{ccrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{周转时间} \\
+		\midrule
+		22 & 10 & 10 & 109 & 119 \\
+		23 & 10 & 132 & 110 & 242 \\
+		24 & 10 & 250 & 109 & 359 \\
+		25 & 10 & 355 & 110 & 465 \\
+		26 & 10 & 455 & 112 & 567 \\
+		27 & 10 & 550 & 111 & 661 \\
+		\midrule
+		\multicolumn{2}{c}{平均运行时间} & \multicolumn{3}{c}{110} \\
+		\multicolumn{2}{c}{运行时间方差} & \multicolumn{3}{c}{\textbf{1}} \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景4 - RR(轮转)调度器测试结果}
+	\begin{tabular}{ccrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{周转时间} \\
+		\midrule
+		46 & 10 & 537 & 108 & 645 \\
+		47 & 10 & 534 & 107 & 641 \\
+		48 & 10 & 537 & 108 & 646 \\
+		49 & 10 & 537 & 107 & 646 \\
+		50 & 10 & 537 & 107 & 646 \\
+		51 & 10 & 537 & 108 & 646 \\
+		\midrule
+		\multicolumn{2}{c}{平均运行时间} & \multicolumn{3}{c}{107} \\
+		\multicolumn{2}{c}{运行时间方差} & \multicolumn{3}{c}{\textbf{0}} \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景4 - PRIORITY调度器测试结果}
+	\begin{tabular}{ccrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{周转时间} \\
+		\midrule
+		70 & 10 & 109 & 108 & 649 \\
+		71 & 10 & 539 & 108 & 652 \\
+		72 & 10 & 539 & 107 & 653 \\
+		73 & 10 & 326 & 107 & 657 \\
+		75 & 10 & 109 & 107 & 652 \\
+		74 & 10 & 326 & 108 & 667 \\
+		\midrule
+		\multicolumn{2}{c}{平均运行时间} & \multicolumn{3}{c}{107} \\
+		\multicolumn{2}{c}{运行时间方差} & \multicolumn{3}{c}{\textbf{0}} \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景4 - FCFS调度器测试结果}
+	\begin{tabular}{ccrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{周转时间} \\
+		\midrule
+		94 & 10 & 2 & 107 & 109 \\
+		95 & 10 & 109 & 106 & 215 \\
+		96 & 10 & 214 & 108 & 322 \\
+		97 & 10 & 322 & 107 & 429 \\
+		98 & 10 & 429 & 106 & 535 \\
+		99 & 10 & 535 & 107 & 642 \\
+		\midrule
+		\multicolumn{2}{c}{平均运行时间} & \multicolumn{3}{c}{106} \\
+		\multicolumn{2}{c}{运行时间方差} & \multicolumn{3}{c}{\textbf{1}} \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景4 - SML(多级队列)调度器测试结果}
+	\begin{tabular}{ccrrr}
+		\toprule
+		\textbf{PID} & \textbf{优先级} & \textbf{就绪时间} & \textbf{运行时间} & \textbf{周转时间} \\
+		\midrule
+		119 & 10 & 539 & 108 & 647 \\
+		120 & 10 & 538 & 107 & 645 \\
+		118 & 10 & 540 & 109 & 653 \\
+		121 & 10 & 538 & 107 & 645 \\
+		122 & 10 & 540 & 109 & 653 \\
+		123 & 10 & 539 & 107 & 646 \\
+		\midrule
+		\multicolumn{2}{c}{平均运行时间} & \multicolumn{3}{c}{107} \\
+		\multicolumn{2}{c}{运行时间方差} & \multicolumn{3}{c}{\textbf{1}} \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+% ============================================================
+% 汇总对比表
+% ============================================================
+\subsection{各场景调度算法性能汇总对比}
+
+\begin{table}[H]
+	\centering
+	\caption{场景1：各调度算法平均性能对比（单位：ticks）}
+	\begin{tabular}{l|ccc|ccc|ccc}
+		\toprule
+		\multirow{2}{*}{\textbf{调度器}} & \multicolumn{3}{c|}{\textbf{长作业}} & \multicolumn{3}{c|}{\textbf{短作业}} & \multicolumn{3}{c}{\textbf{中作业}} \\
+		& 就绪 & 运行 & 周转 & 就绪 & 运行 & 周转 & 就绪 & 运行 & 周转 \\
+		\midrule
+		DEFAULT  & 143 & 218 & 362 & 465 & 22 & 487 & 508 & 75 & 583 \\
+		RR       & 407 & 220 & 628 & 124 & 21 & \textbf{146} & 266 & 73 & 339 \\
+		PRIORITY & 215 & 215 & 430 & \textbf{22} & 21 & \textbf{44} & \textbf{73} & 72 & \textbf{145} \\
+		FCFS     & 107 & 214 & 321 & 11 & 22 & 33 & 36 & 71 & 108 \\
+		SML      & 405 & 221 & 627 & 108 & 21 & 129 & 286 & 71 & 358 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景2：各调度算法平均性能对比（单位：ticks）}
+	\begin{tabular}{l|ccc|ccc|ccc}
+		\toprule
+		\multirow{2}{*}{\textbf{调度器}} & \multicolumn{3}{c|}{\textbf{交互型}} & \multicolumn{3}{c|}{\textbf{CPU背景}} & \multicolumn{3}{c}{\textbf{IO背景}} \\
+		& 就绪 & 休眠 & 周转 & 就绪 & 运行 & 周转 & 就绪 & 休眠 & 周转 \\
+		\midrule
+		DEFAULT  & 477 & 155 & 712 & 118 & 216 & 334 & 429 & 389 & 863 \\
+		RR       & 398 & 86 & 565 & 449 & 225 & 674 & 456 & 288 & 789 \\
+		PRIORITY & \textbf{72} & 200 & \textbf{353} & 477 & 234 & 711 & 227 & 422 & 690 \\
+		FCFS     & 530 & 102 & 714 & 108 & 214 & 323 & 594 & 224 & 859 \\
+		SML      & 75 & 198 & \textbf{353} & 478 & 236 & 714 & 231 & 417 & 689 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景3：各调度算法平均性能对比（单位：ticks）}
+	\begin{tabular}{l|cc|cc|cc}
+		\toprule
+		\multirow{2}{*}{\textbf{调度器}} & \multicolumn{2}{c|}{\textbf{高优先级}} & \multicolumn{2}{c|}{\textbf{中优先级}} & \multicolumn{2}{c}{\textbf{低优先级}} \\
+		& 就绪 & 周转 & 就绪 & 周转 & 就绪 & 周转 \\
+		\midrule
+		DEFAULT  & 40 & 476 & 585 & 695 & 830 & 941 \\
+		RR       & 540 & 986 & 537 & 645 & 562 & 670 \\
+		PRIORITY & \textbf{1} & \textbf{428} & 298 & 407 & 425 & 538 \\
+		FCFS     & 2 & 439 & 546 & 654 & 815 & 923 \\
+		SML      & \textbf{1} & 430 & 647 & 757 & 870 & 983 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\begin{table}[H]
+	\centering
+	\caption{场景4：各调度算法时间片公平性对比}
+	\begin{tabular}{lccc}
+		\toprule
+		\textbf{调度器} & \textbf{平均运行时间} & \textbf{运行时间方差} & \textbf{公平性评价} \\
+		\midrule
+		DEFAULT  & 110 & 1 & 优 \\
+		RR       & 107 & \textbf{0} & \textbf{最优} \\
+		PRIORITY & 107 & \textbf{0} & \textbf{最优} \\
+		FCFS     & 106 & 1 & 优 \\
+		SML      & 107 & 1 & 优 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
 \end{document}

@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.7.3)  24 DEC 2025 03:25
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.7.3)  24 DEC 2025 23:48
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1222,36 +1222,36 @@ Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
 )
 Package hyperref Info: Option `colorlinks' set `true' on input line 48.
 LaTeX Font Info:    Trying to load font information for TU+ppl on input line 14
-5.
-LaTeX Font Info:    No file TUppl.fd. on input line 145.
+1.
+LaTeX Font Info:    No file TUppl.fd. on input line 141.
 
 
 LaTeX Font Warning: Font shape `TU/ppl/m/n' undefined
-(Font)              using `TU/lmr/m/n' instead on input line 145.
+(Font)              using `TU/lmr/m/n' instead on input line 141.
 
 (./review.aux)
 \openout1 = `review.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 145.
-LaTeX Font Info:    ... okay on input line 145.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 145.
-LaTeX Font Info:    ... okay on input line 145.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 145.
-LaTeX Font Info:    ... okay on input line 145.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 145.
-LaTeX Font Info:    ... okay on input line 145.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 145.
-LaTeX Font Info:    ... okay on input line 145.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 145.
-LaTeX Font Info:    ... okay on input line 145.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 145.
-LaTeX Font Info:    ... okay on input line 145.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 145.
-LaTeX Font Info:    ... okay on input line 145.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 145.
-LaTeX Font Info:    ... okay on input line 145.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 145.
-LaTeX Font Info:    ... okay on input line 145.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -1288,7 +1288,7 @@ LaTeX Font Info:    ... okay on input line 145.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 \c@lstlisting=\count390
-Package hyperref Info: Link coloring ON on input line 145.
+Package hyperref Info: Link coloring ON on input line 141.
 (./review.out) (./review.out)
 \@outlinefile=\write4
 \openout4 = `review.out'.
@@ -1332,7 +1332,7 @@ File: img/logo.png Graphic file (type bmp)
 
 
 LaTeX Font Warning: Font shape `TU/ppl/b/n' undefined
-(Font)              using `TU/ppl/m/n' instead on input line 163.
+(Font)              using `TU/ppl/m/n' instead on input line 159.
 
 
 Package fontspec Info: 
@@ -1362,33 +1362,33 @@ Package fontspec Info:
 
 
 LaTeX Font Warning: Font shape `TU/SimHei(0)/b/n' undefined
-(Font)              using `TU/SimHei(0)/m/n' instead on input line 163.
+(Font)              using `TU/SimHei(0)/m/n' instead on input line 159.
 
 LaTeX Font Info:    Trying to load font information for OT1+ppl on input line 1
-75.
+71.
 (c:/texlive/2025/texmf-dist/tex/latex/psnfss/ot1ppl.fd
 File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
 )
 LaTeX Font Info:    Trying to load font information for OML+zplm on input line 
-175.
+171.
 
 (c:/texlive/2025/texmf-dist/tex/latex/psnfss/omlzplm.fd
 File: omlzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OML/zplm.
 )
 LaTeX Font Info:    Trying to load font information for OMS+zplm on input line 
-175.
+171.
 
 (c:/texlive/2025/texmf-dist/tex/latex/psnfss/omszplm.fd
 File: omszplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMS/zplm.
 )
 LaTeX Font Info:    Trying to load font information for OMX+zplm on input line 
-175.
+171.
 
 (c:/texlive/2025/texmf-dist/tex/latex/psnfss/omxzplm.fd
 File: omxzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMX/zplm.
 )
 LaTeX Font Info:    Trying to load font information for OT1+zplm on input line 
-175.
+171.
 
 (c:/texlive/2025/texmf-dist/tex/latex/psnfss/ot1zplm.fd
 File: ot1zplm.fd 2002/09/08 Fontinst v1.914 font definitions for OT1/zplm.
@@ -1436,17 +1436,18 @@ Package fontspec Info:
 (fontspec)             - 'normal' (m/n) with NFSS spec.:
 (fontspec)             <->"FangSong/OT:script=hani;language=dflt;"
 
+File: img3/project_framework.drawio.pdf Graphic file (type pdf)
+<use img3/project_framework.drawio.pdf>
+
+
+[4]
 File: img/experiment_workflow.drawio.pdf Graphic file (type pdf)
 <use img/experiment_workflow.drawio.pdf>
 
 
-[4]
-
 [5]
 
-LaTeX Warning: Reference `fig:sched_framework' on page 6 undefined on input lin
-e 285.
-
+[6]
 \g__tcobox_out_iow=\write6
 \openout6 = `review.listing'.
 
@@ -1476,7 +1477,7 @@ Package fontspec Info:
 (fontspec)             - 'bold italic' (b/it) with NFSS spec.: <->"Microsoft
 (fontspec)             YaHei/BI/OT:script=hani;language=dflt;"
 
-(c:/texlive/2025/texmf-dist/tex/latex/listings/lstlang1.sty
+ (c:/texlive/2025/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2024/09/23 1.10c listings language file
 )
 (c:/texlive/2025/texmf-dist/tex/latex/listings/lstmisc.sty
@@ -1486,46 +1487,51 @@ File: lstmisc.sty 2024/09/23 1.10c (Carsten Heinz)
 LaTeX Font Warning: Font shape `TU/FangSong(0)/m/it' undefined
 (Font)              using `TU/FangSong(0)/m/n' instead on input line 1.
 
-LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10.95> not available
+LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10> not available
 (Font)              Font shape `TU/lmtt/b/n' tried instead on input line 2.
 )
-\openout6 = `review.listing'.
-
- (./review.listing)
-
-[6]
-\openout6 = `review.listing'.
-
- (./review.listing)
 
 [7]
 \openout6 = `review.listing'.
 
  (./review.listing)
+\openout6 = `review.listing'.
+
+ (./review.listing)
 
 [8]
+File: img/setscheduler.drawio.pdf Graphic file (type pdf)
+<use img/setscheduler.drawio.pdf>
+
 
 [9]
-File: img/scheduler_main.drawio.pdf Graphic file (type pdf)
-<use img/scheduler_main.drawio.pdf>
+\openout6 = `review.listing'.
 
+ (./review.listing)
 
 [10]
 
 [11]
+File: img/scheduler_main.drawio.pdf Graphic file (type pdf)
+<use img/scheduler_main.drawio.pdf>
+
+
+[12]
+
+[13]
 
 LaTeX Font Warning: Font shape `TU/ppl/m/it' undefined
-(Font)              using `TU/ppl/m/n' instead on input line 468.
+(Font)              using `TU/ppl/m/n' instead on input line 471.
 
 
-LaTeX Warning: Reference `fig:priority_sched' on page 12 undefined on input lin
-e 502.
+LaTeX Warning: Reference `fig:priority_sched' on page 14 undefined on input lin
+e 505.
 
 \openout6 = `review.listing'.
 
 (./review.listing)
 
-[12]
+[14]
 \openout6 = `review.listing'.
 
  (./review.listing)
@@ -1533,21 +1539,21 @@ File: img/FIFS.jpeg Graphic file (type bmp)
 <img/FIFS.jpeg>
 
 
-[13]
+[15]
 \openout6 = `review.listing'.
 
  (./review.listing)
 
-[14]
+[16]
 File: img/RoundRobin.jpg Graphic file (type bmp)
 <img/RoundRobin.jpg>
 File: img/SML.png Graphic file (type bmp)
 <img/SML.png>
 
 
-[15]
+[17]
 
-[16]
+[18]
 \openout6 = `review.listing'.
 
  (./review.listing)
@@ -1555,69 +1561,73 @@ File: img/scheduler_test.drawio.pdf Graphic file (type pdf)
 <use img/scheduler_test.drawio.pdf>
 
 
-[17]
+[19]
 
-[18]
+[20]
 File: img/wait2.drawio.pdf Graphic file (type pdf)
 <use img/wait2.drawio.pdf>
 
 
-[19]
+[21]
 
-[20]
+[22]
 File: img2/run_result.png Graphic file (type bmp)
 <img2/run_result.png>
 File: img2/run_result1.png Graphic file (type bmp)
 <img2/run_result1.png>
 
 
-[21]
+[23]
 File: img2/run_result2.png Graphic file (type bmp)
 <img2/run_result2.png>
-File: img2/run_result3.png Graphic file (type bmp)
-<img2/run_result3.png>
 
-
-[22]
-
-[23]
 
 [24]
+File: img2/run_result3.png Graphic file (type bmp)
+<img2/run_result3.png>
+File: img3/scene4.png Graphic file (type bmp)
+<img3/scene4.png>
+
 
 [25]
+File: img3/scenario1_convoy_effect.png Graphic file (type bmp)
+<img3/scenario1_convoy_effect.png>
+
 
 [26]
-\openout6 = `review.listing'.
+File: img3/scenario2_interactive_response.png Graphic file (type bmp)
+<img3/scenario2_interactive_response.png>
 
- (./review.listing)
-\openout6 = `review.listing'.
-
- (./review.listing)
 
 [27]
-\openout6 = `review.listing'.
+File: img3/scenario3_priority_starvation.png Graphic file (type bmp)
+<img3/scenario3_priority_starvation.png>
 
- (./review.listing)
 
 [28]
-\openout6 = `review.listing'.
+File: img3/scenario4_fairness.png Graphic file (type bmp)
+<img3/scenario4_fairness.png>
 
- (./review.listing)
 
 [29]
-\openout6 = `review.listing'.
+File: img3/overall_performance_radar.png Graphic file (type bmp)
+<img3/overall_performance_radar.png>
 
- (./review.listing)
 
 [30]
 \openout6 = `review.listing'.
 
  (./review.listing)
+Underfull \hbox (badness 1831) in paragraph at lines 1061--1061
+[]\TU/SimSun(0)/m/n/12 低 优 先 级 进 程 可 能\TU/ppl/m/it/12 ”
+ []
+
+
 
 [31]
-\openout6 = `review.listing'.
+File: img3/CFS.pdf Graphic file (type pdf)
+<use img3/CFS.pdf>
 
- (./review.listing)
 
 [32]
 
@@ -1625,10 +1635,22 @@ File: img2/run_result3.png Graphic file (type bmp)
 \openout6 = `review.listing'.
 
  (./review.listing)
+\openout6 = `review.listing'.
+
+ (./review.listing)
 
 [34]
+\openout6 = `review.listing'.
+
+ (./review.listing)
 
 [35]
+\openout6 = `review.listing'.
+
+ (./review.listing)
+\openout6 = `review.listing'.
+
+ (./review.listing)
 \openout6 = `review.listing'.
 
  (./review.listing)
@@ -1642,6 +1664,9 @@ File: img2/run_result3.png Graphic file (type bmp)
  (./review.listing)
 
 [37]
+\openout6 = `review.listing'.
+
+ (./review.listing)
 
 [38]
 \openout6 = `review.listing'.
@@ -1654,11 +1679,14 @@ File: img2/run_result3.png Graphic file (type bmp)
  (./review.listing)
 
 [40]
-
-[41]
 \openout6 = `review.listing'.
 
  (./review.listing)
+\openout6 = `review.listing'.
+
+ (./review.listing)
+
+[41]
 
 [42]
 
@@ -1668,7 +1696,23 @@ File: img2/run_result3.png Graphic file (type bmp)
 
 [45]
 
-[46] (./review.aux)
+[46]
+
+[47]
+
+[48]
+
+[49]
+
+[50]
+
+[51]
+
+[52]
+
+[53]
+
+[54] (./review.aux)
  ***********
 LaTeX2e <2025-06-01> patch level 1
 L3 programming layer <2022/08/05>
@@ -1681,15 +1725,15 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `review.out' has not changed.
-(rerunfilecheck)             Checksum: 0B4C19948A178D600FCCE3E0535F09CA;8815.
+(rerunfilecheck)             Checksum: 7FC14A100FAB3CAC87B73309E90A5ECC;9144.
  ) 
 Here is how much of TeX's memory you used:
- 35576 strings out of 468529
- 798090 string characters out of 5451400
- 2125350 words of memory out of 5000000
+ 35586 strings out of 468529
+ 801021 string characters out of 5451400
+ 1703883 words of memory out of 5000000
  63297 multiletter control sequences out of 15000+600000
  641101 words of font info for 122 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  93i,13n,111p,1205b,1757s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on review.pdf (47 pages).
+Output written on review.pdf (55 pages).

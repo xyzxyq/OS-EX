@@ -1,0 +1,189 @@
+<mxfile host="65bd71144e">
+    <diagram name="调度实验框架图" id="scheduler_framework">
+        <mxGraphModel dx="1000" dy="1080" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="title" value="xv6 调度算法实验项目框架图" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=24;fontStyle=1;fontColor=#003366;" parent="1" vertex="1">
+                    <mxGeometry x="500" y="20" width="400" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="user_space" value="用户空间 (User Space)" style="swimlane;startSize=30;horizontal=1;fillColor=#E8F5E9;strokeColor=#4CAF50;fontStyle=1;fontSize=14;fontColor=#2E7D32;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="80" width="720" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="scheduler_test" value="scheduler_test.c&#10;&#10;• 四个测试场景&#10;• 车队效应测试&#10;• 交互响应测试&#10;• 优先级饥饿测试&#10;• 时间片公平性测试" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#4CAF50;fontColor=#1B5E20;align=left;spacingLeft=10;" parent="user_space" vertex="1">
+                    <mxGeometry x="20" y="45" width="180" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="user_h" value="user.h&#10;&#10;• fork(), exit(), wait()&#10;• wait2()&#10;• setpriority()&#10;• setscheduler()&#10;• getscheduler()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#4CAF50;fontColor=#1B5E20;align=left;spacingLeft=10;" parent="user_space" vertex="1">
+                    <mxGeometry x="220" y="45" width="150" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="usys" value="usys.S&#10;&#10;系统调用入口&#10;• SYSCALL(fork)&#10;• SYSCALL(wait2)&#10;• SYSCALL(setpriority)&#10;• SYSCALL(setscheduler)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#4CAF50;fontColor=#1B5E20;align=left;spacingLeft=10;" parent="user_space" vertex="1">
+                    <mxGeometry x="390" y="45" width="160" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="ulib" value="printf.c / ulib.c&#10;&#10;用户态库函数&#10;• printf()&#10;• strlen()&#10;• atoi()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#4CAF50;fontColor=#1B5E20;align=left;spacingLeft=10;" parent="user_space" vertex="1">
+                    <mxGeometry x="570" y="45" width="130" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow1" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#388E3C;" parent="user_space" source="scheduler_test" target="user_h" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow2" value="" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#388E3C;" parent="user_space" source="user_h" target="usys" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="syscall_layer" value="系统调用接口层" style="swimlane;startSize=25;horizontal=1;fillColor=#FFF3E0;strokeColor=#FF9800;fontStyle=1;fontSize=14;fontColor=#E65100;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="300" width="720" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="syscall_c" value="syscall.c&#10;&#10;系统调用分发表&#10;SYS_wait2, SYS_setpriority&#10;SYS_setscheduler, SYS_yield" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE0B2;strokeColor=#FF9800;fontColor=#E65100;align=left;spacingLeft=10;" parent="syscall_layer" vertex="1">
+                    <mxGeometry x="20" y="35" width="200" height="75" as="geometry"/>
+                </mxCell>
+                <mxCell id="syscall_h" value="syscall.h&#10;&#10;系统调用号定义&#10;#define SYS_wait2  24&#10;#define SYS_setscheduler 27" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE0B2;strokeColor=#FF9800;fontColor=#E65100;align=left;spacingLeft=10;" parent="syscall_layer" vertex="1">
+                    <mxGeometry x="240" y="35" width="200" height="75" as="geometry"/>
+                </mxCell>
+                <mxCell id="sysproc" value="sysproc.c&#10;&#10;系统调用实现&#10;sys_wait2(), sys_setpriority()&#10;sys_setscheduler(), sys_yield()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE0B2;strokeColor=#FF9800;fontColor=#E65100;align=left;spacingLeft=10;" parent="syscall_layer" vertex="1">
+                    <mxGeometry x="460" y="35" width="200" height="75" as="geometry"/>
+                </mxCell>
+                <mxCell id="scheduler_core" value="调度器核心 (Scheduler Core)" style="swimlane;startSize=30;horizontal=1;fillColor=#E3F2FD;strokeColor=#2196F3;fontStyle=1;fontSize=14;fontColor=#1565C0;" parent="1" vertex="1">
+                    <mxGeometry x="40" y="440" width="720" height="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="sdh_h" value="sdh.h&#10;&#10;调度框架头文件&#10;• 调度器函数声明&#10;• defaultScheduler()&#10;• priorityScheduler()&#10;• fcfsScheduler()&#10;• rrScheduler()&#10;• smlScheduler()&#10;• ready_process 函数指针" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#2196F3;fontColor=#0D47A1;align=left;spacingLeft=10;" parent="scheduler_core" vertex="1">
+                    <mxGeometry x="20" y="40" width="170" height="170" as="geometry"/>
+                </mxCell>
+                <mxCell id="sdh_c" value="sdh.c&#10;&#10;调度框架实现&#10;• schedulerFunction[]&#10;• schedulerName[]&#10;• initScheduler()&#10;• schedSelected 变量" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#2196F3;fontColor=#0D47A1;align=left;spacingLeft=10;" parent="scheduler_core" vertex="1">
+                    <mxGeometry x="210" y="40" width="160" height="170" as="geometry"/>
+                </mxCell>
+                <mxCell id="proc_c" value="proc.c (核心)&#10;&#10;进程管理与调度算法实现&#10;• scheduler() 主循环&#10;• yield() / sched()&#10;• priorityScheduler()&#10;• fcfsScheduler()&#10;• rrScheduler()&#10;• smlScheduler()&#10;• wait2() 统计收集&#10;• setpriority()&#10;• setscheduler()&#10;• addToReadyQueues()&#10;• 最小堆/队列数据结构" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90CAF9;strokeColor=#1976D2;fontColor=#0D47A1;align=left;spacingLeft=10;fontStyle=1;" parent="scheduler_core" vertex="1">
+                    <mxGeometry x="390" y="40" width="180" height="220" as="geometry"/>
+                </mxCell>
+                <mxCell id="trap_c" value="trap.c&#10;&#10;中断处理&#10;• 时钟中断&#10;• update_statistics()&#10;• 抢占式调度触发&#10;• yield() 调用" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#2196F3;fontColor=#0D47A1;align=left;spacingLeft=10;" parent="scheduler_core" vertex="1">
+                    <mxGeometry x="590" y="40" width="120" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="arrow3" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=-0.012;entryY=0.904;entryDx=0;entryDy=0;strokeColor=#1565C0;entryPerimeter=0;" parent="scheduler_core" source="sdh_h" target="proc_c" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="105" y="239"/>
+                            <mxPoint x="240" y="240"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="arrow4" value="" style="endArrow=classic;html=1;entryX=-0.016;entryY=0.419;entryDx=0;entryDy=0;strokeColor=#1565C0;entryPerimeter=0;" parent="scheduler_core" target="proc_c" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="370" y="132" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="arrow5" value="" style="endArrow=classic;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#1565C0;startArrow=classic;startFill=1;exitX=1.004;exitY=0.296;exitDx=0;exitDy=0;exitPerimeter=0;" parent="scheduler_core" source="proc_c" target="trap_c" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="560" y="100" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="header_layer" value="数据结构定义 (Header Files)" style="swimlane;startSize=25;horizontal=1;fillColor=#F3E5F5;strokeColor=#9C27B0;fontStyle=1;fontSize=14;fontColor=#6A1B9A;" parent="1" vertex="1">
+                    <mxGeometry x="780" y="80" width="520" height="280" as="geometry"/>
+                </mxCell>
+                <mxCell id="proc_h" value="proc.h&#10;&#10;进程结构体定义&#10;struct proc {&#10;  int priority;&#10;  int ctime;  // 创建时间&#10;  int stime;  // 休眠时间&#10;  int retime; // 就绪时间&#10;  int rutime; // 运行时间&#10;  struct proc *next;&#10;};&#10;&#10;enum procstate {...};" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1BEE7;strokeColor=#9C27B0;fontColor=#4A148C;align=left;spacingLeft=10;" parent="header_layer" vertex="1">
+                    <mxGeometry x="20" y="35" width="160" height="220" as="geometry"/>
+                </mxCell>
+                <mxCell id="param_h" value="param.h&#10;&#10;系统参数&#10;#define NPROC 64&#10;#define NCPU 8&#10;#define FSSIZE 10000" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1BEE7;strokeColor=#9C27B0;fontColor=#4A148C;align=left;spacingLeft=10;" parent="header_layer" vertex="1">
+                    <mxGeometry x="200" y="35" width="140" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="ptable_h" value="ptable.h&#10;&#10;进程表访问&#10;extern struct ptable&#10;getptable()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1BEE7;strokeColor=#9C27B0;fontColor=#4A148C;align=left;spacingLeft=10;" parent="header_layer" vertex="1">
+                    <mxGeometry x="200" y="160" width="140" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="defs_h" value="defs.h&#10;&#10;函数声明&#10;void scheduler()&#10;void yield()&#10;int wait2()&#10;int setpriority()&#10;int setscheduler()&#10;void update_statistics()" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1BEE7;strokeColor=#9C27B0;fontColor=#4A148C;align=left;spacingLeft=10;" parent="header_layer" vertex="1">
+                    <mxGeometry x="360" y="35" width="140" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="build_layer" value="构建系统" style="swimlane;startSize=25;horizontal=1;fillColor=#FFEBEE;strokeColor=#F44336;fontStyle=1;fontSize=14;fontColor=#C62828;" parent="1" vertex="1">
+                    <mxGeometry x="780" y="380" width="520" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="makefile" value="Makefile&#10;&#10;• UPROGS += _scheduler_test&#10;• SCHEDULER 编译选项&#10;• make qemu-nox" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;strokeColor=#F44336;fontColor=#B71C1C;align=left;spacingLeft=10;" parent="build_layer" vertex="1">
+                    <mxGeometry x="20" y="35" width="200" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="kernel" value="kernel (输出)&#10;&#10;编译生成的内核镜像&#10;包含所有调度算法" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;strokeColor=#F44336;fontColor=#B71C1C;align=left;spacingLeft=10;" parent="build_layer" vertex="1">
+                    <mxGeometry x="240" y="35" width="140" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="fs_img" value="fs.img&#10;&#10;文件系统镜像&#10;_scheduler_test 程序" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;strokeColor=#F44336;fontColor=#B71C1C;align=left;spacingLeft=10;" parent="build_layer" vertex="1">
+                    <mxGeometry x="400" y="35" width="100" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="flow1" value="系统调用" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#FF5722;fontColor=#FF5722;fontStyle=1;" parent="1" edge="1">
+                    <mxGeometry x="-0.1" y="10" width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="400" y="280" as="sourcePoint"/>
+                        <mxPoint x="400" y="300" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow2" value="调用内核函数" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#FF5722;fontColor=#FF5722;fontStyle=1;" parent="1" edge="1">
+                    <mxGeometry x="-0.1" y="10" width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="400" y="420" as="sourcePoint"/>
+                        <mxPoint x="400" y="440" as="targetPoint"/>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="flow3" value="包含" style="endArrow=classic;html=1;strokeWidth=2;strokeColor=#9C27B0;fontColor=#9C27B0;fontStyle=1;dashed=1;" parent="1" edge="1">
+                    <mxGeometry x="-0.2727" y="10" width="50" height="50" relative="1" as="geometry">
+                        <mxPoint x="780" y="300" as="sourcePoint"/>
+                        <mxPoint x="760" y="500" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="770" y="300"/>
+                            <mxPoint x="770" y="400"/>
+                            <mxPoint x="770" y="500"/>
+                        </Array>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="legend" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FAFAFA;strokeColor=#9E9E9E;" parent="1" vertex="1">
+                    <mxGeometry x="780" y="540" width="520" height="180" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend_title" value="图例 Legend" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=14;fontStyle=1;fontColor=#424242;" parent="1" vertex="1">
+                    <mxGeometry x="800" y="550" width="100" height="25" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend1" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#4CAF50;" parent="1" vertex="1">
+                    <mxGeometry x="800" y="580" width="30" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend1_text" value="用户空间代码" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#424242;" parent="1" vertex="1">
+                    <mxGeometry x="840" y="580" width="100" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend2" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE0B2;strokeColor=#FF9800;" parent="1" vertex="1">
+                    <mxGeometry x="800" y="610" width="30" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend2_text" value="系统调用接口" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#424242;" parent="1" vertex="1">
+                    <mxGeometry x="840" y="610" width="100" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend3" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#BBDEFB;strokeColor=#2196F3;" parent="1" vertex="1">
+                    <mxGeometry x="800" y="640" width="30" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend3_text" value="调度器核心代码" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#424242;" parent="1" vertex="1">
+                    <mxGeometry x="840" y="640" width="100" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend4" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1BEE7;strokeColor=#9C27B0;" parent="1" vertex="1">
+                    <mxGeometry x="800" y="670" width="30" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend4_text" value="头文件定义" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#424242;" parent="1" vertex="1">
+                    <mxGeometry x="840" y="670" width="100" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend5" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFCDD2;strokeColor=#F44336;" parent="1" vertex="1">
+                    <mxGeometry x="800" y="700" width="30" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend5_text" value="构建系统/输出" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#424242;" parent="1" vertex="1">
+                    <mxGeometry x="840" y="700" width="100" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend6" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#90CAF9;strokeColor=#1976D2;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="1000" y="580" width="30" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend6_text" value="核心文件（需重点修改）" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#424242;" parent="1" vertex="1">
+                    <mxGeometry x="1040" y="580" width="150" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend7" value="→" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#FF5722;fontSize=16;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="1000" y="610" width="30" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend7_text" value="调用/数据流" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#424242;" parent="1" vertex="1">
+                    <mxGeometry x="1040" y="610" width="100" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend8" value="--→" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#9C27B0;fontSize=14;fontStyle=1;" parent="1" vertex="1">
+                    <mxGeometry x="1000" y="640" width="30" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="legend8_text" value="#include 包含" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#424242;" parent="1" vertex="1">
+                    <mxGeometry x="1040" y="640" width="100" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="stats" value="涉及文件统计：&#10;• 需修改源文件: 8 个&#10;• 需修改头文件: 6 个&#10;• 测试程序: 1 个&#10;• 构建配置: 1 个" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=top;whiteSpace=wrap;rounded=0;fontColor=#424242;fontSize=12;" parent="1" vertex="1">
+                    <mxGeometry x="1170" y="630" width="210" height="80" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
